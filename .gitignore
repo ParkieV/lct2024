@@ -1,0 +1,16 @@
+#Enviroment files
+*.env
+!*example.env
+
+# PyCharm
+.idea/
+
+#VS Code
+.vscode/
+
+# Docker volumes
+volumes/
+
+# NGINX
+nginx/*
+!nginx/server.conf

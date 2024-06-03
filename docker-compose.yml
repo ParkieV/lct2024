@@ -1,0 +1,49 @@
+version: '3.11'
+
+services:
+  postgres:
+    container_name: postgres_hack
+    image: postgres:latest
+    restart: unless-stopped
+    env_file:
+      - backend/src/db.env
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+    volumes:
+      - ./volumes/db-data:/var/lib/postgresql/data
+    ports:
+      - 5400:5432
+  redis:
+    container_name: redis_hack
+    image: redis:latest
+    restart: unless-stopped
+    env_file:
+      - backend/src/redis.env
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+    volumes:
+      - ./volumes/redis.conf:/etc/redis/redis.conf
+      - ./volumes/redis:/var/lib/redis/data
+    ports:
+      - 6300:6379
+
+  backend:
+    container_name: backend_app
+    restart: unless-stopped
+    env_file:
+      - backend/src/app.env
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - 8000:8000
+    build:
+      context: backend/src
+      dockerfile: Dockerfile
+#
