@@ -1,6 +1,7 @@
 from typing import Any
 
 from app.services.redis_service import RedisServiceFacade
+from app.shared.logger import logger
 
 class RedisRepository:
 	_service = RedisServiceFacade()
@@ -34,10 +35,7 @@ class RedisRepository:
 		except Exception as err:
 			raise ValueError("Can't encode to string")
 
-		if not cls._service.check_key(key):
-			cls._service.set_pair(key, svalue)
-		else:
-			cls._service.add_members(key, svalue)
+		cls._service.add_members(key, svalue)
 
 	@classmethod
 	def insert_values_by_key(cls,
@@ -58,10 +56,11 @@ class RedisRepository:
 							key: str,
 							value: Any):
 		if result := cls.get_values_by_key(key):
+			logger.debug(f"num of results {len(result)}")
 			if len(result) > 1:
 				cls._service.delete_value(key, value)
 			elif len(result) == 1:
 				cls._service.delete_key(key)
-			else:
-				raise KeyError(f"Can't find values for key {key}")
+		else:
+			raise KeyError(f"Can't find values for key {key}")
 

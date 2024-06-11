@@ -21,7 +21,7 @@ class TokenPayload(BaseModel):
 					 examples=[int(datetime.now().timestamp())])
 	iat: int = Field(description="Время создания токена",
 					 examples=[int(datetime.now().timestamp())])
-	jti: uuid.UUID = Field(description="Идентификатор токена",
+	jti: str = Field(description="Идентификатор токена",
 					 default=uuid.uuid4(), examples=['d9ef1c50-514a-4095-9e51-1c35da329ee0'])
 	type: Literal["access", "refresh"] = Field(description="тип JWT токена", examples=["access", "refresh"])
 
@@ -74,9 +74,9 @@ class TokenPayload(BaseModel):
 	# 		raise ValueError('Data must be a dictionary')
 
 class AccessTokenPayload(TokenPayload):
-	user_id: uuid.UUID = Field(description="Идентификатор пользователя", examples=[123])
-	email: EmailStr = Field(description="Почта пользователя", examples=[123])
+	user_id: str = Field(description="Идентификатор пользователя", examples=["d9ef1c50-514a-4095-9e51-1c35da329ee0"])
+	email: EmailStr = Field(description="Почта пользователя", examples=["example@example.com"])
 	password: str = Field(description="Пароль пользователя")
 
 class RefreshTokenPayload(TokenPayload):
-	user_id: uuid.UUID = Field(description="Идентификатор пользователя", examples=[123])
+	user_id: str = Field(description="Идентификатор пользователя", examples=["d9ef1c50-514a-4095-9e51-1c35da329ee0"])

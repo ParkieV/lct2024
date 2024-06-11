@@ -10,6 +10,4 @@ class LoginRequestBodyDTO(BaseModel):
 
 
 class SignupRequestBodyDTO(BaseModel):
-    email: EmailStr
     user: UserDTO
-    password: str

@@ -15,6 +15,7 @@ services:
       retries: 2
     volumes:
       - ./volumes/db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5400:5432
     privileged: true
@@ -25,6 +26,7 @@ services:
     restart: unless-stopped
     env_file:
       - backend/src/.envs/redis.env
+    command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
@@ -34,7 +36,7 @@ services:
       - ./volumes/redis.conf:/etc/redis/redis.conf
       - ./volumes/redis:/var/lib/redis/data
     ports:
-      - 6300:6379
+      - 6379:6379
 
   backend:
     container_name: backend_app

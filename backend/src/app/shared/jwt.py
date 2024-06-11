@@ -53,12 +53,13 @@ class JWT:
 			return jwt.decode(token,
 						   cls._secret_key,
 						   algorithms=[cls._CONFIG.algorithm],
-						   audience="http://localhost:8000/api",
-						   issuer="http://localhost:8000/api")
-		except jwt.ExpiredSignatureError:
+						   audience="https://localhost:8000/api",
+						   issuer="https://localhost:8000/api")
+		except jwt.ExpiredSignatureError as err:
+			logger.error(f"Exception: {err.__class__.__name__}, details:{err}")
 			raise jwt.InvalidTokenError("Token expired")
 		except Exception as err:
-			# logger.warning(f"Exception: {err.__class__.__name__}, details:{err}")
+			logger.error(f"Exception: {err.__class__.__name__}, details:{err}")
 			raise jwt.InvalidTokenError("Invalid token")
 
 	@classmethod

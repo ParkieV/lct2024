@@ -15,6 +15,5 @@ class UserDTO(AbstractUserDTO):
 	id: uuid.UUID = uuid.uuid4()
 	telegram_nickname: str
 	phone: str
-	work_org_id: uuid.UUID
-	position_id: uuid.UUID
-	right_ids: list[int]
+	work_org_id: uuid.UUID | None = None
+	position_id: uuid.UUID | None = None

@@ -9,11 +9,11 @@ class RedisServiceFacade(AbstractDBService):
 
 	def __init__(self, config: RedisSettings | None = None) -> None:
 		super().__init__(config)
+		print("redis pass", self._config.redis_password)
 		self._engine = redis.Redis(host=self._config.redis_host,
-										port=self._config.redis_port,
-										db=self._config.redis_database,
-										password=self._config.redis_password,
-										encoding='utf-8')
+									db=self._config.redis_database,
+									password=self._config.redis_password,
+									encoding='utf-8')
 
 	def check_connection(self):
 		if self._engine.ping():
@@ -31,12 +31,12 @@ class RedisServiceFacade(AbstractDBService):
 
 	def get_values(self, key: str) -> list[Any] | None:
 		if response := self._engine.smembers(key):
-			return [item.decode('utf-8') for item in response] # type: ignore
+			return [item.decode('utf-8') for item in response]
 		return None
 
 	def get_keys(self) -> list[Any] | None:
 		if keys := self._engine.keys(pattern="*"):
-			return [item.decode('utf-8') for item in keys]  #type: ignore
+			return [item.decode('utf-8') for item in keys]
 		return None
 
 	def check_key(self, key: str) -> bool:
@@ -54,6 +54,6 @@ class RedisServiceFacade(AbstractDBService):
 		self._engine.srem(key, value)
 
 	def check_value(self, key: str, value: str) -> bool:
-		if self._engine.sismember(key, value): # Type: ignore
+		if self._engine.sismember(key, value):
 			return True
 		return False
