@@ -18,7 +18,7 @@ class AbstractDBRepository(ABC):
 						out_schema: BaseModel,
 						allow_none: bool = True,
 						limit: int | None = None,
-						offset: int | None = None) -> list[BaseModel] | None:
+						offset: int | None = None):
 		pass
 
 	@abstractmethod
@@ -26,8 +26,8 @@ class AbstractDBRepository(ABC):
 				id: uuid.UUID,
 				*,
 				expression: Any,
-				out_schema: BaseModel,
-				allow_none: bool = True) -> None | BaseModel:
+				out_schema: Type[BaseModel],
+				allow_none: bool = True):
 		pass
 
 	@abstractmethod
