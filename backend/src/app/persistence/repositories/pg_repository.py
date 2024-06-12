@@ -9,9 +9,10 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.persistence.repositories.db_repository import AbstractDBRepository
-from app.persistence.sqlalc_models import Base, User
+from app.persistence.sqlalc_models import Base, Organization, User
 from app.schemas.user import UserDTO
 from app.shared.logger import logger
+from app.schemas.organization import OrganizationDTO
 
 
 class AsyncPostgresRepository(AbstractDBRepository):
@@ -28,17 +29,48 @@ class AsyncPostgresRepository(AbstractDBRepository):
 	def __init__(self, model: Type[Base]) -> None:
 		self.__model = model
 
+	async def get_object_by_id(self,
+						id: uuid.UUID,
+						*,
+						session: AsyncSession,
+						out_schema: Type[BaseModel],
+						allow_none: bool = True,
+						joins: Any = None) -> Any:
+
+		logger.debug("Getting object")
+		query = select(self.db_model).where(self.db_model.id == id)
+		if joins:
+			query = query.options(selectinload(joins))
+
+		try:
+			logger.debug("send query to db")
+			if not (result := (await session.execute(query)).scalar_one_or_none()):
+				if allow_none:
+					return None
+				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+									detail=f"{self.db_model.__name__} not found")
+
+			logger.debug("send result")
+			return out_schema.model_validate(result, from_attributes=True)
+		except Exception as err:
+			logger.error("Error while select object from DB:", f"{err}")
+			raise err
+
 	async def get_objects(self,
 						*,
-						expression: Any,
+						expression: Any = None,
 						out_schema: Type[BaseModel],
 						allow_none: bool = True,
 						joins: Any = None,
 						limit: int | None = None,
 						offset: int | None = None,
-						session: AsyncSession) -> None | list[BaseModel]:
+						session: AsyncSession) -> Any:
 
-		query = select(self.db_model).where(expression)
+		logger.debug("Start getting objects")
+		query = select(self.db_model)
+
+		if expression:
+			query = query.where(expression)
 		if joins:
 			query = query.options(selectinload(joins))
 		if limit:
@@ -46,19 +78,22 @@ class AsyncPostgresRepository(AbstractDBRepository):
 		if offset:
 			query = query.offset(offset)
 
+		logger.debug("Start select")
 		if not (result := (await session.execute(query)).scalars().all()):
+			logger.debug(f"Finish select a{result}a")
 			if allow_none:
 				return None
 			raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
 								detail=f"{self.db_model.__name__} not found")
 
-		return [out_schema.model_validate(obj) for obj in result]
+		logger.debug("Start transform")
+		return [out_schema.model_validate(obj, from_attributes=True) for obj in result]
 
 	async def insert_object(self,
 							data: BaseModel,
 							*,
 							out_schema: Type[BaseModel],
-							session: AsyncSession) -> BaseModel | None:
+							session: AsyncSession) -> Any:
 
 		logger.debug("Inserting object")
 		try:
@@ -83,7 +118,6 @@ class AsyncPostgresRepository(AbstractDBRepository):
 								  id: uuid.UUID,
 								  updated_object: BaseModel,
 								  *,
-								  out_schema: Type[BaseModel],
 								  session: AsyncSession
 								  ) -> None:
 		query = (update(self.db_model)
@@ -102,40 +136,13 @@ class UserRepository(AsyncPostgresRepository):
 		self.db_model: Type[User]
 
 
-	async def get_object_by_id(self,
-						id: uuid.UUID,
-						*,
-						session: AsyncSession,
-						out_schema: Type[BaseModel] = UserDTO,
-						allow_none: bool = True,
-						joins: Any = None) -> Any:
-
-		logger.debug("Getting object")
-		query = select(self.db_model).where(self.db_model.id == id)
-		if joins:
-			query = query.options(selectinload(joins))
-
-		try:
-			logger.debug("send query to db")
-			if not (result := (await session.execute(query)).scalar_one_or_none()):
-				if allow_none:
-					return None
-				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-									detail=f"{self.db_model.__name__} not found")
-
-			logger.debug("send result")
-			return out_schema.model_validate(result, from_attributes=True)
-		except Exception as err:
-			logger.error("Error while select object from DB:", f"{err}")
-			raise err
-
 	async def get_object_by_email(self,
 						email: EmailStr,
 						*,
 						session: AsyncSession,
-						out_schema: Type[BaseModel] = UserDTO,
+						out_schema: type[UserDTO] = UserDTO,
 						allow_none: bool = True,
-						joins: Any = None) -> Any:
+						joins: Any = None) -> UserDTO | None:
 
 		logger.debug("Getting object")
 		query = select(self.db_model).where(self.db_model.email == email)
@@ -155,4 +162,25 @@ class UserRepository(AsyncPostgresRepository):
 			logger.error("Error while select object from DB:", f"{err}")
 			raise err
 
+class OrganizationRepository(AsyncPostgresRepository):
 
+	def __init__(self, user_model: Type[Organization] = Organization) -> None:
+		super().__init__(user_model)
+		self.db_model: Type[Organization]
+
+	async def get_objects(self,
+						*,
+						expression: Any = None,
+						out_schema: Type[OrganizationDTO],
+						allow_none: bool = True,
+						joins: Any = None,
+						limit: int | None = None,
+						offset: int | None = None,
+						session: AsyncSession) -> None | list[OrganizationDTO]:
+		return await super().get_objects(expression=expression,
+							out_schema=out_schema,
+							allow_none=allow_none,
+							joins=joins,
+							limit=limit,
+							offset=offset,
+							session=session)
