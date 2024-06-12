@@ -9,5 +9,5 @@ class LoginRequestBodyDTO(BaseModel):
     password: str
 
 
-class SignupRequestBodyDTO(BaseModel):
+class SignupRequestBodyDTO(UserDTO):
     user: UserDTO
