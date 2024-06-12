@@ -7,7 +7,7 @@ from jwt import InvalidTokenError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.persistence.repositories.pg_repository import AsyncPostgresRepository, UserRepository
+from app.persistence.repositories.pg_repository import UserRepository
 from app.persistence.repositories.redis_repository import RedisRepository
 from app.persistence.sqlalc_models import User
 from app.schemas.auth import LoginRequestBodyDTO, SignupRequestBodyDTO
