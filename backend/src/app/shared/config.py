@@ -11,7 +11,11 @@ class ServerSettings(BaseSettings):
 	backend_cors_origins: list[str]
 	backend_allowed_headers: list[str]
 	backend_project_name: str
+	backend_ml_uri: str
 
+	@property
+	def ml_uri(self) -> str:
+		return self.backend_ml_uri
 
 
 class AuthSettings(BaseSettings):
