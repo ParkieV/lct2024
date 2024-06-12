@@ -1,54 +1,66 @@
 version: '3.11'
 
 services:
-  postgres:
-    user: "0:0"
-    container_name: postgres_hack
-    image: postgres:latest
-    restart: unless-stopped
-    env_file:
-      - backend/src/.envs/db.env
-    healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'" ]
-      interval: 10s
-      timeout: 3s
-      retries: 2
-    volumes:
-      - ./volumes/db-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - 5400:5432
-    privileged: true
+  # postgres:
+  #   user: "0:0"
+  #   container_name: postgres_hack
+  #   image: postgres:latest
+  #   restart: unless-stopped
+  #   env_file:
+  #     - backend/src/.envs/db.env
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'" ]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 2
+  #   volumes:
+  #     - ./volumes/db-data:/var/lib/postgresql/data
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   ports:
+  #     - 5400:5432
+  #   privileged: true
 
-  redis:
-    container_name: redis_hack
-    image: redis:latest
-    restart: unless-stopped
-    env_file:
-      - backend/src/.envs/redis.env
-    command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 2
-    volumes:
-      - ./volumes/redis.conf:/etc/redis/redis.conf
-      - ./volumes/redis:/var/lib/redis/data
-    ports:
-      - 6379:6379
+  # redis:
+  #   container_name: redis_hack
+  #   image: redis:latest
+  #   restart: unless-stopped
+  #   env_file:
+  #     - backend/src/.envs/redis.env
+  #   command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+  #   healthcheck:
+  #     test: [ "CMD", "redis-cli", "--raw", "incr", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 2
+  #   volumes:
+  #     - ./volumes/redis.conf:/etc/redis/redis.conf
+  #     - ./volumes/redis:/var/lib/redis/data
+  #   ports:
+  #     - 6379:6379
 
-  backend:
-    container_name: backend_app
+  # backend:
+  #   container_name: backend_app
+  #   restart: unless-stopped
+  #   env_file:
+  #     - backend/src/.envs/app.env
+  #     - backend/src/.envs/auth.env
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   ports:
+  #     - 8000:8000
+  #   build:
+  #     context: backend/src
+  #     dockerfile: Dockerfile
+
+  ml:
+    container_name: ml
     restart: unless-stopped
-    env_file:
-      - backend/src/.envs/app.env
-      - backend/src/.envs/auth.env
-    depends_on:
-      - postgres
-      - redis
-    ports:
-      - 8000:8000
     build:
-      context: backend/src
-      dockerfile: Dockerfile
+      dockerfile: ./ml/docker/ml.dockerfile
+    ports:
+      - "0.0.0.0:8001:8001"
+    command: uvicorn ml.api.__main__:app --reload --host 0.0.0.0 --port 8001
+    volumes:
+      - ./:/ml_data
+
