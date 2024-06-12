@@ -1,7 +1,5 @@
-from typing import Annotated
-
 import jwt
-from fastapi import Header, Request
+from fastapi import HTTPException, Request, status
 
 from app.schemas.token import TokenHeader, TokenPayload, AccessTokenPayload, RefreshTokenPayload
 from app.shared.config import AUTH_SETTINGS
@@ -77,12 +75,12 @@ class JWT:
 			None: Token is valid.
 		"""
 		if not (token := request.cookies.get("access_token")):
-			raise ValueError("Access token not found")
+			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access token not found")
 
 		token_payload = AccessTokenPayload.model_validate(cls.decode_token(token))
 
 		if token_payload.type != "access":
-			raise jwt.InvalidTokenError("Invalid token")
+			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 		request.state.access_token = token
 		request.state.token_payload = token_payload
@@ -103,12 +101,12 @@ class JWT:
 			None: Token is valid.
 		"""
 		if not (token := request.cookies.get("refresh_token")):
-			raise ValueError("Refresh token not found")
+			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token not found")
 
 		token_payload = RefreshTokenPayload.model_validate(cls.decode_token(token))
 
 		if token_payload.type != "refresh":
-			raise jwt.InvalidTokenError("Incorrect token type")
+			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 		request.state.refresh_token = token
 		request.state.token_payload = token_payload
