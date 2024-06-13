@@ -5,13 +5,23 @@ import numpy as np
 import pandas as pd
 import torch
 import nltk
+import json
 
 from transformers import AutoTokenizer, AutoModel
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
+from sklearn.linear_model import Ridge
 from nltk.stem.snowball import SnowballStemmer
 from pymystem3 import Mystem
 from thefuzz import process
+
+
+reference_model = None
+leftovers_model = None
+script_loc = os.path.dirname(os.path.realpath(__file__))
+tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
+model = AutoModel.from_pretrained("DeepPavlov/rubert-base-cased")
+
 
 class Dataset:
 
@@ -211,15 +221,12 @@ class PromptMatching:
         self.processed_column = processed_column
         self.embeddings_column = embeddings_column
 
-        self.tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
-        self.model = AutoModel.from_pretrained("DeepPavlov/rubert-base-cased")
-
         self.preprocessor = Dataset(self.df, text_col=processed_column)
 
     def get_embeddings(self, texts):
-        inputs = self.tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
+        inputs = tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
         with torch.no_grad():
-            outputs = self.model(**inputs)
+            outputs = model(**inputs)
 
         embeddings = outputs.last_hidden_state[:, 0, :]
         return embeddings
@@ -235,35 +242,218 @@ class PromptMatching:
         results = process.extract(user_prompt, goods, limit=top_n)
         most_similar = [result[0] for result in results]
 
-        processed_df = self.df.copy()
-        processed_df = processed_df[processed_df[self.processed_column].isin(most_similar)]
+        self.df = self.df[self.df[self.processed_column].isin(most_similar)]
+        product_embeddings = self.get_embeddings(self.df[self.embeddings_column].tolist())
 
-        product_embeddings = self.get_embeddings(processed_df[self.embeddings_column].tolist())
-        user_prompt_embedding = self.get_embeddings([user_prompt])
+        help_embedding = self.get_embeddings([user_prompt])
 
-        similarities = cosine_similarity(user_prompt_embedding, product_embeddings).flatten()
+        similarities = cosine_similarity(help_embedding, product_embeddings).flatten()
+        self.df['similarity'] = similarities
+        self.df = self.df.sort_values(by='similarity', ascending=False)
 
-        processed_df['similarity'] = similarities
+        return {'values': self.df[self.original_column].to_list()}
+    
 
-        processed_df = processed_df.sort_values(by='similarity', ascending=False)
+class FindLeftovers:
+    def __init__(self, reference_df: str, concat_leftovers_df: str):
+        
+        self.reference_df = pd.read_excel(reference_df)
+        self.concat_leftovers_df = pd.read_excel(concat_leftovers_df)
+        self.kpgz = None
 
-        return {'values': processed_df[self.original_column].to_list()}
+        self.leftover_name = ''
+        self.code = 0
+        self.preprocessor = Dataset(self.concat_leftovers_df, text_col='Name processed')
+
+    @staticmethod
+    def find_kpgz(df, user_pick) -> str:
+        kpgz = df[df['Название СТЕ'] == user_pick]['КПГЗ'].values[0]
+
+        return kpgz
+    
+    @staticmethod
+    def get_embeddings(texts):
+        inputs = tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = model(**inputs)
+
+        embeddings = outputs.last_hidden_state[:, 0, :]
+        return embeddings
+    
+    def find_similar_leftover(self, user_choice):
+        goods = self.concat_leftovers_df['Name processed'].tolist()
+        kpgz = self.find_kpgz(self.reference_df, user_choice)
+
+        results = process.extract(kpgz, goods, limit=10)
+        most_similars = [result[0] for result in results]
+
+        filtered_df = self.concat_leftovers_df[self.concat_leftovers_df['Name processed'].isin(most_similars)]
+        embeddings_list = filtered_df['embeddings'].apply(lambda x : [float(x) for x in x.replace("[", "").replace ("]", "").split(',')])
+        product_embeddings = list(embeddings_list)
+        help_embedding = self.get_embeddings([user_choice])
+
+        similarities = cosine_similarity(help_embedding, product_embeddings).flatten()
+        filtered_df['similarity'] = similarities
+        filtered_df = filtered_df.sort_values(by='similarity', ascending=False)
+
+        most_similar = filtered_df.head(1)['Name processed'].iloc[0]
+
+        self.leftover_name = self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Name'].values[0]
+        self.code = int(self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Code1'].iloc[0])
+
+    def leftover_info(self, path_to_data):
+        if self.code == 0:
+            raise Exception("Not fitted on previous method! Call find_similar_leftovers()")
+        
+        df =  pd.read_excel(f'{path_to_data}/Остатки {self.code}.xlsx')
+
+        columns_to_out = ['1Q2022|остаток кон|балансовая стоимость', '1Q2022|остаток кон|количество',
+                          '1Q2022|остаток кон|остаточная стоимость', '2Q2022|остаток кон|балансовая стоимость', '2Q2022|остаток кон|количество',
+                          '2Q2022|остаток кон|остаточная стоимость', '3Q2022|остаток кон|балансовая стоимость',
+                          '3Q2022|остаток кон|количество', '3Q2022|остаток кон|остаточная стоимость', 
+                          '4Q2022|остаток кон|балансовая стоимость', '4Q2022|остаток кон|количество', '4Q2022|остаток кон|остаточная стоимость']
+
+        df = df[df['Name'] == self.leftover_name][columns_to_out]
+
+        return df.to_dict()
 
 
+def embed_bert_cls(text, model, tokenizer):
+    t = tokenizer(text, padding=True, truncation=True, return_tensors='pt')
+    with torch.no_grad():
+        model_output = model(**{k: v.to(model.device) for k, v in t.items()})
+    embeddings = model_output.last_hidden_state[:, 0, :]
+    embeddings = torch.nn.functional.normalize(embeddings)
+    return embeddings[0].cpu().numpy()
 
-reference_model = None
 
-def init_models():
-    script_loc = os.path.dirname(os.path.realpath(__file__))
-    nltk.download('stopwords')
+class PurchaseHistory:
 
-    global reference_model
-    reference_model = PromptMatching(f'{script_loc}/data/processed_names.xlsx', 'Название СТЕ', 'Название СТЕ processed', 'КПГЗ')
+    def __init__(self, name: str, voc: pd.DataFrame, contracts: pd.DataFrame) -> None:
 
-def matching_service_reference(prompt: str):
+        self.voc_rows = pd.DataFrame(voc.loc[voc['Название СТЕ'] == name])
+        self.contracts = contracts
 
-    output = reference_model.match(prompt, 15)
+    def get_purchases(self, include_rk: bool=True, include_kpgz: bool=True) -> pd.DataFrame:
+
+        self.kpgz_contracts = self.contracts.copy()
+
+        if include_kpgz:
+            kpgz = self.voc_rows['КПГЗ код'].values[0]
+            self.kpgz_contracts = self.contracts.loc[self.contracts['Конечный код КПГЗ'].str.contains(kpgz).fillna(False)]
+
+        if include_rk:
+            rks = self.voc_rows['Реестровый номер в РК'].values
+            self.kpgz_contracts = self.kpgz_contracts.loc[self.kpgz_contracts['Реестровый номер в РК'].isin(rks)]
+
+        return self.kpgz_contracts
+
+    def drop_cancelled(self):
+
+        self.kpgz_contracts = self.kpgz_contracts[self.kpgz_contracts['Статус контракта'] != 'Расторгнут']
+
+    def generate_features(self):
+
+        contracts_cleaned = self.kpgz_contracts.copy()
+        contracts_cleaned = contracts_cleaned[contracts_cleaned['Статус контракта'] != 'Расторгнут']
+        contracts_cleaned['Срок исполнения с'] = pd.to_datetime(contracts_cleaned['Срок исполнения с'], format='%d.%m.%Y')
+        contracts_cleaned['Срок исполнения по'] = pd.to_datetime(contracts_cleaned['Срок исполнения по'], format='%d.%m.%Y')
+        contracts_cleaned['year'] = contracts_cleaned['Срок исполнения с'].dt.year
+        contracts_cleaned['quarter'] = contracts_cleaned['Срок исполнения с'].dt.quarter
+        contracts_cleaned['month'] = contracts_cleaned['Срок исполнения с'].dt.month
+        contracts_cleaned['day'] = contracts_cleaned['Срок исполнения с'].dt.day_of_year
+        contracts_cleaned['Длительность'] = (contracts_cleaned['Срок исполнения по'] - contracts_cleaned['Срок исполнения с']).dt.days
+
+        self.kpgz_contracts = contracts_cleaned.copy()
+
+        return self.kpgz_contracts
+
+    def check_regular_purchase(self):
+
+        num_rk = len(self.kpgz_contracts['Реестровый номер в РК'].unique())
+
+        if num_rk >= 2:
+            return True # Регулярная
+
+        else:
+            return False # Нерегулярная
+
+    def normalize_spgz(self):
+
+        contracts_dataset = Dataset(self.kpgz_contracts.copy(), text_col='Наименование СПГЗ')
+        contracts_dataset.prepare_dataset()
+        self.normalized_spgz_contracts = contracts_dataset.data.copy()
+
+        return self.normalized_spgz_contracts
+
+    def normalize_ste(self):
+
+        voc_dataset = Dataset(self.voc_rows.copy(), text_col='Название СТЕ')
+        voc_dataset.prepare_dataset(voc_dataset)
+        self.normalized_ste_voc = voc_dataset.data.copy()
+
+        return self.normalized_ste_voc
+
+    def rank_ste_spgz(self):
+
+        contract_embeds = []
+        for sent in self.normalized_spgz_contracts['Наименование СПГЗ']:
+            embed = embed_bert_cls(sent.lower(), model, tokenizer)
+            contract_embeds.append(embed)
+
+        contract_embeds_df = pd.DataFrame(contract_embeds, index=self.normalized_spgz_contracts.index)
+        contracts_merged = pd.merge(self.normalized_spgz_contracts, contract_embeds_df, left_index=True, right_index=True)
+
+        query_embed = embed_bert_cls(self.normalized_ste_voc['Название СТЕ'].values[0], model, tokenizer)
+
+        cosine_similarities = []
+        for row in range(len(contracts_merged)):
+            sent = contract_embeds_df.iloc[row].values
+            cos = cosine_similarity(sent.reshape(1, -1), query_embed.reshape(1, -1))[0][0]
+            cosine_similarities.append(cos)
+
+        result = pd.DataFrame({'sent': self.normalized_spgz_contracts['Наименование СПГЗ'].values,
+                               'cos': np.array(cosine_similarities)})
+
+        return result.sort_values(by=['cos'], ascending=False)
+
+    def fit_lr(self, target):
+
+        model = Ridge(alpha=0.05)
+        model.fit()
+
+
+def matching_service_reference(prompt: str, top_n):
+    output = reference_model.match(prompt, top_n)
 
     return output
 
 
+def get_leftovers(prompt: str):
+        
+    leftovers_model.find_similar_leftover(prompt)
+    return leftovers_model.leftover_info(script_loc + '/data/')
+
+
+def is_regular(user_pick: str):
+    path_contracts = f'{script_loc}/data/Выгрузка контрактов по Заказчику.xlsx'
+    path_voc = f'{script_loc}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
+
+    contracts = pd.read_excel(path_contracts)
+    voc = pd.read_excel(path_voc)
+
+    ph = PurchaseHistory(user_pick, voc, contracts)
+
+    ph.get_purchases(include_rk=True, include_kpgz=True)
+    ph.drop_cancelled()
+
+    return ph.check_regular_purchase()
+
+
+def init_models():
+    nltk.download('stopwords')
+
+    global reference_model, leftovers_model
+
+    reference_model = PromptMatching(f'{script_loc}/data/processed_names.xlsx', 'Название СТЕ', 'Название СТЕ processed', 'КПГЗ')
+    leftovers_model = FindLeftovers(f'{script_loc}/data/processed_names.xlsx', f'{script_loc}/data/concat_leftovers.xlsx')
