@@ -170,3 +170,4 @@ weasel==0.4.1
 Werkzeug==3.0.3
 widgetsnbextension==4.0.11
 wrapt==1.16.0
+XlsxWriter==3.2.0

@@ -18,6 +18,7 @@ from thefuzz import process
 
 reference_model = None
 leftovers_model = None
+sales_model = None
 script_loc = os.path.dirname(os.path.realpath(__file__))
 tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
 model = AutoModel.from_pretrained("DeepPavlov/rubert-base-cased")
@@ -296,24 +297,29 @@ class FindLeftovers:
         filtered_df['similarity'] = similarities
         filtered_df = filtered_df.sort_values(by='similarity', ascending=False)
 
-        most_similar = filtered_df.head(1)['Name processed'].iloc[0]
+        if filtered_df.iloc[0]['similarity'] > 0.77:
 
-        self.leftover_name = self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Name'].values[0]
-        self.code = int(self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Code1'].iloc[0])
+            most_similar = filtered_df.head(1)['Name processed'].iloc[0]
+
+            self.leftover_name = self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Name'].values[0]
+            self.code = int(self.concat_leftovers_df[self.concat_leftovers_df['Name processed'] == most_similar]['Code1'].iloc[0])
+
+        else:
+            self.code = 404
+            self.leftover_name = user_choice
 
     def leftover_info(self, path_to_data):
         if self.code == 0:
             raise Exception("Not fitted on previous method! Call find_similar_leftovers()")
         
+        if self.code == 404:
+            return {'4Q2022|остаток кон|балансовая стоимость': 0, '4Q2022|остаток кон|количество': 0, '4Q2022|остаток кон|остаточная стоимость': 0}
+        
         df =  pd.read_excel(f'{path_to_data}/Остатки {self.code}.xlsx')
 
-        columns_to_out = ['1Q2022|остаток кон|балансовая стоимость', '1Q2022|остаток кон|количество',
-                          '1Q2022|остаток кон|остаточная стоимость', '2Q2022|остаток кон|балансовая стоимость', '2Q2022|остаток кон|количество',
-                          '2Q2022|остаток кон|остаточная стоимость', '3Q2022|остаток кон|балансовая стоимость',
-                          '3Q2022|остаток кон|количество', '3Q2022|остаток кон|остаточная стоимость', 
-                          '4Q2022|остаток кон|балансовая стоимость', '4Q2022|остаток кон|количество', '4Q2022|остаток кон|остаточная стоимость']
+        columns_to_out = ['4Q2022|остаток кон|балансовая стоимость', '4Q2022|остаток кон|количество', '4Q2022|остаток кон|остаточная стоимость']
 
-        df = df[df['Name'] == self.leftover_name][columns_to_out]
+        df = df[df['Name'] == self.leftover_name][columns_to_out].sum()
 
         return df.to_dict()
 
@@ -449,11 +455,41 @@ def is_regular(user_pick: str):
 
     return ph.check_regular_purchase()
 
+def pick_history(user_pick: str):
+    path_contracts = f'{script_loc}/data/Выгрузка контрактов по Заказчику.xlsx'
+    path_voc = f'{script_loc}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
+
+    contracts = pd.read_excel(path_contracts)
+    voc = pd.read_excel(path_voc)
+
+    ph = PurchaseHistory(user_pick, voc, contracts)
+
+    ph.get_purchases(include_rk=True, include_kpgz=True)
+    ph.drop_cancelled()
+
+    return ph.generate_features()
+
+
+def pick_history(user_pick: str):
+    path_contracts = f'{script_loc}/data/Выгрузка контрактов по Заказчику.xlsx'
+    path_voc = f'{script_loc}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
+
+    contracts = pd.read_excel(path_contracts)
+    voc = pd.read_excel(path_voc)
+
+    ph = PurchaseHistory(user_pick, voc, contracts)
+
+    ph.get_purchases(include_rk=True, include_kpgz=True)
+    ph.drop_cancelled()
+
+    return ph.generate_features()
+
 
 def init_models():
     nltk.download('stopwords')
 
-    global reference_model, leftovers_model
+    global reference_model, leftovers_model, sales_model
 
+    sales_model =  None
     reference_model = PromptMatching(f'{script_loc}/data/processed_names.xlsx', 'Название СТЕ', 'Название СТЕ processed', 'КПГЗ')
     leftovers_model = FindLeftovers(f'{script_loc}/data/processed_names.xlsx', f'{script_loc}/data/concat_leftovers.xlsx')
