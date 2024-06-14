@@ -29,22 +29,22 @@ async def signup(body: SignupRequestBodyDTO, session: AsyncSession = Depends(Pos
 	logger.debug("Start signup")
 	user_repo = UserRepository(User)
 	logger.debug("Start check user in DB")
-	if await user_repo.get_object_by_email(body.user.email, session=session):
+	if await user_repo.get_object_by_email(body.email, session=session):
 		raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
 							detail="User is existing")
 
 	logger.debug("Start insert object")
-	await user_repo.insert_object(body.user, out_schema=UserDTO, session=session)
+	await user_repo.insert_object(body, out_schema=UserDTO, session=session)
 
 	try:
 		logger.debug("Start generate tokens")
 		# Generate tokens
 		time_temp: int = int(datetime.datetime.now(pytz.timezone('Europe/Moscow')).timestamp())
 		access_token = JWT.generate_token(AccessTokenPayload(iss="https://localhost:8000/api",
-													   user_id=str(body.user.id),
-													   email=body.user.email,
-													   name=body.user.first_name + " " + body.user.last_name,
-													   password=body.user.password,
+													   user_id=str(body.id),
+													   email=body.email,
+													   name=body.first_name + " " + body.last_name,
+													   password=body.password,
 													   aud="https://localhost:8000/api",
 													   exp=time_temp +
 														   datetime.timedelta(minutes=AUTH_SETTINGS.access_expired_minutes).seconds,
@@ -54,8 +54,8 @@ async def signup(body: SignupRequestBodyDTO, session: AsyncSession = Depends(Pos
 													   ))
 
 		refresh_token = JWT.generate_token(RefreshTokenPayload(iss="https://localhost:8000/api",
-														user_id=str(body.user.id),
-														name=body.user.first_name + " " + body.user.last_name,
+														user_id=str(body.id),
+														name=body.first_name + " " + body.last_name,
 														aud="https://localhost:8000/api",
 														exp=time_temp +
 															int(datetime.timedelta(days=AUTH_SETTINGS.refresh_expired_days).total_seconds()),
@@ -65,7 +65,7 @@ async def signup(body: SignupRequestBodyDTO, session: AsyncSession = Depends(Pos
 														))
 
 		logger.debug("Start insert into redis")
-		RedisRepository.insert_value_by_key(str(body.user.id), refresh_token)
+		RedisRepository.insert_value_by_key(str(body.id), refresh_token)
 	except Exception as err:
 		logger.error("Problem with tokens/Redis", {err})
 		raise err
