@@ -10,4 +10,4 @@ class LoginRequestBodyDTO(BaseModel):
 
 
 class SignupRequestBodyDTO(UserDTO):
-    user: UserDTO
+    pass

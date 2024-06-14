@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 
 
 class AbstractUserDTO(BaseModel):
-	id: int
+	id: uuid.UUID = uuid.uuid4()
 	first_name: str
 	middle_name: str | None
 	last_name: str
@@ -12,11 +12,11 @@ class AbstractUserDTO(BaseModel):
 
 
 class UserDTO(AbstractUserDTO):
-	id: uuid.UUID = uuid.uuid4()
 	telegram_nickname: str
 	phone: str
 	work_org_id: uuid.UUID | None = None
-	position_id: uuid.UUID | None = None
+	position: str | None
+	rights: str | None
 
 
 class CreateRequestBodyDTO(UserDTO):
