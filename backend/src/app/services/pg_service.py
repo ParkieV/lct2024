@@ -43,6 +43,9 @@ class PostgresServiceFacade(AbstractDBService):
 				await session.rollback()
 				raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
 									detail=sql_validation_error(database_error))
+			except HTTPException as err:
+				logger.error(f"Excepted error: {err}")
+				raise err
 			except Exception as e:
 				await session.rollback()
 				logger.error(f"Error in session: {e}")
