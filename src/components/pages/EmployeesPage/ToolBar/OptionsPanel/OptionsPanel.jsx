@@ -10,7 +10,7 @@ class SortingOptions {
         if (sortOption.value === 'id') {
             this.text = "Сначала " + (direction ?  "старые"  :  "новые");
         } else  {
-            this.text = "По " + sortOption.label + " " + (direction ? "А-Я" : "Я-А");
+            this.text = sortOption.label + " " + (direction ? "А-Я" : "Я-А");
         }
         this.direction = direction;
     }
