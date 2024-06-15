@@ -1,0 +1,36 @@
+.excelButton {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    border: 2px solid #b12725;
+    border-radius: 0.56rem;
+    background: #fff;
+
+    padding: 0.625em 1em 0.625em 0.625em;
+}
+
+.excelButton:hover {
+    background: #b12725;
+}
+
+.excelButton span {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.excelButton p {
+    font-weight: 400;
+    font-size: 1rem;
+    color: #000;
+}
+
+.excelButton:hover p {
+    color: #fff;
+}
+
+.excelButton:hover span {
+}

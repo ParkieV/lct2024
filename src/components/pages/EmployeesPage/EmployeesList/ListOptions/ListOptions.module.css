@@ -1,0 +1,12 @@
+.optionsBlock {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    margin-top: 0.5em;
+}
+
+.optionsSelectBlock {
+    display: flex;
+    gap: 0.5em;
+}

@@ -1,0 +1,32 @@
+.row {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr 1fr;
+
+    border-radius: 0.75rem;
+    padding: 1.25em 3em;
+    background: white;
+    width: 100%;
+    align-items: center;
+
+    gap: 0.75rem;
+}
+
+.position {
+
+}
+
+.actions {
+    display: flex;
+    gap: 1.25em;
+    justify-self: end;
+}
+
+.actions button img {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.type,
+.organization {
+    /*justify-self: center;*/
+}

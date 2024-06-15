@@ -1,0 +1,49 @@
+.rights {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.rightBlock {
+    padding: 0.75em;
+    border: 1px solid #f0f0f2;
+    border-radius: 0.75rem;
+}
+
+.rightBlock:not(.inactive):hover {
+    border: 1px solid #b12725;
+    cursor: pointer;
+}
+
+.rightBlock.active {
+    border: 1px solid #b12725;
+}
+
+.rightBlock.inactive {
+    filter: blur(2px);
+}
+
+.blockHeader {
+    display: block;
+    font-size: 0.88rem;
+    color: #000;
+    margin-bottom: 1.42em;
+}
+
+.rightCheckboxBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.rightCheckboxContainer {
+    display: flex;
+    gap: 1em;
+}
+
+.rightCheckboxContainer input {
+    border: 1px solid #b3b3b3;
+    border-radius: 0.12rem;
+    width: 0.88rem;
+    height: 0.88rem;
+}
