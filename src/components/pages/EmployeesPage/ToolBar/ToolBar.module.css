@@ -8,6 +8,17 @@
     background: #fff;
 }
 
+.toolBar.toolBarExpand {
+    display: grid;
+    grid-template-columns: 100fr 1fr;
+}
+
+.optionsContainer {
+    display: block;
+    grid-column: span 2;
+    background: red;
+}
+
 .newUser {
     display: flex;
     gap: 2.625em;
@@ -16,8 +27,30 @@
     justify-content: center;
 }
 
+.optionsButton {
+    display: none;
+}
+
 @media screen and (max-width: 551px) {
+    .toolBar {
+        padding: 0.5em;
+        gap: 0.75em;
+    }
+
     .newUser {
+        gap: 0.75em;
+    }
+
+    .newUser b {
         display: none;
+    }
+
+    .optionsButton {
+        display: block;
+    }
+
+    .optionsButton img {
+        width: 2em;
+        height: 2em;
     }
 }
