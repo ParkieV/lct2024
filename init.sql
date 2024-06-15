@@ -1,7 +1,7 @@
 \c lct_postgres
 
 CREATE TABLE "users" (
-  "id" uuid,
+  "id" uuid DEFAULT gen_random_uuid(),
   "email" varchar(255),
   "password" varchar(100),
   "first_name" varchar(50),
@@ -16,13 +16,13 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "organization" (
-  "id" uuid,
+  "id" uuid DEFAULT gen_random_uuid(),
   "name" varchar(150),
   PRIMARY KEY ("id")
 );
 
 CREATE TABLE "balance" (
-  "id" uuid,
+  "id" uuid DEFAULT gen_random_uuid(),
   "name" varchar(150),
   "amount" numeric(14, 2),
   "user_id" uuid,
@@ -30,7 +30,7 @@ CREATE TABLE "balance" (
 );
 
 CREATE TABLE "purchase" (
-  "id" uuid,
+  "id" uuid DEFAULT gen_random_uuid(),
   "user_id" uuid,
   "lotEntityId" varchar(40),
   "customerId" varchar(40),
@@ -39,7 +39,7 @@ CREATE TABLE "purchase" (
 
 
 CREATE TABLE "purchase_position" (
-  "id" uuid,
+  "id" uuid DEFAULT gen_random_uuid(),
   "purchase_id" uuid,
   "DeliverySchedule__dates__end_date" varchar(50),
   "DeliverySchedule__dates__start_date" varchar(50),
