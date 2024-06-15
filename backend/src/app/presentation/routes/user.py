@@ -1,17 +1,10 @@
-import datetime
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-import pytz
-import uuid
 
 from app.persistence.sqlalc_models import User
 from app.schemas.user import CreateRequestBodyDTO, UserDTO
 from app.persistence.repositories.pg_repository import UserRepository
-from app.persistence.repositories.redis_repository import RedisRepository
 from app.services.pg_service import PostgresServiceFacade
-from app.schemas.token import AccessTokenPayload, RefreshTokenPayload
 from app.shared.logger import logger
-from app.shared.jwt import JWT
-from app.shared.config import AUTH_SETTINGS
 
 router = APIRouter(prefix="/user")
 
