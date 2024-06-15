@@ -242,32 +242,6 @@ class PurchaseRepository(AsyncPostgresRepository):
 							session: AsyncSession) -> BalanceDTO:
 		return await super().insert_object(data, out_schema=out_schema, session=session)
 
-	def _convert_str_to_datetime(self, item):
-		logger.debug(f"Start converting {item}")
-		if isinstance(item, dict):
-			for key, value in item.items():
-				if 'date' in key or 'Date' in key:
-					if isinstance(value, str):
-						try:
-							# Удаляем лишние пробелы и проверяем на соответствие ISO 8601
-							cleaned_value = value.strip()
-							item[key] = datetime.fromisoformat(cleaned_value)
-						except ValueError:
-							# Если fromisoformat не справляется, используем strptime
-							try:
-								item[key] = datetime.strptime(cleaned_value, "%Y-%m-%d %H:%M:%S%z")
-							except ValueError:
-								pass
-				elif isinstance(value, dict):
-					self._convert_str_to_datetime(value)
-				elif isinstance(value, list):
-					for i, sub_item in enumerate(value):
-						value[i] = self._convert_str_to_datetime(sub_item)
-		elif isinstance(item, list):
-			for i, sub_item in enumerate(item):
-				item[i] = self._convert_str_to_datetime(sub_item)
-		return item
-
 	async def get_objects_by_user_id(self,
 						user_id: uuid.UUID,
 						*,
@@ -290,8 +264,7 @@ class PurchaseRepository(AsyncPostgresRepository):
 								detail=f"{self.db_model.__name__} not found")
 
 		logger.debug(f"Finish select {result}")
-		result = list(map(lambda x: self._convert_str_to_datetime(x.positions), result))
-		logger.debug(f"Start transform {result}")
+		logger.debug("Start transform")
 		a=[out_schema.model_validate(obj, from_attributes=True) for obj in result]
 		logger.debug("Stop transform")
 		return a

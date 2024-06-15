@@ -77,6 +77,7 @@ class AccessTokenPayload(TokenPayload):
 	user_id: str = Field(description="Идентификатор пользователя", examples=["d9ef1c50-514a-4095-9e51-1c35da329ee0"])
 	email: EmailStr = Field(description="Почта пользователя", examples=["example@example.com"])
 	password: str = Field(description="Пароль пользователя")
+	rights: str = Field(description="Права пользователя")
 
 class RefreshTokenPayload(TokenPayload):
 	user_id: str = Field(description="Идентификатор пользователя", examples=["d9ef1c50-514a-4095-9e51-1c35da329ee0"])
