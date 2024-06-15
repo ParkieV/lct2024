@@ -36,7 +36,7 @@
 
 @media screen and (max-width: 551px) {
     .header {
-        padding: 0.75em 1em 0.75em 0;
+        padding: 0 1em 0 0;
     }
 
     .header img {

@@ -12,10 +12,10 @@ import EmployeePagination from "./EmployeePagination/EmployeePagination";
  */
 const filter = (filterStore, employeeStore, employees) => {
     if (filterStore.employeesType.value === 'all') {
-        return employees;
+        return employeeStore.list;
     }
 
-    return employees.filter(elem => {
+    return employeeStore.list.filter(elem => {
         return elem.type === filterStore.employeesTypeList
             .find(type => type.value === filterStore.employeesType.value).value;
     });
@@ -66,7 +66,7 @@ const sort = (filterStore, organizations, employees) => {
  */
 const findEmployee = (filterStore, employeeStore, employees) => {
     if (filterStore.findUserValues === null) {
-        return employees;
+        return employeeStore.list;
     }
 
     return employees.filter(elem => {
