@@ -140,9 +140,10 @@ async def login(body: LoginRequestBodyDTO, request: Request, session: AsyncSessi
 			 summary="Refresh tokens for user")
 async def refresh(request: Request, session: AsyncSession = Depends(PostgresServiceFacade.get_async_session)):
 	if not (payload := request.state.token_payload):
-		raise InvalidTokenError("Can't find token payload")
+		raise HTTPException(500, "Can't find token payload")
+
 	if not (refresh_token := request.state.refresh_token):
-		raise InvalidTokenError("Can't find refresh token")
+		raise HTTPException(400, "Can't find refresh token")
 
 	logger.debug(f"User id: {payload.user_id}, refresh_token: {refresh_token}")
 	if not RedisRepository.check_value_by_key(payload.user_id, refresh_token):

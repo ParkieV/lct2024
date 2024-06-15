@@ -9,7 +9,7 @@ from app.services.pg_service import PostgresServiceFacade
 router = APIRouter(prefix="/organization")
 
 
-@router.post("/organizations",
+@router.get("/organizations",
              response_model=OrganizationListDTO | None,
              dependencies=[Depends(JWT.check_access_token)],
              summary="Get information about all organizations")

@@ -11,19 +11,22 @@ CREATE TABLE "users" (
   "phone" varchar(12),
   "work_org_id" uuid DEFAULT (NULL),
   "position" varchar(100),
-  "rights" varchar(100)
+  "rights" varchar(100),
+  PRIMARY KEY ("id")
 );
 
 CREATE TABLE "organization" (
   "id" uuid,
-  "name" varchar(150)
+  "name" varchar(150),
+  PRIMARY KEY ("id")
 );
 
 CREATE TABLE "balance" (
   "id" uuid,
   "name" varchar(150),
   "amount" numeric(14, 2),
-  user_id uuid,
+  "user_id" uuid,
+  PRIMARY KEY ("id")
 );
 
 CREATE TABLE "purchase" (
@@ -31,37 +34,38 @@ CREATE TABLE "purchase" (
   "user_id" uuid,
   "lotEntityId" varchar(40),
   "customerId" varchar(40),
+  PRIMARY KEY ("id")
 );
 
 
 CREATE TABLE "purchase_position" (
-  id uuid,
-  purchase_id uuid,
-  DeliverySchedule__dates__end_date varchar(50),
-  DeliverySchedule__dates__start_date varchar(50),
-  DeliverySchedule__deliveryAmount numeric(14, 2),
-  DeliverySchedule__deliveryConditions varchar(50),
-  DeliverySchedule__year integer,
-  address__gar_id varchar(50),
-  address__text varchar(300),
-  entityId varchar(50),
-  spgz_id varchar(50),
-  nmc numeric(14, 2),
-  okei_code varchar(50),
-  purchaseAmount numeric(14, 2),
-  spgzCharacteristics__characteristicName varchar(50),
-  spgzCharacteristics__characteristicEnums__value varchar(50),
-  spgzCharacteristics__conditionTypeId varchar(50),
-  spgzCharacteristics__kpgzCharacteristicId varchar(50),
-  spgzCharacteristics__okei_id varchar(50),
-  spgzCharacteristics__selectType varchar(50),
-  spgzCharacteristics__typeId varchar(50),
-  spgzCharacteristics__value1 varchar(50),
-  spgzCharacteristics__value varchar(50)
+  "id" uuid,
+  "purchase_id" uuid,
+  "DeliverySchedule__dates__end_date" varchar(50),
+  "DeliverySchedule__dates__start_date" varchar(50),
+  "DeliverySchedule__deliveryAmount" numeric(14, 2),
+  "DeliverySchedule__deliveryConditions" varchar(50),
+  "DeliverySchedule__year" integer,
+  "address__gar_id" varchar(50),
+  "address__text" varchar(300),
+  "entityId" varchar(50),
+  "spgz_id" varchar(50),
+  "nmc" numeric(14, 2),
+  "okei_code" varchar(50),
+  "purchaseAmount" numeric(14, 2),
+  "spgzCharacteristics__characteristicName" varchar(50),
+  "spgzCharacteristics__characteristicEnums__value" varchar(50),
+  "spgzCharacteristics__conditionTypeId" varchar(50),
+  "spgzCharacteristics__kpgzCharacteristicId" varchar(50),
+  "spgzCharacteristics__okei_id" varchar(50),
+  "spgzCharacteristics__selectType" varchar(50),
+  "spgzCharacteristics__typeId" varchar(50),
+  "spgzCharacteristics__value1" varchar(50),
+  "spgzCharacteristics__value2" varchar(50),
+  PRIMARY KEY ("id")
 );
 
-
-ALTER TABLE "user" ADD FOREIGN KEY ("work_org_id") REFERENCES "organization" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("work_org_id") REFERENCES "organization" ("id");
 
 ALTER TABLE "balance" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 

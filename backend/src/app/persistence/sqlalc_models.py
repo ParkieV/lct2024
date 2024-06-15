@@ -1,10 +1,10 @@
 from datetime import datetime
 import uuid
-from sqlalchemy import UUID, Column, ForeignKey, Integer, Numeric, String, Table
+from sqlalchemy import UUID, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
 class Base(DeclarativeBase):
-	id: Mapped[int] = mapped_column(Integer, autoincrement=True, unique=True, primary_key=True, index=True)
+	id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
 
 
 class User(Base):
@@ -56,8 +56,8 @@ class PurchasePosition(Base):
 
 	id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
 	purchase_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('purchase.id'))
-	DeliverySchedule__dates__end_date: Mapped[datetime]
-	DeliverySchedule__dates__start_date: Mapped[datetime]
+	DeliverySchedule__dates__end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+	DeliverySchedule__dates__start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 	DeliverySchedule__deliveryAmount: Mapped[Numeric] = mapped_column(Numeric(14, 2), default=0)
 	DeliverySchedule__deliveryConditions: Mapped[str] = mapped_column(String)
 	DeliverySchedule__year: Mapped[int] = mapped_column(Integer)

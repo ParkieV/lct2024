@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Type
 import uuid
 
@@ -9,7 +10,9 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.persistence.repositories.db_repository import AbstractDBRepository
-from app.persistence.sqlalc_models import Base, Organization, User
+from app.persistence.sqlalc_models import Balance, Base, Organization, Purchase, User
+from app.schemas.balance import BalanceDTO
+from app.schemas.purchase import PurchaseDTO
 from app.schemas.user import UserDTO
 from app.shared.logger import logger
 from app.schemas.organization import OrganizationDTO
@@ -128,6 +131,7 @@ class AsyncPostgresRepository(AbstractDBRepository):
 		await session.execute(query)
 		await session.commit()
 
+
 class UserRepository(AsyncPostgresRepository):
 
 
@@ -162,6 +166,7 @@ class UserRepository(AsyncPostgresRepository):
 			logger.error("Error while select object from DB:", f"{err}")
 			raise err
 
+
 class OrganizationRepository(AsyncPostgresRepository):
 
 	def __init__(self, user_model: Type[Organization] = Organization) -> None:
@@ -184,3 +189,109 @@ class OrganizationRepository(AsyncPostgresRepository):
 							limit=limit,
 							offset=offset,
 							session=session)
+
+
+class BalanceRepository(AsyncPostgresRepository):
+
+	def __init__(self, user_model: Type[Balance] = Balance) -> None:
+		super().__init__(user_model)
+		self.db_model: Type[Balance]
+
+	async def insert_object(self,
+							data: BaseModel,
+							*,
+							out_schema: Type[BalanceDTO],
+							session: AsyncSession) -> BalanceDTO:
+		return await super().insert_object(data, out_schema=out_schema, session=session)
+
+	async def get_objects_by_user_id(self,
+						user_id: uuid.UUID,
+						*,
+						session: AsyncSession,
+						out_schema: Type[BalanceDTO],
+						allow_none: bool = True,
+						joins: Any = None) -> list[BalanceDTO] | None:
+
+		logger.debug("Getting object")
+		query = select(self.db_model).where(self.db_model.user_id == user_id)
+		if joins:
+			query = query.options(selectinload(joins))
+
+		logger.debug("Start select")
+		if not (result := (await session.execute(query)).scalars().all()):
+			logger.debug(f"Finish select {result}")
+			if allow_none:
+				return None
+			raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+								detail=f"{self.db_model.__name__} not found")
+
+		logger.debug("Start transform")
+		return [out_schema.model_validate(obj, from_attributes=True) for obj in result]
+
+
+class PurchaseRepository(AsyncPostgresRepository):
+
+	def __init__(self, user_model: Type[Purchase] = Purchase) -> None:
+		super().__init__(user_model)
+		self.db_model: Type[Purchase]
+
+	async def insert_object(self,
+							data: BaseModel,
+							*,
+							out_schema: Type[BalanceDTO],
+							session: AsyncSession) -> BalanceDTO:
+		return await super().insert_object(data, out_schema=out_schema, session=session)
+
+	def _convert_str_to_datetime(self, item):
+		logger.debug(f"Start converting {item}")
+		if isinstance(item, dict):
+			for key, value in item.items():
+				if 'date' in key or 'Date' in key:
+					if isinstance(value, str):
+						try:
+							# Удаляем лишние пробелы и проверяем на соответствие ISO 8601
+							cleaned_value = value.strip()
+							item[key] = datetime.fromisoformat(cleaned_value)
+						except ValueError:
+							# Если fromisoformat не справляется, используем strptime
+							try:
+								item[key] = datetime.strptime(cleaned_value, "%Y-%m-%d %H:%M:%S%z")
+							except ValueError:
+								pass
+				elif isinstance(value, dict):
+					self._convert_str_to_datetime(value)
+				elif isinstance(value, list):
+					for i, sub_item in enumerate(value):
+						value[i] = self._convert_str_to_datetime(sub_item)
+		elif isinstance(item, list):
+			for i, sub_item in enumerate(item):
+				item[i] = self._convert_str_to_datetime(sub_item)
+		return item
+
+	async def get_objects_by_user_id(self,
+						user_id: uuid.UUID,
+						*,
+						session: AsyncSession,
+						out_schema: Type[PurchaseDTO],
+						allow_none: bool = True,
+						joins: Any = Purchase.positions) -> list[PurchaseDTO] | None:
+
+		logger.debug("Getting object")
+		query = select(self.db_model).where(self.db_model.user_id == user_id)
+		if joins:
+			query = query.options(selectinload(joins))
+
+		logger.debug("Start select")
+		if not (result := (await session.execute(query)).scalars().all()):
+			logger.debug(f"Finish select {result}")
+			if allow_none:
+				return None
+			raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+								detail=f"{self.db_model.__name__} not found")
+
+		logger.debug(f"Finish select {result}")
+		result = list(map(lambda x: self._convert_str_to_datetime(x.positions), result))
+		logger.debug(f"Start transform {result}")
+		a=[out_schema.model_validate(obj, from_attributes=True) for obj in result]
+		logger.debug("Stop transform")
+		return a
