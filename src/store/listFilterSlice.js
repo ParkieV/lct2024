@@ -28,16 +28,34 @@ const LIST_OPTIONS_PAGE_ELEMENTS = [{
     label: 50,
 }];
 
+const LIST_OPTIONS_SORTING = [{
+    value: 'id',
+    label: 'ID'
+}, {
+    value: 'full_name',
+    label: 'ФИО'
+}, {
+    value: 'position',
+    label: 'Должность'
+}, {
+    value: 'organization',
+    label: 'Организация'
+}, {
+    value: 'type',
+    label: 'Роль'
+}]
+
 const initialState = {
     employeesTypeList: LIST_OPTIONS_EMPLOYEE_TYPES,
     elementsOnPageList: LIST_OPTIONS_PAGE_ELEMENTS,
+    sortingList: LIST_OPTIONS_SORTING,
 
     employeesType: LIST_OPTIONS_EMPLOYEE_TYPES[0],
     elementsOnPage: LIST_OPTIONS_PAGE_ELEMENTS[0],
     baseMaxPageNumberInPagination: 4,
     currentPage: 1,
 
-    sorting: "id",
+    sorting: LIST_OPTIONS_SORTING[0],
     sortingDirection: true,
     findUserValues: null,
 };
@@ -56,13 +74,18 @@ export const listFilterSlice = createSlice({
             state.employeesType = action.payload;
         },
         setSorting: (state, action) => {
-            if (state.sorting !== action.payload) {
+            if (state.sorting.value !== action.payload.value) {
                 state.sortingDirection = true;
             } else {
                 state.sortingDirection = !state.sortingDirection;
             }
 
-            state.sorting = action.payload;
+            state.sorting = state.sortingList.find(sort => sort.value === action.payload.value);
+        },
+        setSortingWithDirection: (state, action) => {
+            console.log(action.payload.sort, action.payload.direction);
+            state.sorting = state.sortingList.find(sort => sort.value === action.payload.sort.value);
+            state.sortingDirection = action.payload.direction;
         },
         setFindUserValues: (state, action) => {
             state.findUserValues = action.payload;
@@ -75,6 +98,7 @@ export const {
     setElementsOnPage,
     setEmployeesType,
     setSorting,
-    setFindUserValues
+    setFindUserValues,
+    setSortingWithDirection
 } = listFilterSlice.actions;
 export default listFilterSlice.reducer;

@@ -30,12 +30,13 @@ const sort = (filterStore, organizations, employees) => {
     const localEmployees = [...employees];
 
     localEmployees.sort((employee1, employee2) => {
-        switch (filterStore.sorting) {
+        const sorting  =  filterStore.sorting.value;
+        switch (filterStore.sorting.value) {
             case 'id':
             case 'type':
             case 'position': {
-                if (employee1[filterStore.sorting] > employee2[filterStore.sorting]) return 1 * coefficient;
-                if (employee1[filterStore.sorting] < employee2[filterStore.sorting]) return -1 * coefficient;
+                if (employee1[sorting] > employee2[sorting]) return 1 * coefficient;
+                if (employee1[sorting] < employee2[sorting]) return -1 * coefficient;
                 return 0;
             }
             case 'full_name': {
@@ -73,7 +74,6 @@ const findEmployee = (filterStore, employeeStore, employees) => {
         return elem.id.toString() === filterStore.findUserValues;
     });
 }
-
 
 /**
  * Отображение списка сотрудников по страницам на основной текущей страницы

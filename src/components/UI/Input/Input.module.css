@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
 
-    border: 2px solid #b3b3b3;
+    border: 1px solid #b3b3b3;
     border-radius: 0.7em;
 
     padding: 1em;
@@ -46,7 +46,7 @@
 }
 
 .inputBlock:has(input.invalid) {
-    border: 2px solid #b12725;
+    border: 1px solid #b12725;
 }
 
 .inputBlock .buttonIcon,

@@ -7,7 +7,8 @@
         grid-column: span 2;
     }
 
-    .optionsContainer button {
+    .pageElementsBlock button,
+    .typeEmployeesBlock button {
         padding: 1em;
 
         font-weight: 600;
@@ -25,6 +26,7 @@
         height: auto;
     }
 
+    .sortBlock,
     .typeEmployeesBlock,
     .pageElementsButtons {
         display: flex;

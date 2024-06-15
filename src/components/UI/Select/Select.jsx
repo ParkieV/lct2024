@@ -22,15 +22,16 @@ const Select = ({
                     required = false,
                     name = "",
                     selectStyle = {},
-                    onChange = (e) => {
+                    onChange = (e, option) => {
                     },
                     options = [],
                     defaultValue = "",
+                    defaultLabel = "",
                     block = null,
                     invalid = false,
                 }) => {
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-    const [optionLabel, setOptionLabel] = React.useState("");
+    const [optionLabel, setOptionLabel] = React.useState(defaultLabel);
     const [optionValue, setOptionValue] = React.useState(defaultValue);
 
     const selectRef = React.useRef(null);
@@ -52,7 +53,7 @@ const Select = ({
         e.preventDefault();
         setOptionLabel(option.label);
         setOptionValue(option.value);
-        console.log(option)
+        onChange(e, option);
     }
 
     return (
@@ -78,7 +79,6 @@ const Select = ({
                            autoComplete={'off'}
                            onChange={(e) => {
                                setOptionLabel(e.target.value);
-                               onChange(e);
                            }}/>
                     <button className={style.dropdownButton} type={'button'} onClick={e => {
                         block !== null && showDropdown()
