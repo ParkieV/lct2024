@@ -62,28 +62,35 @@ const EmployeePagination = (props) => {
                       style={{backgroundImage: `url(${arrow_left})`}}></span>
         </PaginationButton>
 
-        {[...Array(Math.ceil(employeeStore.list.length / filterStore.elementsOnPage.value))].map((elem, index) => {
-            const isActive = filterStore.currentPage - 1 === index;
-            const isLastPages = filterStore.currentPage >= pageCount - 3;
-            const maxLeftIndex = pageCount - maxPage - 2;
+        <div className={style.paginationDesktop}>
+            {[...Array(Math.ceil(employeeStore.list.length / filterStore.elementsOnPage.value))].map((elem, index) => {
+                const isActive = filterStore.currentPage - 1 === index;
+                const isLastPages = filterStore.currentPage >= pageCount - 3;
+                const maxLeftIndex = pageCount - maxPage - 2;
 
 
-            if (index === maxPage + pageDelta && filterStore.currentPage + 1 < pageCount - 2) {
-                return <PaginationButton key={index}>...</PaginationButton>
-            }
-            if (filterStore.currentPage + 1 < pageCount - 1 &&
-                index >= maxPage + (isLastPages ? 0 : pageDelta) &&
-                (!isLastPages ? index < pageCount - 1 : index < maxLeftIndex)) {
-                return null;
-            }
-            if (index < (isLastPages ? maxLeftIndex : pageDelta)) {
-                return null;
-            }
+                if (index === maxPage + pageDelta && filterStore.currentPage + 1 < pageCount - 2) {
+                    return <PaginationButton key={index}>...</PaginationButton>
+                }
+                if (filterStore.currentPage + 1 < pageCount - 1 &&
+                    index >= maxPage + (isLastPages ? 0 : pageDelta) &&
+                    (!isLastPages ? index < pageCount - 1 : index < maxLeftIndex)) {
+                    return null;
+                }
+                if (index < (isLastPages ? maxLeftIndex : pageDelta)) {
+                    return null;
+                }
 
-            return <PaginationButton key={index}
-                                     isActive={isActive}
-                                     onClickCallback={onClick}>{index + 1}</PaginationButton>
-        })}
+                return <PaginationButton key={index}
+                                         isActive={isActive}
+                                         onClickCallback={onClick}>{index + 1}</PaginationButton>
+            })}
+        </div>
+        <div className={style.paginationMobile}>
+            <button>
+                {filterStore.currentPage} из {pageCount}
+            </button>
+        </div>
 
         <PaginationButton onClickCallback={e => arrowClick(e, 'right')}>
                 <span className={style.arrow}

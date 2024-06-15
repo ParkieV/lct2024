@@ -20,3 +20,9 @@
     align-items: center;
     gap: 0.5em;
 }
+
+@media screen and (max-width: 551px) {
+    .header {
+        display: none;
+    }
+}

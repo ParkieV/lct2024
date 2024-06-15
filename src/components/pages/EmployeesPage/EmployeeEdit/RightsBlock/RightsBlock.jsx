@@ -51,8 +51,8 @@ const RightsBlock = (props) => {
         }
         setActiveAdmin(null);
 
-    }, [rightsAdmin, rightsUser])
-    console.log(isActiveAdmin)
+    }, [rightsAdmin, rightsUser]);
+
     return (
         <div className={style.rights}>
             <div
