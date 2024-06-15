@@ -1,0 +1,22 @@
+.header {
+    background: transparent;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.header p {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #737373;
+}
+
+.sortButton img {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.headerField {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}

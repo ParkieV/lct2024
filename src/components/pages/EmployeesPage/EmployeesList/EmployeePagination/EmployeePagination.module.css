@@ -1,0 +1,28 @@
+.pagination {
+    display: flex;
+    gap: 0.75em;
+}
+
+.pagination button {
+    border-radius: 0.56em;
+    padding: 0.85em;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #000;
+    background: #fff;
+    width: 3em;
+    height: 3em;
+}
+
+.arrow {
+    display: block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.3em;
+    height: 1.3em;
+}
+
+.pagination button.active {
+    border: 1px solid #b12725;
+}

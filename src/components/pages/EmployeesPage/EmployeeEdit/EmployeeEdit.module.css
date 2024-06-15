@@ -1,0 +1,27 @@
+.employeeEditContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75em;
+
+    padding: 1.75em;
+    border-radius: 0.75rem;
+    background: #fff;
+    margin-top: 0.1em;
+}
+
+.employeeEditForm {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 1.25em;
+    row-gap: 1.625em;
+}
+
+.employeeEditForm > button {
+    display: none;
+}
+
+.employeeEditHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

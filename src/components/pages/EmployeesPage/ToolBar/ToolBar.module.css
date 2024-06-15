@@ -1,0 +1,17 @@
+.toolBar {
+    display: flex;
+    justify-content: space-between;
+
+    width: 100%;
+    border-radius: 0.75rem;
+    padding: 0.5em 2.5em 0.5em 0.5em;
+    background: #fff;
+}
+
+.newUser {
+    display: flex;
+    gap: 2.625em;
+
+    align-items: center;
+    justify-content: center;
+}
