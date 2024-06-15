@@ -2,3 +2,10 @@
     margin-top: 3em;
     padding-bottom: 5.75em;
 }
+
+@media screen and (max-width: 551px) {
+    .employeesContainer {
+        margin-top: 1.125em;
+        padding-bottom: 3.5em;
+    }
+}

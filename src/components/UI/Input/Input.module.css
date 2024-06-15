@@ -109,4 +109,9 @@
     .inputBlock input {
         font-size: 0.75rem;
     }
+
+    .inputBlock {
+        min-width: unset;
+        width: 100%;
+    }
 }

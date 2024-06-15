@@ -25,3 +25,14 @@
     justify-content: space-between;
     align-items: center;
 }
+
+@media screen and (max-width: 551px) {
+    .employeeEditContainer {
+        gap: 0.75em;
+        padding: 1em;
+    }
+
+    .employeeEditForm {
+        grid-template-columns: 1fr;
+    }
+}
