@@ -16,7 +16,7 @@ class UserDTO(AbstractUserDTO):
 	phone: str
 	work_org_id: uuid.UUID | None = None
 	position: str | None
-	rights: str | None
+	rights: str = ""
 
 
 class CreateRequestBodyDTO(UserDTO):

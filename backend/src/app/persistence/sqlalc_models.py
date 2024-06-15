@@ -40,7 +40,6 @@ class Balance(Base):
 	amount: Mapped[Numeric] = mapped_column(Numeric(14, 2), default=0)
 	user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'))
 
-
 class Purchase(Base):
 	__tablename__ = "purchase"
 
