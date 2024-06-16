@@ -60,6 +60,20 @@ services:
       network:
         ipv4_address: 172.18.0.3
 
+  ml:
+    container_name: ml_app
+    restart: unless-stopped
+    build:
+      context: ./ml
+      dockerfile: ml.dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./volumes/ml_data:/ml_data
+    networks:
+      network:
+        ipv4_address: 172.18.0.4
+
   backend:
     container_name: backend_app
     restart: unless-stopped
@@ -79,19 +93,27 @@ services:
       network:
         ipv4_address: 172.18.0.4
 
-  ml:
-    container_name: ml_app
+  tg_bot:
+    container_name: telegram_bot
     restart: unless-stopped
     build:
-      context: ./ml
-      dockerfile: ml.dockerfile
-    ports:
-      - 8080:8080
-    volumes:
-      - ./volumes/ml_data:/ml_data
+      context: tg_bot
+      dockerfile: Dockerfile
     networks:
       network:
-        ipv4_address: 172.18.0.5
+        ipv4_address: 172.18.0.6
+
+  frontend:
+    container_name: frontend_app
+    restart: unless-stopped
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:80
+    networks:
+      network:
+        ipv4_address: 172.18.0.7
 
 
 volumes:
