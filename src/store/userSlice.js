@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {login} from "./thunk";
+import {login, logout} from "./thunk";
 
 const initialState = {
     isLogin: false,
@@ -29,6 +29,11 @@ export const userSlice = createSlice({
             localStorage.setItem('email', action.payload.data.email);
             localStorage.setItem('password', action.payload.data.password);
             delete action.payload.data['password'];
+        })
+        builder.addCase(logout.fulfilled,  (state, action)  =>  {
+            state.isLogin = false;
+            state.user = {};
+            localStorage.clear();
         })
     },
 });

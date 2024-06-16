@@ -23,9 +23,6 @@ const App = () => {
 
     React.useEffect(() => {
         const checkLogin = async () => {
-
-            // navigate(LOGIN_PAGE_URL);
-            // return;
             if (userStore.isLogin) {
                 navigate(EMPLOYEES_PAGE_URL);
                 return;

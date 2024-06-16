@@ -5,6 +5,15 @@ import {wrapper} from "axios-cookiejar-support";
 
 function createAxios() {
     const axios = require('axios');
+    setInterval(() => {
+        const update = async () => {
+            try {
+                await updateCookies();
+            } catch {
+            }
+        }
+        update().then(r => r);
+    }, 600000)
     return wrapper(axios.create({
         baseURL: apiUrl,
         withCredentials: true,
@@ -34,7 +43,6 @@ export const login = createAsyncThunk(
 
 export const logout = createAsyncThunk(
     'user/logout', async (_, thunkAPI) => {
-        await updateCookies();
         let res = await axiosInstance.get(`/api/auth/logout`);
         return res;
     });
@@ -42,7 +50,6 @@ export const logout = createAsyncThunk(
 
 export const getOrganizations = createAsyncThunk(
     'organization/getOrganizations', async (_, thunkAPI) => {
-        await updateCookies();
         let res = await axiosInstance.get(`/api/organization/organizations`);
         console.log(res);
         return res;
@@ -60,11 +67,10 @@ export const getEmployees = createAsyncThunk(
 
 export const addUser = createAsyncThunk(
     'user/addUser', async ({user}, thunkAPI) => {
-        await updateCookies();
         console.log(user);
         let res = await axiosInstance.post(`/api/user/`, {
             ...user
         });
         console.log(res)
         return res;
-})
+    })

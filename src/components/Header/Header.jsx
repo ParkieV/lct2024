@@ -16,9 +16,11 @@ const Header = (props) => {
     const navigate = useNavigate();
 
     const logoutHandler = () => {
-        dispatch(logout())
-        localStorage.clear();
-        navigate(LOGIN_PAGE_URL);
+        const logoutAsync = async ()  =>  {
+            await dispatch(logout())
+            navigate(LOGIN_PAGE_URL);
+        }
+        logoutAsync().then(r => r);
     }
 
     return (

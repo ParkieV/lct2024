@@ -24,7 +24,7 @@ const RightsBlock = (props) => {
         new Right("permission_suggestion", "Доступ к прогнозу по закупкам"),
         new Right("create_purchase", "Создание новых закупок"),
         new Right("analysis_common", "Просмотр аналитики истории закупок"),
-        new Right("analysis_product", "Просмотр аналитики по товару"),
+        new Right("мы", "Просмотр аналитики по товару"),
         new Right("balance", "Добавление сведений о балансе"),
     ]);
 
