@@ -1,12 +1,14 @@
 """
 Раздел <Общий анализ закупок>
 """
+import aiohttp
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import KeyboardButton, Message
+from aiogram.types import KeyboardButton, Message, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+from config import bot, apiURL_ML
 from db.db import User
 from db.db_utils import getUser
 from res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
@@ -14,6 +16,39 @@ from res.general_purchases_analysis_text import *
 from res.general_text import *
 from state.app_state import AppState
 from state.general_purchase_analysis_state import CommonPurchaseAnalysisState
+from utils import base64ToBufferInputStream
+
+
+class GeneralPurchaseAnalysis(object):
+    @staticmethod
+    async def allStatistics(message: Message, period, price):
+        user: User = await getUser(message.chat.id)
+        async with aiohttp.ClientSession(cookies=user.cookies) as session:
+            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics_all/purchase_stats", params={
+                "period": period,
+                "summa": str(price),
+            }) as r:
+                res = await r.json()
+                print(res)
+                if res['state'] != 'Success':
+                    return b''
+
+                return base64ToBufferInputStream(res['plot_image'])
+
+    @staticmethod
+    async def allHistoryAnalysis(message: Message):
+        user: User = await getUser(message.chat.id)
+        async with aiohttp.ClientSession(cookies=user.cookies) as session:
+            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics_all/history", params={
+                "n": 15,
+            }) as r:
+                res = await r.json()
+                print(res)
+                if r.status != 200:
+                    return b''
+
+                return base64ToBufferInputStream(res['file'])
+
 
 commonPurchasesAnalysisRouter = Router()
 
@@ -40,9 +75,10 @@ async def commonPurchaseAnalysisInit(message: Message, state: FSMContext) -> Non
 
 @commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == PURCHASES_STATISTIC_BUTTON_TEXT)
 async def purchaseStatistics(message: Message, state: FSMContext) -> None:
-    # await state.set_state(CommonPurchaseAnalysisState.purchaseStatistics)
-    await state.set_state(AppState.commonPurchaseAnalysis)
-    await message.answer(text=PURCHASES_STATISTIC_MESSAGE_TEXT)
+    allHistoryAnalysis = await GeneralPurchaseAnalysis.allHistoryAnalysis(message)
+
+    await bot.send_document(message.chat.id,
+                            document=BufferedInputFile(allHistoryAnalysis, filename="all_history.png"))
 
 
 @commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == TOP_EXPENSIVE_BUTTON_TEXT)
@@ -68,6 +104,8 @@ async def suggestProductYear(message: Message, state: FSMContext) -> None:
     keyboard = ReplyKeyboardBuilder().add(
         KeyboardButton(text=AMOUNT_OF_PURCHASES_BUTTON_TEXT),
         KeyboardButton(text=PRICE_OF_PURCHASES_BUTTON_TEXT),
+    ).row(
+        KeyboardButton(text=BACK_BUTTON_TEXT)
     )
 
     period: int = 0
@@ -78,24 +116,25 @@ async def suggestProductYear(message: Message, state: FSMContext) -> None:
     elif message.text == MONTH_TEXT:
         period = 3
 
-    await state.update_data(сommonPurchaseAnalysis_period=period)
-    await message.answer(text=SELECT_PERIOD_TEXT(period), reply_markup=keyboard.as_markup(resize_keyboard=True))
+    await state.update_data(allPurchaseAnalysis_period=period)
+    await message.answer(text=CHOSE_TYPE_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
 @commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.chooseStatisticType,
                                        F.text == AMOUNT_OF_PURCHASES_BUTTON_TEXT)
 async def suggestProductYear(message: Message, state: FSMContext) -> None:
-    user: User = await getUser(message.chat.id)
-    # async with aiohttp.ClientSession(cookies=user.cookies) as session:
-    #     async with session.post(f"{"http://localhost:8080"}/api/auth/refresh") as response:
-    #         pass
-    # if response.status != 200:
+    period: int = (await state.get_data())['allPurchaseAnalysis_period']
+    allStatisticsAmount = await GeneralPurchaseAnalysis.allStatistics(message, period, False)
 
-    # user.setCookies(response.cookies)
-    # await self.session.commit()
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(allStatisticsAmount, filename="amount.png"))
 
 
 @commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.chooseStatisticType,
                                        F.text == PRICE_OF_PURCHASES_BUTTON_TEXT)
 async def suggestProductYear(message: Message, state: FSMContext) -> None:
-    user: User = await getUser(message.chat.id)
+    period: int = (await state.get_data())['allPurchaseAnalysis_period']
+    allStatisticsPrice = await GeneralPurchaseAnalysis.allStatistics(message, period, True)
+
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(allStatisticsPrice, filename="price.png"))

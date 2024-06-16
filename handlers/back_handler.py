@@ -227,12 +227,24 @@ async def backButtonEditPurchase(message: Message, state: FSMContext) -> None:
 
 
 @backRouter.message(ProductState.productStatisticChoosePeriod, F.text == BACK_BUTTON_TEXT)
-async def backButtonProductStatistics(message: Message, state: FSMContext)  -> None:
+async def backButtonProductStatistics(message: Message, state: FSMContext) -> None:
     """
-    Кнопка назад в блоке <Редактирование закупки>:
+    Кнопка назад в блоке <Статистика товара>:
     :param message:
     :param state:
     :return:
     """
     await state.set_state(AppState.actionList)
     await productActionsInit(message, state)
+
+
+@backRouter.message(CommonPurchaseAnalysisState.chooseStatisticType, F.text == BACK_BUTTON_TEXT)
+async def backButtonProductStatistics(message: Message, state: FSMContext) -> None:
+    """
+    Кнопка назад в блоке <Общий анализ>:`выбор типа графика`
+    :param message:
+    :param state:
+    :return:
+    """
+    await state.set_state(AppState.actionList)
+    await commonPurchaseAnalysisInit(message, state)

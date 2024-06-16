@@ -66,6 +66,16 @@ class ProductAnalysisActions(object):
                 res = await r.json()
                 return base64ToBufferInputStream(res['plot_image'])
 
+    @staticmethod
+    async def remainsProduct(message) -> bytes:
+        user: User = await getUser(message.chat.id)
+        async with aiohttp.ClientSession(cookies=user.cookies) as session:
+            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics/leftover_info", params={
+                "user_id": user.db_id,
+            }) as r:
+                res = await r.json()
+                return base64ToBufferInputStream(res['plot_image'])
+
 
 productAnalysisRouter = Router()
 
@@ -94,7 +104,10 @@ async def productAnalysisInit(message: Message, state: FSMContext) -> None:
 @productAnalysisRouter.message(AppState.productAnalysis, F.text == HOW_MANY_ITEMS_LEFT_BUTTON_TEXT)
 async def howManyItemsLeft(message: Message, state: FSMContext) -> None:
     productName: str = (await state.get_data())['productName']
-    await message.answer(text=HOW_MANY_ITEMS_LEFT_MESSAGE_TEXT(productName))
+    remainsProduct = await ProductAnalysisActions.remainsProduct(message)
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(remainsProduct, filename="remains.png"))
+
 
 
 @productAnalysisRouter.message(AppState.productAnalysis, F.text == LAST_N_PURCHASE_BUTTON_TEXT)

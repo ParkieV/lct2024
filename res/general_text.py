@@ -15,4 +15,5 @@ MONTH_TEXT = "Месяц"
 QUARTER_TEXT = "Квартал"
 
 CHOSE_PERIOD_TEXT = "Выберите период"
+CHOSE_TYPE_TEXT = "Выберите сумму/количество"
 SELECT_PERIOD_TEXT = lambda period: f"""Вы выбрали период {period}"""
