@@ -1,5 +1,5 @@
 {$DOMAIN} {
-	handle_path /admin/* {
+	handle {
 		root * /srv
 		encode gzip
 		try_files {path} /index.html
