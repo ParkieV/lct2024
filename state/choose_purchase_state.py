@@ -8,4 +8,5 @@ class ChoosePurchaseState(StatesGroup):
     purchaseList = State()  # Состояние выбора активной закупки
     choosePurchase = State()  # Состояние выбора активной закупки
     actionsList = State()  # Состояние выбора активной закупки
+    chooseActionsFromList = State()  # Состояние выбора активной закупки
     editPurchase = State()  # Состояние ввода пароля

@@ -8,7 +8,6 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from handlers.choose_purchase import choosePurchaseInit
 from res.action_list_text import *
 from res.info_text import *
 from state.app_state import AppState
@@ -36,13 +35,12 @@ async def actionListHandlerInit(message: Message, state: FSMContext) -> None:
 
     await message.answer(text=ACTION_LIST_HELLO_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
 
-
 # @actionListRouter.message(default_state, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
 # @actionListRouter.message(AppState.actionList, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
 # async def productGoTo(message: Message, state: FSMContext) -> None:
 #     await productInit(message, state)
 
 
-@actionListRouter.message(AppState.actionList, F.text == CHOOSE_PURCHASE_BUTTON_TEXT)
-async def choosePurchaseGoTo(message: Message, state: FSMContext) -> None:
-    await choosePurchaseInit(message, state)
+# @actionListRouter.message(AppState.actionList, F.text == CHOOSE_PURCHASE_BUTTON_TEXT)
+# async def choosePurchaseGoTo(message: Message, state: FSMContext) -> None:
+#     await choosePurchaseInit(message, state)

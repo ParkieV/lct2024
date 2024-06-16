@@ -13,6 +13,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from config import apiURL, session
 from db.db import User
+from db.db_utils import getUser
 from handlers.info_handler import infoHandlerInit
 from res.general_text import SOMETHING_WRONG
 from res.login_text import *
@@ -32,8 +33,8 @@ async def loginHandlerInit(message: types.Message, state: FSMContext) -> None:
     :param state:
     :return:
     """
-    user_login_info: User = await session.get(User, message.chat.id)
-    if user_login_info is not None and user_login_info.access_token is not None:
+    user: User = await getUser(message.chat.id)
+    if user is not None and user.access_token is not None:
         await goToInfoHandler(message, state)
         return
 

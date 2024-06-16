@@ -79,9 +79,21 @@ class User(Base):
             ]
         }
 
+    def deletePurchase(self, id: str):
+        if self.purchases is None or id not in self.purchases.keys():
+            return
+        self.purchases.pop(id)
+
     def setCookies(self, cookies: SimpleCookie):
         self.access_token = cookies.get('access_token').value
         self.refresh_token = cookies.get('refresh_token').value
+
+    @property
+    def cookies(self):
+        return {
+            'access_token': self.access_token,
+            'refresh_token': self.refresh_token,
+        }
 
     def updatePurchase(self):
         pass

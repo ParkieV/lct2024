@@ -1,7 +1,7 @@
 import asyncio
 
 import aiohttp
-import requests
+
 
 # s = requests.Session()
 #
@@ -12,12 +12,19 @@ import requests
 
 
 async def main():
+    cookies = None
     async with aiohttp.ClientSession() as session:
-        async with session.post("http://localhost:8000/api/auth/login/", json={
+        async with session.post("http://localhost:8000/api/auth/login", json={
             "email": "user@mos.ru",
             "password": "test123"
         }) as r:
-            print(r.cookies.get('access_token'))
+            cookies = r.cookies
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get("http://localhost:8080/api/v1/ml/check_regular", params={
+            "user_pick": "Охранные услуги"
+        }) as r:
+            print((await r.json()))
 
 
 asyncio.run(main())

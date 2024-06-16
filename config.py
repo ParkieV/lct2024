@@ -16,6 +16,7 @@ bot = Bot(token=__env["apiTG"],
           ))
 
 apiURL: str = __env["apiURL"]
+apiURL_ML: str = __env["apiURL_ML"]
 
 stateStorage = MemoryStorage()
 dp = Dispatcher(storage=stateStorage)

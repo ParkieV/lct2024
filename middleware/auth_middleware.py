@@ -5,10 +5,10 @@ from aiogram.client.session import aiohttp
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import TelegramObject, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.orm import Session
 
 from config import apiURL, AsyncSessionDB
 from db.db import User
+from db.db_utils import getUser
 from res.general_text import SOMETHING_WRONG
 from res.login_text import *
 from state.app_state import AppState
@@ -38,11 +38,11 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
         :return:
         """
         try:
-            user: User = await self.session.get(User, event.chat.id)
+            user: User = await getUser(event.chat.id)
             if user is None or user.access_token is None:
                 raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)
 
-            async with aiohttp.ClientSession(cookies={"refresh_token": user.refresh_token}) as session:
+            async with aiohttp.ClientSession(cookies=user.cookies) as session:
                 async with session.post(f"{apiURL}/api/auth/refresh") as response:
                     if response.status != 200:
                         raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)
