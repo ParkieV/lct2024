@@ -28,14 +28,6 @@ PRODUCT_ACTIONS_TEXT = lambda product, regular: \
 
 SUGGESTED_PRODUCT_TEXT = "Какое-то прогнозирование с картинкой"
 
-CHOSE_PERIOD_TEXT = "Выберите период"
-
-YEAR_TEXT = "Год"
-MONTH_TEXT = "Месяц"
-QUARTER_TEXT = "Квартал"
-
-SELECT_PERIOD_TEXT = lambda period: f"""Вы выбрали период {period}"""
-
 CREATE_PURCHASE_INIT_MESSAGE_TEXT = f"""Для создания закупки товара введите 6 сообщений в соответствии со списком:
 1. Объем поставки
 2. Сумма спецификации

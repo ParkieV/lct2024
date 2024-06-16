@@ -8,3 +8,5 @@ class CommonPurchaseAnalysisState(StatesGroup):
     waitPressButtons = State()
     purchaseStatistics = State()
     expensivePurchase = State()
+    choosePeriod = State()
+    chooseStatisticType = State()

@@ -9,12 +9,14 @@ from aiogram.types import Message
 
 from handlers.actions_list_handler import actionListHandlerInit
 from handlers.choose_purchase import choosePurchaseInit
+from handlers.general_purchases_analysis_handler import commonPurchaseAnalysisInit
 from handlers.info_handler import infoHandlerInit
 from handlers.product_handler import productInit, productActionsInit, enterProductName
 from res.general_text import BACK_BUTTON_TEXT
-from state.choose_purchase_state import ChoosePurchaseState
 from state.app_state import AppState
+from state.choose_purchase_state import ChoosePurchaseState
 from state.create_new_purchase_state import CreateNewPurchaseState
+from state.general_purchase_analysis_state import CommonPurchaseAnalysisState
 from state.info_state import InfoState
 from state.product_state import ProductState
 
@@ -188,7 +190,7 @@ async def backButtonEditActivePurchase(message: Message, state: FSMContext) -> N
 @backRouter.message(CreateNewPurchaseState.id, F.text == BACK_BUTTON_TEXT)
 @backRouter.message(CreateNewPurchaseState.lotId, F.text == BACK_BUTTON_TEXT)
 @backRouter.message(CreateNewPurchaseState.customerId, F.text == BACK_BUTTON_TEXT)
-async def backButtonCreateNewPurchase(message: Message, state: FSMContext)  -> None:
+async def backButtonCreateNewPurchase(message: Message, state: FSMContext) -> None:
     """
     Кнопка назад в блоке <Создание новой закупки>:
     :param message:
@@ -197,3 +199,15 @@ async def backButtonCreateNewPurchase(message: Message, state: FSMContext)  -> N
     """
     await state.set_state(AppState.actionList)
     await actionListHandlerInit(message, state)
+
+
+@backRouter.message(CommonPurchaseAnalysisState.choosePeriod, F.text == BACK_BUTTON_TEXT)
+async def backButtonCommonPurchaseAnalysis(message: Message, state: FSMContext) -> None:
+    """
+    Кнопка назад в блоке <Создание новой закупки>:
+    :param message:
+    :param state:
+    :return:
+    """
+    await state.set_state(AppState.actionList)
+    await commonPurchaseAnalysisInit(message, state)

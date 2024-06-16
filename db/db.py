@@ -20,7 +20,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     isAuth = Column(Boolean, nullable=False, default=False)
-    purchases = Column("purchases", MutableDict.as_mutable(JSON), nullable=True)
+    purchases = Column("purchases", MutableDict.as_mutable(JSON), default={})
 
     access_token = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)
@@ -31,9 +31,6 @@ class User(Base):
         self.refresh_token = ""
 
     def createPurchase(self, json: dict[str, str]):
-        if self.purchases is None:
-            self.purchases = {}
-
         self.purchases[json['id']] = {
             'id': json['id'],
             'lotEntityId': json['lotEntityId'],

@@ -7,10 +7,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import apiURL_ML, apiURL
+from config import apiURL
 from db.db_utils import getUserCookies, getUser
 from pagination import Pagination
 from res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
+from res.general_text import *
 from res.product_text import *
 from state.choose_purchase_state import ChoosePurchaseState
 from state.product_state import ProductState
@@ -73,10 +74,11 @@ async def enterProductName(message: Message, state: FSMContext) -> None:
     await state.set_state(ProductState.productNameSuggestedList)
 
     async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
-        async with session.get(f"{apiURL}/api/v1/ml/show_reference", params={
+        async with session.get(f"{apiURL}/api/search/catalog", params={
             "prompt": productName
         }) as r:
-            await showProductNameSuggestedList(message, state, items=(await r.json())['values'])
+            print(await r.text())
+            await showProductNameSuggestedList(message, state, items=(await r.json())[productName])
 
 
 @productRouter.message(ProductState.productNameSuggestedList, F.text != BACK_BUTTON_TEXT)
@@ -126,7 +128,7 @@ async def productActionsInit(message: Message, state: FSMContext) -> None:
     productName: str = (await state.get_data())["productName"]
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"{apiURL_ML}/api/v1/ml/show_reference", params={
+        async with session.get(f"{apiURL}/api/search/regular", params={
             "user_pick": productName
         }) as r:
             await message.answer(text=PRODUCT_ACTIONS_TEXT(productName, await r.json()),
