@@ -15,6 +15,3 @@ volumes/
 # NGINX
 nginx/*
 !nginx/server.conf
-
-# notebooks
-**.ipynb
