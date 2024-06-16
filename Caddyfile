@@ -1,6 +1,6 @@
 {$DOMAIN} {
 	handle /admin/* {
-		reverse_proxy frontend:80
+		reverse_proxy frontend:3000
 		file_server
 	}
 	handle_errors {
