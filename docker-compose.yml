@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile
     networks:
       network:
-        ipv4_address: 172.18.0.4
+        ipv4_address: 172.18.0.5
 
   tg_bot:
     container_name: telegram_bot
