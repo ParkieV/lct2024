@@ -6,6 +6,10 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import TelegramObject
 from sqlalchemy.orm import Session
 
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUser
+from tg_bot.res.general_text import PERMISSION_RIGHTS_ERROR_TEXT, SOMETHING_WRONG
+
 
 class RightsCheckMiddleware(BaseMiddleware):
     def __init__(self, session: Session, storage: MemoryStorage):
@@ -20,13 +24,23 @@ class RightsCheckMiddleware(BaseMiddleware):
     ) -> Any:
         try:
             rights = get_flag(data, "rights")
-            print(rights)
-            if False:
-                raise PermissionError(PERMISSION_RIGHTS_ERROR_TEXT)
+            user: User = await getUser(event.chat.id)
+
+            print(rights, user.rights, user.type)
+            if rights is not None and user.type != 'admin':
+                isValid: bool = True
+                for right in rights:
+                    if right not in user.rights:
+                        isValid = False
+                        break
+
+                if not isValid:
+                    raise PermissionError(PERMISSION_RIGHTS_ERROR_TEXT)
 
             return await handler(event, data)
         except PermissionError as pe:
             print(pe)
+            return await event.answer(PERMISSION_RIGHTS_ERROR_TEXT)
         except Exception as e:
             print(e)
-            await event.answer(PERMISSION_RIGHTS_ERROR_TEXT)
+            return await event.answer(SOMETHING_WRONG)

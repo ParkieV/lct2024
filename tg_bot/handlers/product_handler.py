@@ -1,29 +1,116 @@
 """
 Раздел <Товар>
 """
-
+import aiohttp
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state
-from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from pagination import Pagination
-from res.action_list_text import ENTER_PRODUCT_NAME_BUTTON_TEXT
-from res.product_text import *
-from state.app_state import AppState
-from state.product_state import ProductState
+from tg_bot.config import apiURL, bot, apiURL_ML
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUserCookies, getUser
+from tg_bot.pagination import Pagination
+from tg_bot.res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
+from tg_bot.res.general_text import *
+from tg_bot.res.product_text import *
+from tg_bot.state.choose_purchase_state import ChoosePurchaseState
+from tg_bot.state.product_state import ProductState
+from tg_bot.utils import base64ToBufferInputStream
+
+
+class ProductActions:
+    @staticmethod
+    async def getSuggestedList(message, product_name):
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/catalog", params={
+                "prompt": product_name
+            }) as r:
+                return (await r.json())[product_name]
+
+    @staticmethod
+    async def pickProduct(message, product_name: str) -> int:
+        user: User = await getUser(message.chat.id)
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.post(f"{apiURL}/api/search/set_user_pick", params={
+                "user_pick ": product_name
+            }) as r:
+                pass
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"{apiURL_ML}/api/v1/ml/matching/set_user_pick/", params={
+                "user_id": user.db_id,
+                "user_pick ": product_name
+            }) as r:
+                pass
+
+    @staticmethod
+    async def checkRegular(message, product_name: str) -> bool:
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/regular", params={
+                "user_pick": product_name
+            }) as r:
+                if r.status == 200:
+                    return (await r.json())['is_regular']
+
+                return False
+
+    @staticmethod
+    async def suggestPrice(message, period, type) -> bytes:
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/purchase_stats", params={
+                "period": period,
+                "summa": str(type)
+            }) as r:
+                res = await r.json()
+                print(res)
+                if res['state'] != 'Success':
+                    return b''
+
+                return base64ToBufferInputStream(res['plot_image'])
+
 
 productRouter = Router()
 
 
-@productRouter.message(default_state, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
-@productRouter.message(AppState.actionList, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
-@productRouter.message(AppState.product, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
+@productRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == EDIT_PURCHASE_BUTTON_TEXT)
 async def productInit(message: Message, state: FSMContext) -> None:
+    await state.set_state(ProductState.initActions)
+
+    keyboard = ReplyKeyboardBuilder().add(
+        KeyboardButton(text=CREATE_BUTTON_TEXT),
+        KeyboardButton(text=EDIT_BUTTON_TEXT),
+    ).row(
+        KeyboardButton(text=BACK_BUTTON_TEXT)
+    )
+
+    await message.answer(text=PRODUCT_ACTION_HELLO_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
+
+
+@productRouter.message(ProductState.initActions, F.text == EDIT_BUTTON_TEXT)
+async def editExistedProduct(message: Message, state: FSMContext) -> None:
+    user = await getUser(message.chat.id)
+    productList = user.getAllProducts((await state.get_data())['active_purchase'])
+
+    if len(productList) == 0:
+        await message.answer(text=NO_PRODUCTS_IN_PURCHASE_TEXT)
+        await productInit(message, state)
+        return
+
+    keyboard = ReplyKeyboardBuilder().add(
+        KeyboardButton(text=BACK_BUTTON_TEXT)
+    )
+
+    await message.answer(text=INPUT_PRODUCT_INDEX, reply_markup=keyboard.as_markup(resize_keyboard=True))
+
+    await showProductNameSuggestedList(message, state, items=productList)
+
+
+@productRouter.message(ProductState.initActions, F.text == CREATE_BUTTON_TEXT)
+async def editExistedProduct(message: Message, state: FSMContext) -> None:
     await state.set_state(ProductState.productName)
 
-    keyboard = ReplyKeyboardBuilder().row(
+    keyboard = ReplyKeyboardBuilder().add(
         KeyboardButton(text=BACK_BUTTON_TEXT)
     )
 
@@ -34,35 +121,15 @@ async def productInit(message: Message, state: FSMContext) -> None:
 async def enterProductName(message: Message, state: FSMContext) -> None:
     productName: str = message.text
     await state.update_data(productName=productName)
-    print(productName)
 
     await state.set_state(ProductState.productNameSuggestedList)
-    await showProductNameSuggestedList(message, state)
+
+    await showProductNameSuggestedList(message, state,
+                                       items=await ProductActions.getSuggestedList(message, productName))
 
 
 @productRouter.message(ProductState.productNameSuggestedList, F.text != BACK_BUTTON_TEXT)
-async def showProductNameSuggestedList(message: Message, state: FSMContext) -> None:
-    items = [
-        "Пылесос синий",
-        "Шторы рулонные",
-        "Удлинитель 5 м",
-        "Пилот на 5 гнезд",
-        "Пилот на 6 гнезд",
-        "Пилот на 7 гнезд",
-        "Пилот на 8 гнезд",
-        "Пилот на 9 гнезд",
-        "Пилот на 10 гнезд",
-        "Пилот на 11 гнезд",
-        "Пилот на 12 гнезд",
-        "Пилот на 13 гнезд",
-        "Пилот на 14 гнезд",
-        "Пилот на 15 гнезд",
-        "Пилот на 16 гнезд",
-        "Пилот на 17 гнезд",
-        "Пилот на 18 гнезд",
-    ]
-
-    CALLBACK_DATA_PAGINATION_END = "product"
+async def showProductNameSuggestedList(message: Message, state: FSMContext, items) -> None:
     pagination: Pagination = Pagination(
         items=items,
     )
@@ -85,6 +152,8 @@ async def getProductFromList(message: Message, state: FSMContext) -> None:
         await state.update_data(productName=pagination.items[index])
         print(pagination.items[index])
 
+        await ProductActions.pickProduct(message, pagination.items[index])
+
         await message.reply(text=pagination.items[index], reply_markup=ReplyKeyboardRemove())
         await state.set_state(ProductState.productActions)
         await productActionsInit(message, state)
@@ -105,11 +174,16 @@ async def productActionsInit(message: Message, state: FSMContext) -> None:
         KeyboardButton(text=BACK_BUTTON_TEXT)
     )
 
-    await message.answer(text=PRODUCT_ACTIONS_TEXT((await state.get_data())["productName"]),
-                         reply_markup=keyboard.as_markup(resize_keyboard=True))
+    productName: str = (await state.get_data())["productName"]
+    regularity: bool = await ProductActions.checkRegular(message, productName)
+    await state.update_data(regularity=regularity)
+    await message.answer(
+        text=PRODUCT_ACTIONS_TEXT(productName, regularity),
+        reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
-@productRouter.message(ProductState.productWaitActions, F.text == SUGGESTED_PRODUCT_BUTTON_TEXT)
+@productRouter.message(ProductState.productWaitActions, F.text == SUGGESTED_PRODUCT_BUTTON_TEXT,
+                       flags={"rights": "permission_suggestion"})
 async def suggestProduct(message: Message, state: FSMContext) -> None:
     keyboard = ReplyKeyboardBuilder().row(
         KeyboardButton(text=YEAR_TEXT),
@@ -127,11 +201,20 @@ async def suggestProduct(message: Message, state: FSMContext) -> None:
 @productRouter.message(ProductState.choosePeriod, F.text == QUARTER_TEXT)
 @productRouter.message(ProductState.choosePeriod, F.text == MONTH_TEXT)
 async def suggestProductYear(message: Message, state: FSMContext) -> None:
-    period: str = message.text
-    await message.answer(text=SELECT_PERIOD_TEXT(period))
+    await message.answer(text=SELECT_PERIOD_TEXT(message.text))
+
+    period: int = 1
+    if message.text == YEAR_TEXT:
+        period = 1
+    elif message.text == QUARTER_TEXT:
+        period = 2
+    elif message.text == MONTH_TEXT:
+        period = 3
+
+    price = await ProductActions.suggestPrice(message, period, True)
+    amount = await ProductActions.suggestPrice(message, period, False)
     # with open('res/img/test.png', 'rb') as photo:
-    #     result: Message = await bot.send_photo(message.chat.id,
-    #                                            photo=BufferedInputFile(photo.read(), filename="test.png"),
-    #                                            caption=SUGGESTED_PRODUCT_TEXT,
-    #                                            # reply_markup=ReplyKeyboardRemove()
-    #                                            )
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(price, filename="price.png"))
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(amount, filename="amount.png"))

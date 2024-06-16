@@ -5,6 +5,8 @@ class ProductState(StatesGroup):
     """
     Класс для описания состояний в разделе <Товар>
     """
+    initActions = State()
+
     # Ввод имени товара и его выбор
     productName = State()
     productNameSuggestedList = State()
@@ -23,3 +25,6 @@ class ProductState(StatesGroup):
     waitPurchaseActions = State()
     cretePurchase = State()
     inputSubAccount = State()
+
+    productStatistic = State()
+    productStatisticChoosePeriod = State()

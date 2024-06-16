@@ -1,5 +1,3 @@
-from res.general_text import BACK_BUTTON_TEXT
-
 HELP_BUTTON_TEXT = "Помощь"
 CONTINUE_BUTTON_TEXT = "Продолжить"
 

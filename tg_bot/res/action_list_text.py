@@ -1,9 +1,11 @@
-from res.general_text import BACK_BUTTON_TEXT
+from tg_bot.res.general_text import BACK_BUTTON_TEXT
 
 ENTER_PRODUCT_NAME_BUTTON_TEXT = "Введите название товара"
 ACTIVE_PURCHASE_BUTTON_TEXT = "Активные закупки"
 COMMON_ANALYSIS_BUTTON_TEXT = "Общий анализ закупок"
 BALANCE_BUTTON_TEXT = "Баланс"
+CREATE_PURCHASE_BUTTON_TEXT = "Создание закупки"
+CHOOSE_PURCHASE_BUTTON_TEXT = "Выбор закупки"
 
 ACTION_LIST_HELLO_TEXT = f"""Выберите действие, которое вы хотите выполнить:  
   

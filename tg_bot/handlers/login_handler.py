@@ -4,19 +4,21 @@
 
 from __future__ import annotations
 
+import aiohttp
 from aiogram import types, Router, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from config import session
-from db.db import User
-from handlers.info_handler import infoHandlerInit
-from res.general_text import SOMETHING_WRONG
-from res.login_text import *
-from state.auth_state import AuthState
-from state.app_state import AppState
+from tg_bot.config import apiURL, session
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUser
+from tg_bot.handlers.info_handler import infoHandlerInit
+from tg_bot.res.general_text import SOMETHING_WRONG
+from tg_bot.res.login_text import *
+from tg_bot.state.app_state import AppState
+from tg_bot.state.auth_state import AuthState
 
 loginRouter = Router()
 
@@ -31,8 +33,8 @@ async def loginHandlerInit(message: types.Message, state: FSMContext) -> None:
     :param state:
     :return:
     """
-    user_login_info: User = await session.get(User, message.from_user.id)
-    if user_login_info is not None and user_login_info.isAuth:
+    user: User = await getUser(message.chat.id)
+    if user is not None and user.access_token is not None:
         await goToInfoHandler(message, state)
         return
 
@@ -41,7 +43,7 @@ async def loginHandlerInit(message: types.Message, state: FSMContext) -> None:
     await state.set_state(AuthState.login)
 
 
-@loginRouter.callback_query(StateFilter(None), F.data == TRY_AGAIN_ACTION)
+@loginRouter.callback_query(F.data == TRY_AGAIN_ACTION)
 async def loginHandlerCallbackInit(callback: types.CallbackQuery, state: FSMContext) -> None:
     """
     Функция-инициализатор, которая вызывается при нажатии на inline-кнопку c callback_data={TRY_AGAIN_ACTION}. Кнопка
@@ -49,6 +51,7 @@ async def loginHandlerCallbackInit(callback: types.CallbackQuery, state: FSMCont
     :param callback:
     :param state:
     """
+
     await callback.message.answer(ENTER_LOGIN)
     await state.set_state(AuthState.login)
 
@@ -76,6 +79,7 @@ async def getPassword(message: types.Message, state: FSMContext) -> None:
     """
     await state.update_data(password=message.text.lower())
     auth: AuthorizationCredentialsChecker = AuthorizationCredentialsChecker(**await state.get_data())
+    auth.isAuth = await auth.checkData()
     await __checkAuthentication(message, state, auth)
 
 
@@ -95,7 +99,13 @@ async def __checkAuthentication(message: types.Message, state: FSMContext,
         await state.clear()
 
         if auth.isAuth:
-            session.add(User(id=message.from_user.id, isAuth=auth.isAuth))
+            user: User = await getUser(message.chat.id)
+            if user is None:
+                session.add(User(id=message.chat.id, isAuth=auth.isAuth, rights=auth.rights,
+                                 type='admin' if auth.isAdmin else 'user', db_id=auth.db_id))
+            user = await session.get(User, message.chat.id)
+            user.setCookies(auth.cookies)
+
             await session.commit()
 
             await message.answer(RIGHT_LOGIN_AND_PASSWORD)
@@ -135,13 +145,27 @@ class AuthorizationCredentialsChecker(object):
     def __init__(self, login: str, password: str, **kwargs):
         self.__login: str = login
         self.__password: str = password
-        self.isAuth: bool = self.__checkData()
+        self.cookies: dict = {}
+        self.rights: str = ""
+        self.isAdmin: bool = False
+        self.isAuth: bool = False
+        self.db_id: str = ""
 
-    def __checkLogin(self) -> bool:
-        return self.__login == "test123"
+    async def checkData(self) -> bool:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(f"{apiURL}/api/auth/login/", json={
+                    "email": self.__login,
+                    "password": self.__password
+                }) as response:
+                    jsonRes = await response.json()
+                    if response.status == 200:
+                        self.cookies = response.cookies
+                        self.rights = jsonRes["rights"]
+                        self.isAdmin = "add_user" in self.rights.split(";")
+                        self.db_id = jsonRes["id"]
+                        return True
+        except Exception as e:
+            print(e)
 
-    def __checkPassword(self) -> bool:
-        return self.__password == "test123"
-
-    def __checkData(self) -> bool:
-        return self.__checkLogin() and self.__checkPassword()
+        return False
