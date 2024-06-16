@@ -20,6 +20,14 @@ from api.src.configurations.models import model as MODEL, tokenizer as TOKENIZER
 SCRIPT_LOC = os.path.dirname(os.path.realpath(__file__))
 
 def get_embeddings(texts):
+    '''Получить эмбеддинг текста
+
+    Вход: 
+        texts: текстовые запросы
+
+    Выход:
+        embeddings: эмбеддинги
+    '''
     inputs = TOKENIZER(texts, return_tensors='pt', padding=True, truncation=True)
     with torch.no_grad():
         outputs = MODEL(**inputs)
@@ -62,14 +70,29 @@ def find_similar_leftover(user_pick: str) -> Tuple[int, str, str]:
 
 
 class PurchaseHistory:
+    '''Класс для матчинга справочника и закупок
+    '''
 
     def __init__(self, name: str, voc: pd.DataFrame, contracts: pd.DataFrame) -> None:
+        '''Инициализация
 
+        Вход:
+            name: название товара из справочника
+            contracts: датасет истории закупок
+        '''
         self.voc_rows = pd.DataFrame(voc.loc[voc['Название СТЕ'] == name])
         self.contracts = contracts
 
     def get_purchases(self, include_rk: bool=True, include_kpgz: bool=True) -> pd.DataFrame:
+        '''Выбрать историю закупок нужного товара из общей истории закупок
 
+        Вход:
+            include_rk: учитывать реестровый номер при отсеивании
+            include_kpgz: учитывать кпгз код при отсеивании
+
+        Выход
+            self.kpgz_contracts: закупки товара
+        '''
         self.kpgz_contracts = self.contracts.copy()
 
         if include_kpgz:
@@ -83,11 +106,16 @@ class PurchaseHistory:
         return self.kpgz_contracts
 
     def drop_cancelled(self):
-
+        '''Удалить расторгнутые закупки
+        '''
         self.kpgz_contracts = self.kpgz_contracts[self.kpgz_contracts['Статус контракта'] != 'Расторгнут']
 
     def generate_features(self):
+        '''Сгенерировать временные признаки
 
+        Выход:
+            self.kpgz_contracts: история закупок товара с добавленными столбцами новых признаков
+        '''
         contracts_cleaned = self.kpgz_contracts.copy()
         contracts_cleaned = contracts_cleaned[contracts_cleaned['Статус контракта'] != 'Расторгнут']
         contracts_cleaned['Срок исполнения с'] = pd.to_datetime(contracts_cleaned['Срок исполнения с'], format='%d.%m.%Y')
@@ -96,6 +124,7 @@ class PurchaseHistory:
         contracts_cleaned['quarter'] = contracts_cleaned['Срок исполнения с'].dt.quarter
         contracts_cleaned['month'] = contracts_cleaned['Срок исполнения с'].dt.month
         contracts_cleaned['day'] = contracts_cleaned['Срок исполнения с'].dt.day_of_year
+        contracts_cleaned['day_of_month'] = contracts_cleaned['Срок исполнения с'].dt.day
         contracts_cleaned['Длительность'] = (contracts_cleaned['Срок исполнения по'] - contracts_cleaned['Срок исполнения с']).dt.days
 
         self.kpgz_contracts = contracts_cleaned.copy()
@@ -103,17 +132,26 @@ class PurchaseHistory:
         return self.kpgz_contracts
 
     def check_regular_purchase(self):
+        '''Проверить товара на регулярность
 
-        num_rk = len(self.kpgz_contracts['Реестровый номер в РК'].unique())
+        Выход:
+            True: товар регулярный
+            False: товар нерегулярный
+        '''
+        year_quarters = len((self.kpgz_contracts['year'].astype('str') + self.kpgz_contracts['quarter'].astype('str')).unique())
 
-        if num_rk >= 2:
+        if year_quarters >= 3:
             return True # Регулярная
 
         else:
             return False # Нерегулярная
 
     def normalize_spgz(self):
+        '''Нормализовать СПГЗ (процессинг текста)
 
+        Выход:
+            self.normalized_spgz_contracts: данные с нормализованным спгз
+        '''
         contracts_dataset = Dataset(self.kpgz_contracts.copy(), text_col='Наименование СПГЗ')
         contracts_dataset.prepare_dataset()
         self.normalized_spgz_contracts = contracts_dataset.data.copy()
@@ -121,7 +159,11 @@ class PurchaseHistory:
         return self.normalized_spgz_contracts
 
     def normalize_ste(self):
+        '''Нормализовать СТЕ (процессинг текста)
 
+        Выход:
+            self.normalized_ste_voc: данные с нормализованным СТЕ
+        '''
         voc_dataset = Dataset(self.voc_rows.copy(), text_col='Название СТЕ')
         voc_dataset.prepare_dataset(voc_dataset)
         self.normalized_ste_voc = voc_dataset.data.copy()
@@ -129,7 +171,11 @@ class PurchaseHistory:
         return self.normalized_ste_voc
 
     def rank_ste_spgz(self):
+        '''Сматчить и отранжировать СТЕ и СПГЗ
 
+        Выход:
+            Отранжированные по релевантности позиции
+        '''
         contract_embeds = []
         for sent in self.normalized_spgz_contracts['Наименование СПГЗ']:
             embed = get_embeddings([sent.lower()])
@@ -151,21 +197,22 @@ class PurchaseHistory:
 
         return result.sort_values(by=['cos'], ascending=False)
 
-    def fit_lr(self, target):
-
-        model = Ridge(alpha=0.05)
-        model.fit()
-
 
 class PurchaseHistory:
-
+    '''Класс для матчинга справочника и закупок
+    '''
     def __init__(self, name: str, voc: pd.DataFrame, contracts: pd.DataFrame) -> None:
 
         self.voc_rows = pd.DataFrame(voc.loc[voc['Название СТЕ'] == name])
         self.contracts = contracts
 
     def get_purchases(self, include_rk: bool=True, include_kpgz: bool=True) -> pd.DataFrame:
+        '''Инициализация
 
+        Вход:
+            name: название товара из справочника
+            contracts: датасет истории закупок
+        '''
         self.kpgz_contracts = self.contracts.copy()
 
         if include_kpgz:
@@ -179,11 +226,16 @@ class PurchaseHistory:
         return self.kpgz_contracts
 
     def drop_cancelled(self):
-
+        '''Удалить расторгнутые закупки
+        '''
         self.kpgz_contracts = self.kpgz_contracts[self.kpgz_contracts['Статус контракта'] != 'Расторгнут']
 
     def generate_features(self):
+        '''Сгенерировать временные признаки
 
+        Выход:
+            self.kpgz_contracts: история закупок товара с добавленными столбцами новых признаков
+        '''
         contracts_cleaned = self.kpgz_contracts.copy()
         contracts_cleaned = contracts_cleaned[contracts_cleaned['Статус контракта'] != 'Расторгнут']
         contracts_cleaned['Срок исполнения с'] = pd.to_datetime(contracts_cleaned['Срок исполнения с'], format='%d.%m.%Y')
@@ -200,7 +252,12 @@ class PurchaseHistory:
         return self.kpgz_contracts
 
     def check_regular_purchase(self):
+        '''Проверить товар на регулярность
 
+        Выход:
+            True: товар регулярный
+            False: товар нерегулярный
+        '''
         num_rk = len((self.kpgz_contracts['year'].astype('str') + self.kpgz_contracts['quarter'].astype('str')).unique())
 
         if num_rk >= 3:
@@ -210,7 +267,11 @@ class PurchaseHistory:
             return False # Нерегулярная
 
     def normalize_spgz(self):
+        '''Нормализовать СПГЗ (процессинг текста)
 
+        Выход:
+            self.normalized_spgz_contracts: данные с нормализованным спгз
+        '''
         contracts_dataset = Dataset(self.kpgz_contracts.copy(), text_col='Наименование СПГЗ')
         contracts_dataset.prepare_dataset()
         self.normalized_spgz_contracts = contracts_dataset.data.copy()
@@ -218,7 +279,11 @@ class PurchaseHistory:
         return self.normalized_spgz_contracts
 
     def normalize_ste(self):
+        '''Нормализовать СТЕ (процессинг текста)
 
+        Выход:
+            self.normalized_ste_voc: данные с нормализованным СТЕ
+        '''
         voc_dataset = Dataset(self.voc_rows.copy(), text_col='Название СТЕ')
         voc_dataset.prepare_dataset(voc_dataset)
         self.normalized_ste_voc = voc_dataset.data.copy()
@@ -226,7 +291,11 @@ class PurchaseHistory:
         return self.normalized_ste_voc
 
     def rank_ste_spgz(self):
+        '''Сматчить и отранжировать СТЕ и СПГЗ
 
+        Выход:
+            Отранжированные по релевантности позиции
+        '''
         contract_embeds = []
         for sent in self.normalized_spgz_contracts['Наименование СПГЗ']:
             embed = get_embeddings([sent.lower()])

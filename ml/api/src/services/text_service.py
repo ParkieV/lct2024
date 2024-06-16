@@ -26,7 +26,11 @@ class Dataset:
 
     @staticmethod
     def delete_punct(text):
+        '''Удалить знаки препинания, кроме запятой
 
+        Выход:
+            text: текст без знаков препинания
+        '''
         punc_list = [".",";",":","!","?","/","\\","#","@","$","&",")","(","'","\"", "*", "-", "№", "`", "+", "|", "[", "]", "{", "}", "_"]
         for punc in punc_list:
             text = text.replace(punc, ' ', -1)
@@ -35,6 +39,12 @@ class Dataset:
     
     @staticmethod
     def replace_commas(text):
+        '''Удалить все запятые, кроме тех, которые разделяют числа (например 1,5 (полтора))
+
+        Выход:
+            text: текст без ненужных запятых
+        '''
+
         digits = '0123456789'
         
         if text[0] == ',':
@@ -59,7 +69,8 @@ class Dataset:
     
     @staticmethod
     def add_spaces(text):
-        # разделяет пробелом слова и числа
+        '''Разделить пробелом слова и числа
+        '''
 
         result = ''
         for i in range(len(text) - 1):
@@ -77,40 +88,49 @@ class Dataset:
     
     @staticmethod
     def delete_big_nums(text):
-        # удаляет числа больше 4 знаков
+        '''Удалить числа больше 3 знаков
+        '''
         text = re.sub(r'\b\d{3,}\b', '', text)
         text = re.sub(r'\s+', ' ', text)
         return text
     
     @staticmethod
     def remove_russian_stopwords(text, russian_stopwords):
-        
-        # убирает ненужные слова
+        '''Убрать ненужные слова (стоп-слова)
+        '''
         text_without_stopwords = [word for word in text.split() if word.lower() not in russian_stopwords]
         return ' '.join(text_without_stopwords)
 
     @staticmethod
     def stem_russian_text(text, stemmer):
-    
+        '''Стемминг текста
+        '''
         stemmed_text = ' '.join([stemmer.stem(word) for word in text.split()])
         return stemmed_text
 
     @staticmethod
     def lemmatize_russian_text(text, mystem):
-
+        '''Лемматизация текста
+        '''
         lemmatized_text = ''.join(mystem.lemmatize(text)).strip()
         return lemmatized_text
 
     def lower(self):
-
+        '''Привести к нижнему регистру
+        '''
         self.data = self.data.applymap(lambda x: str(x).lower() if pd.notnull(x) else x)
 
     def drop_empty(self):
-
+        '''Удалить пустые ячейки
+        '''
         self.data = self.data[self.data[self.text_col].str.strip() != '']
 
     def process_russian_series(self, series, process_russian_text_type):
+        '''Процессинг текстового столбца
 
+        Выход: 
+            result_series: нормализованный текстовых столбец
+        '''
         result_series = series.copy()
 
         if process_russian_text_type == 'lemmatizer':
@@ -125,7 +145,11 @@ class Dataset:
         return result_series
 
     def process_russian_sentence(self, sentence, process_russian_text_type):
+        '''Процессинг текста
 
+        Выход: 
+            result_sentence: нормализованный текст
+        '''
         result_sentence = ''
 
         if process_russian_text_type == 'lemmatizer':
@@ -146,7 +170,8 @@ class Dataset:
                         delete_big_nums=True,
                         remove_russian_stopwords=True,
                         process_russian_text_type=None) -> None:
-        
+        '''Подготовить датасет
+        '''
         if delete_punct:
             self.data[self.text_col] = self.data[self.text_col].apply(Dataset.delete_punct)
 
@@ -175,7 +200,8 @@ class Dataset:
                          delete_big_nums=True,
                          remove_russian_stopwords=True,
                          process_russian_text_type=None):
-        
+        '''Подготовить текстовый запрос
+        '''
         sentence = sentence.lower()
         
         if delete_punct:
