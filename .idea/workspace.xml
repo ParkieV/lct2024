@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="move to folder" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="aiogram" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="99048d6c-8e12-4f23-bd29-f9325f54d948" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2hNthXbHbMCBsy6qqsmaMfHxuxr" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="false" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.auth_state.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.viewModel.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;tgbot&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/isupo/YandexDisk/Programming/MyProject/forecasting-service/forecasting-service-tg-bot&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
+    ],
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL Dialect&quot;: [
+      &quot;SQLite&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot" />
+      <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot\res\img" />
+      <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecastin-service-tg-bot" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot\db" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="forecasting-service-tg-bot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="forecastin-service-tg-bot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot\main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="forecasting-service-tg-bot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="forecasting-service-tg-bot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.utils" />
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
+        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\isupo\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="" />
+      <created>1717446483003</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1717446483003</updated>
+      <workItem from="1717446484853" duration="1746000" />
+      <workItem from="1717449120614" duration="733000" />
+      <workItem from="1717610350420" duration="22848000" />
+      <workItem from="1717765951853" duration="594000" />
+      <workItem from="1717789146142" duration="19349000" />
+      <workItem from="1717863249503" duration="9562000" />
+      <workItem from="1717881884562" duration="12125000" />
+      <workItem from="1717950983707" duration="4958000" />
+      <workItem from="1718017781942" duration="10853000" />
+      <workItem from="1718103358442" duration="4959000" />
+      <workItem from="1718126946552" duration="2758000" />
+      <workItem from="1718130693011" duration="4806000" />
+      <workItem from="1718211946473" duration="1321000" />
+      <workItem from="1718219152273" duration="779000" />
+      <workItem from="1718302800754" duration="7190000" />
+      <workItem from="1718361827773" duration="10988000" />
+      <workItem from="1718421279824" duration="28085000" />
+      <workItem from="1718532461238" duration="383000" />
+      <workItem from="1718532859359" duration="183000" />
+      <workItem from="1718533050914" duration="1710000" />
+      <workItem from="1718535236103" duration="16264000" />
+    </task>
+    <task id="LOCAL-00001" summary="add types">
+      <option name="closed" value="true" />
+      <created>1717449259855</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1717449259855</updated>
+    </task>
+    <task id="LOCAL-00002" summary="make new files for composition">
+      <option name="closed" value="true" />
+      <created>1717610712994</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1717610712994</updated>
+    </task>
+    <task id="LOCAL-00003" summary="finish login step">
+      <option name="closed" value="true" />
+      <created>1717757092015</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1717757092015</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix login logic">
+      <option name="closed" value="true" />
+      <created>1717763599920</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1717763599920</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add login with aiogram">
+      <option name="closed" value="true" />
+      <created>1717853539786</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1717853539786</updated>
+    </task>
+    <task id="LOCAL-00006" summary="make transition from logit to info ste[">
+      <option name="closed" value="true" />
+      <created>1717856818499</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1717856818499</updated>
+    </task>
+    <task id="LOCAL-00007" summary="add info step">
+      <option name="closed" value="true" />
+      <created>1717859886084</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1717859886084</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update code">
+      <option name="closed" value="true" />
+      <created>1717865225980</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1717865225980</updated>
+    </task>
+    <task id="LOCAL-00009" summary="add logout and assert error in tg bot">
+      <option name="closed" value="true" />
+      <created>1717871664901</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1717871664901</updated>
+    </task>
+    <task id="LOCAL-00010" summary="finish info handler">
+      <option name="closed" value="true" />
+      <created>1717879857732</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1717879857732</updated>
+    </task>
+    <task id="LOCAL-00011" summary="optimize user steps">
+      <option name="closed" value="true" />
+      <created>1717944481080</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1717944481080</updated>
+    </task>
+    <task id="LOCAL-00012" summary="add common_purchases_analysis and fix info logic">
+      <option name="closed" value="true" />
+      <created>1717950961654</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1717950961654</updated>
+    </task>
+    <task id="LOCAL-00013" summary="add comments">
+      <option name="closed" value="true" />
+      <created>1717951878986</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1717951878986</updated>
+    </task>
+    <task id="LOCAL-00014" summary="comment functions in login_handler.py">
+      <option name="closed" value="true" />
+      <created>1717952473010</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1717952473010</updated>
+    </task>
+    <task id="LOCAL-00015" summary="comment functions in info_handler.py">
+      <option name="closed" value="true" />
+      <created>1717952691755</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1717952691755</updated>
+    </task>
+    <task id="LOCAL-00016" summary="finish do balance_handler.py">
+      <option name="closed" value="true" />
+      <created>1718022234273</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1718022234273</updated>
+    </task>
+    <task id="LOCAL-00017" summary="complete pagination and add back buttons in product topic">
+      <option name="closed" value="true" />
+      <created>1718108724962</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1718108724962</updated>
+    </task>
+    <task id="LOCAL-00018" summary="add selecting period">
+      <option name="closed" value="true" />
+      <created>1718311426612</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1718311426612</updated>
+    </task>
+    <task id="LOCAL-00019" summary="add product analysis">
+      <option name="closed" value="true" />
+      <created>1718312724152</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1718312724152</updated>
+    </task>
+    <task id="LOCAL-00020" summary="add opportunity of editing purchase">
+      <option name="closed" value="true" />
+      <created>1718314560271</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1718314560271</updated>
+    </task>
+    <task id="LOCAL-00021" summary="change text and user-flow">
+      <option name="closed" value="true" />
+      <created>1718392415019</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1718392415019</updated>
+    </task>
+    <task id="LOCAL-00022" summary="add common pagination handler">
+      <option name="closed" value="true" />
+      <created>1718394183429</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1718394183429</updated>
+    </task>
+    <task id="LOCAL-00023" summary="finish user-flow">
+      <option name="closed" value="true" />
+      <created>1718396210396</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1718396210396</updated>
+    </task>
+    <task id="LOCAL-00024" summary="finish user-flow">
+      <option name="closed" value="true" />
+      <created>1718464051849</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1718464051849</updated>
+    </task>
+    <task id="LOCAL-00025" summary="fix something">
+      <option name="closed" value="true" />
+      <created>1718532544969</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1718532544969</updated>
+    </task>
+    <task id="LOCAL-00026" summary="preloading">
+      <option name="closed" value="true" />
+      <created>1718532703308</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1718532703308</updated>
+    </task>
+    <task id="LOCAL-00027" summary="fix all v2">
+      <option name="closed" value="true" />
+      <created>1718533027127</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1718533027127</updated>
+    </task>
+    <task id="LOCAL-00028" summary="git add new buttons">
+      <option name="closed" value="true" />
+      <created>1718549220727</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1718549220727</updated>
+    </task>
+    <task id="LOCAL-00029" summary="add rights check">
+      <option name="closed" value="true" />
+      <created>1718551391881</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1718551391882</updated>
+    </task>
+    <task id="LOCAL-00030" summary="add getting photos">
+      <option name="closed" value="true" />
+      <created>1718559846832</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1718559846833</updated>
+    </task>
+    <task id="LOCAL-00031" summary="finish all analytics">
+      <option name="closed" value="true" />
+      <created>1718560915596</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1718560915596</updated>
+    </task>
+    <task id="LOCAL-00032" summary="move to folder">
+      <option name="closed" value="true" />
+      <created>1718561360689</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1718561360689</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add info step" />
+    <MESSAGE value="update code" />
+    <MESSAGE value="add logout and assert error in tg bot" />
+    <MESSAGE value="finish info handler" />
+    <MESSAGE value="optimize user steps" />
+    <MESSAGE value="add common_purchases_analysis and fix info logic" />
+    <MESSAGE value="add comments" />
+    <MESSAGE value="comment functions in login_handler.py" />
+    <MESSAGE value="comment functions in info_handler.py" />
+    <MESSAGE value="finish do balance_handler.py" />
+    <MESSAGE value="complete pagination and add back buttons in product topic" />
+    <MESSAGE value="add selecting period" />
+    <MESSAGE value="add product analysis" />
+    <MESSAGE value="add opportunity of editing purchase" />
+    <MESSAGE value="change text and user-flow" />
+    <MESSAGE value="add common pagination handler" />
+    <MESSAGE value="finish user-flow" />
+    <MESSAGE value="fix something" />
+    <MESSAGE value="preloading" />
+    <MESSAGE value="fix all v2" />
+    <MESSAGE value="git add new buttons" />
+    <MESSAGE value="add rights check" />
+    <MESSAGE value="add getting photos" />
+    <MESSAGE value="finish all analytics" />
+    <MESSAGE value="move to folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="move to folder" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$utils.coverage" NAME="utils Coverage Results" MODIFIED="1718554935816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$login.coverage" NAME="login Coverage Results" MODIFIED="1717700364112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/branches" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$test.coverage" NAME="test Coverage Results" MODIFIED="1718550299190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$viewModel.coverage" NAME="viewModel Coverage Results" MODIFIED="1717700332286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$auth_state.coverage" NAME="auth_state Coverage Results" MODIFIED="1717855477705" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/state" />
+    <SUITE FILE_PATH="coverage/forecastin_service_tg_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1717446647285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$db.coverage" NAME="db Coverage Results" MODIFIED="1717851394484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main2.coverage" NAME="main Coverage Results" MODIFIED="1717855411975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$config.coverage" NAME="config Coverage Results" MODIFIED="1717852937587" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1718561228385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
