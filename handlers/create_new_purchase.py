@@ -1,20 +1,36 @@
 """
 Раздел <Общий список действий>
 """
-
+import aiohttp
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import session
+from config import session, apiURL
 from db.db import User
+from db.db_utils import getUser
 from handlers.choose_purchase import choosePurchaseActionList
 from res.action_list_text import *
 from res.create_new_purchase_text import *
 from res.info_text import *
 from state.app_state import AppState
 from state.create_new_purchase_state import CreateNewPurchaseState
+
+
+class CrateNewPurchaseActions:
+    @staticmethod
+    async def createNewPurchase(message, purchaseHeader):
+        user: User = await getUser(message.chat.id)
+        async with aiohttp.ClientSession(cookies=user.cookies) as session:
+            async with session.post(f"{apiURL}/api/user/purchase/", json={
+                "id": purchaseHeader['id'],
+                "user_id": user.id,
+                "lotEntityId": purchaseHeader['lotEntityId'],
+                "customerId": purchaseHeader["CustomerId"]
+            }) as r:
+                print(await r.json(), r.status)
+
 
 creteNewPurchaseRouter = Router()
 
@@ -59,6 +75,7 @@ async def enterLotId(message: Message, state: FSMContext) -> None:
         "lotEntityId": (await state.get_data())["lotEntityId"],
         "CustomerId": (await state.get_data())["CustomerId"],
     }
+    await CrateNewPurchaseActions.createNewPurchase(message, purchaseHeader)
 
     (await session.get(User, message.chat.id)).createPurchase(purchaseHeader)
     await session.commit()

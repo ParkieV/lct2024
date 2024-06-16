@@ -8,7 +8,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import Message
 
 from handlers.actions_list_handler import actionListHandlerInit
-from handlers.choose_purchase import choosePurchaseInit
+from handlers.choose_purchase import choosePurchaseInit, choosePurchaseActionList
 from handlers.general_purchases_analysis_handler import commonPurchaseAnalysisInit
 from handlers.info_handler import infoHandlerInit
 from handlers.product_handler import productInit, productActionsInit, enterProductName
@@ -211,3 +211,28 @@ async def backButtonCommonPurchaseAnalysis(message: Message, state: FSMContext) 
     """
     await state.set_state(AppState.actionList)
     await commonPurchaseAnalysisInit(message, state)
+
+
+@backRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(ProductState.initActions, F.text == BACK_BUTTON_TEXT)
+async def backButtonEditPurchase(message: Message, state: FSMContext) -> None:
+    """
+    Кнопка назад в блоке <Редактирование закупки>:
+    :param message:
+    :param state:
+    :return:
+    """
+    await state.set_state(AppState.actionList)
+    await choosePurchaseActionList(message, state)
+
+
+@backRouter.message(ProductState.productStatisticChoosePeriod, F.text == BACK_BUTTON_TEXT)
+async def backButtonProductStatistics(message: Message, state: FSMContext)  -> None:
+    """
+    Кнопка назад в блоке <Редактирование закупки>:
+    :param message:
+    :param state:
+    :return:
+    """
+    await state.set_state(AppState.actionList)
+    await productActionsInit(message, state)

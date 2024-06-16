@@ -26,7 +26,8 @@ class RightsCheckMiddleware(BaseMiddleware):
             rights = get_flag(data, "rights")
             user: User = await getUser(event.chat.id)
 
-            if rights is not None:
+            print(rights, user.rights, user.type)
+            if rights is not None and user.type != 'admin':
                 isValid: bool = True
                 for right in rights:
                     if right not in user.rights:

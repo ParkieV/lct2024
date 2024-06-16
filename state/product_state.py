@@ -25,3 +25,6 @@ class ProductState(StatesGroup):
     waitPurchaseActions = State()
     cretePurchase = State()
     inputSubAccount = State()
+
+    productStatistic = State()
+    productStatisticChoosePeriod = State()

@@ -19,6 +19,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
+    db_id = Column(String, nullable=False)
     isAuth = Column(Boolean, nullable=False, default=False)
     purchases = Column("purchases", MutableDict.as_mutable(JSON), default={})
 
@@ -26,7 +27,7 @@ class User(Base):
     refresh_token = Column(String, nullable=True)
 
     rights = Column(String, default="")
-    type = Column(String, default="user")
+    type = Column(String, default="")
 
     def __init__(self, **kw: Any):
         super().__init__(**kw)

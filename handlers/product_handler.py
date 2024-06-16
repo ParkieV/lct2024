@@ -4,10 +4,10 @@
 import aiohttp
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import apiURL
+from config import apiURL, bot
 from db.db_utils import getUserCookies, getUser
 from pagination import Pagination
 from res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
@@ -15,13 +15,55 @@ from res.general_text import *
 from res.product_text import *
 from state.choose_purchase_state import ChoosePurchaseState
 from state.product_state import ProductState
+from utils import base64ToBufferInputStream
+
+
+class ProductActions:
+    @staticmethod
+    async def getSuggestedList(message, product_name):
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/catalog", params={
+                "prompt": product_name
+            }) as r:
+                return (await r.json())[product_name]
+
+    @staticmethod
+    async def pickProduct(message, product_name: str) -> int:
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.post(f"{apiURL}/api/search/set_user_pick", params={
+                "user_pick ": product_name
+            }) as r:
+                return r.status
+
+    @staticmethod
+    async def checkRegular(message, product_name: str) -> bool:
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/regular", params={
+                "user_pick": product_name
+            }) as r:
+                if r.status == 200:
+                    return (await r.json())['is_regular']
+
+                return False
+
+    @staticmethod
+    async def suggestPrice(message, period, type) -> bytes:
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/api/search/purchase_stats", params={
+                "period": period,
+                "summa": str(type)
+            }) as r:
+                res = await r.json()
+                print(res)
+                if res['state'] != 'Success':
+                    return b''
+
+                return base64ToBufferInputStream(res['plot_image'])
+
 
 productRouter = Router()
 
 
-# @productRouter.message(default_state, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
-# @productRouter.message(AppState.actionList, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
-# @productRouter.message(AppState.product, F.text == ENTER_PRODUCT_NAME_BUTTON_TEXT)
 @productRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == EDIT_PURCHASE_BUTTON_TEXT)
 async def productInit(message: Message, state: FSMContext) -> None:
     await state.set_state(ProductState.initActions)
@@ -73,12 +115,8 @@ async def enterProductName(message: Message, state: FSMContext) -> None:
 
     await state.set_state(ProductState.productNameSuggestedList)
 
-    async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
-        async with session.get(f"{apiURL}/api/search/catalog", params={
-            "prompt": productName
-        }) as r:
-            print(await r.text())
-            await showProductNameSuggestedList(message, state, items=(await r.json())[productName])
+    await showProductNameSuggestedList(message, state,
+                                       items=await ProductActions.getSuggestedList(message, productName))
 
 
 @productRouter.message(ProductState.productNameSuggestedList, F.text != BACK_BUTTON_TEXT)
@@ -105,6 +143,8 @@ async def getProductFromList(message: Message, state: FSMContext) -> None:
         await state.update_data(productName=pagination.items[index])
         print(pagination.items[index])
 
+        await ProductActions.pickProduct(message, pagination.items[index])
+
         await message.reply(text=pagination.items[index], reply_markup=ReplyKeyboardRemove())
         await state.set_state(ProductState.productActions)
         await productActionsInit(message, state)
@@ -126,13 +166,11 @@ async def productActionsInit(message: Message, state: FSMContext) -> None:
     )
 
     productName: str = (await state.get_data())["productName"]
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"{apiURL}/api/search/regular", params={
-            "user_pick": productName
-        }) as r:
-            await message.answer(text=PRODUCT_ACTIONS_TEXT(productName, await r.json()),
-                                 reply_markup=keyboard.as_markup(resize_keyboard=True))
+    regularity: bool = await ProductActions.checkRegular(message, productName)
+    await state.update_data(regularity=regularity)
+    await message.answer(
+        text=PRODUCT_ACTIONS_TEXT(productName, regularity),
+        reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
 @productRouter.message(ProductState.productWaitActions, F.text == SUGGESTED_PRODUCT_BUTTON_TEXT,
@@ -154,11 +192,20 @@ async def suggestProduct(message: Message, state: FSMContext) -> None:
 @productRouter.message(ProductState.choosePeriod, F.text == QUARTER_TEXT)
 @productRouter.message(ProductState.choosePeriod, F.text == MONTH_TEXT)
 async def suggestProductYear(message: Message, state: FSMContext) -> None:
-    period: str = message.text
-    await message.answer(text=SELECT_PERIOD_TEXT(period))
+    await message.answer(text=SELECT_PERIOD_TEXT(message.text))
+
+    period: int = 1
+    if message.text == YEAR_TEXT:
+        period = 1
+    elif message.text == QUARTER_TEXT:
+        period = 2
+    elif message.text == MONTH_TEXT:
+        period = 3
+
+    price = await ProductActions.suggestPrice(message, period, True)
+    amount = await ProductActions.suggestPrice(message, period, False)
     # with open('res/img/test.png', 'rb') as photo:
-    #     result: Message = await bot.send_photo(message.chat.id,
-    #                                            photo=BufferedInputFile(photo.read(), filename="test.png"),
-    #                                            caption=SUGGESTED_PRODUCT_TEXT,
-    #                                            # reply_markup=ReplyKeyboardRemove()
-    #                                            )
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(price, filename="price.png"))
+    await bot.send_photo(message.chat.id,
+                         photo=BufferedInputFile(amount, filename="amount.png"))

@@ -15,6 +15,9 @@ HOW_MANY_ITEMS_LEFT_MESSAGE_TEXT = lambda product: f"""Осталось 12 ед�
 LAST_N_PURCHASE_MESSAGE_TEXT = f"""Список из 15 закупок:\n
 - 1. Что-то"""
 
-DEBIT_CREDIT_PRODUCT_MESSAGE_TEXT = lambda product: f"""Оборот дебит/кредит для <b>{product}</b>:\n"""
 
-STATISTIC_MESSAGE_TEXT = lambda product: f"""Статистика закупок для  <b>{product}</b>:\n"""
+PRICE_BUTTON_TEXT = 'Сумма'
+AMOUNT_BUTTON_TEXT = 'Количество'
+DEBIT_CREDIT_PRODUCT_MESSAGE_TEXT = f"""Оборот дебит/кредит\n"""
+
+STATISTIC_MESSAGE_TEXT = lambda product: f"""Статистика закупок для <b>{product}</b>:\n"""

@@ -22,14 +22,22 @@ createPurchaseRouter = Router()
 async def purchaseProductInit(message: Message, state: FSMContext) -> None:
     await state.set_state(ProductState.waitPurchaseActions)
 
-    keyboard = ReplyKeyboardBuilder().add(
-        KeyboardButton(text=CREATE_BUTTON_TEXT),
-        KeyboardButton(text=EDIT_BUTTON_TEXT),
-    ).row(
+    keyboard = ReplyKeyboardBuilder().row(
         KeyboardButton(text=BACK_BUTTON_TEXT),
     )
 
     await message.answer(text=CREATE_PURCHASE_INIT_MESSAGE_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
+
+
+# @createPurchaseRouter.message(ProductState.waitPurchaseActions, F.text != BACK_BUTTON_TEXT)\
+# async def purchaseProductInit(message: Message, state: FSMContext) -> None:
+#     await state.set_state(ProductState.waitPurchaseActions)
+#
+#     keyboard = ReplyKeyboardBuilder().row(
+#         KeyboardButton(text=BACK_BUTTON_TEXT),
+#     )
+#
+#     await message.answer(text=CREATE_PURCHASE_INIT_MESSAGE_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
 @createPurchaseRouter.message(ProductState.waitPurchaseActions, F.text == EDIT_BUTTON_TEXT)
