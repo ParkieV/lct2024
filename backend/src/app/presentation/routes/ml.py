@@ -2,7 +2,7 @@ import io
 from typing import Any
 from fastapi.responses import StreamingResponse
 import requests
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
 from urllib.parse import quote
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/search")
 			dependencies=[Depends(JWT.check_access_token)],
 			response_model= dict[str, Any],
 			summary="Get references to the search query")
-async def catalog(prompt: str, *, request: Request) -> dict[str, Any]:
+async def get_references_catalog(prompt: str, *, request: Request) -> dict[str, Any]:
 	if not (payload := request.state.token_payload):
 		raise HTTPException(500, "Can't find token payload")
 
@@ -41,14 +41,34 @@ async def catalog(prompt: str, *, request: Request) -> dict[str, Any]:
 							detail=err)
 
 
-@router.get("/remnants_references",
-			summary="Remnants of similar products")
-async def remnants_references(user_pick: str):
-	try:
-		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/return_leftovers", params={"user_pick": user_pick}).json()
+@router.post("/set_user_pick",
+			dependencies=[Depends(JWT.check_access_token)],
+			 summary="")
+async def set_user_pick(user_pick: str, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
 
-		logger.debug(f"Refereces result: {result}")
-		print(f"Refereces result: {result}")
+	try:
+		result = requests.post(f"{SERVER_SETTINGS.ml_uri}/v1/ml/matching/set_user_pick", params={"user_pick": user_pick,
+																								 "user_id": payload.user_id}).json()
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/leftover_name",
+			dependencies=[Depends(JWT.check_access_token)],
+			summary="shows the name of the items that are left in stock")
+async def get_leftover_name(*, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/other/leftover_name", {"user_id": payload.user_id}).json()
 
 		return result
 	except HTTPException as http_err:
@@ -59,13 +79,16 @@ async def remnants_references(user_pick: str):
 
 
 @router.get("/regular",
+			dependencies=[Depends(JWT.check_access_token)],
 			summary="Check if purchase is regular")
-async def is_regular(user_pick: str):
-	try:
-		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/check_regular", params={"user_pick": user_pick}).json()
+async def is_regular(*, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
 
-		logger.debug(f"Refereces result: {result}")
-		print(f"Refereces result: {result}")
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/other/check_regularity", params={"user_id": payload.user_id}).json()
+
+		print(f"result {result}")
 
 		return result
 	except HTTPException as http_err:
@@ -75,26 +98,126 @@ async def is_regular(user_pick: str):
 							detail=err)
 
 
-@router.get("/purchases_history",
-			summary="History of goods purchase")
-async def purchases_history(user_pick: str):
-	logger.debug(f"query: {user_pick}")
+@router.get("/user_pick_info",
+			dependencies=[Depends(JWT.check_access_token)],
+			summary="Get STE, SPGZ name and code about user pick")
+async def get_user_pick_info(*, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
 	try:
-		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/get_history", params={"user_pick": user_pick})
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/other/get_user_pick_info", params={"user_id": payload.user_id}).json()
 
-		print(result.status_code, result.content)
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
 
-		if result.status_code == 200:
-			encoded_filename = quote(f'{user_pick}_history.xlsx')
-			return StreamingResponse(
-				io.BytesIO(result.content),
-				media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				headers={'Content-Disposition': f'attachment; filename={encoded_filename}; filename*=UTF-8\'\'{encoded_filename}'}
 
-			)
-		else:
-			raise HTTPException(result.status_code, result.content)
+@router.get("/leftover_info",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_leftover_info(*, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
 
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics/leftover_info", params={"user_id": payload.user_id}).json()
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/history",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_user_pick_history(n: int, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics/history", params={"user_id": payload.user_id, "n": n})
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/debit_credit_info",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_debit_credit_info(credit: bool, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics/debit_credit_info", params={"user_id": payload.user_id, "credit": credit}).json()
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/purchase_stats",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_purchase_stats(period: int, summa: bool, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics/purchase_stats", params={"period": period, "summa": summa, "user_id": payload.user_id}).json()
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/all/history",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_all_purchases_history(n: int, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics_all/history", params={"n": n})
+
+		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+
+@router.get("/all/purchase_stats",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_all_purchase_stats(period: int, summa: bool, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics_all/purchase_stats", params={"period": period, "summa": summa})
+
+		return result
 	except HTTPException as http_err:
 		raise http_err
 	except Exception as err:

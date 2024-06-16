@@ -3,7 +3,7 @@ import re
 import numpy as np
 import pandas as pd
 import nltk
-
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from pymystem3 import Mystem
@@ -34,9 +34,9 @@ class Dataset:
         punc_list = [".",";",":","!","?","/","\\","#","@","$","&",")","(","'","\"", "*", "-", "№", "`", "+", "|", "[", "]", "{", "}", "_"]
         for punc in punc_list:
             text = text.replace(punc, ' ', -1)
-        
+
         return text
-    
+
     @staticmethod
     def replace_commas(text):
         '''Удалить все запятые, кроме тех, которые разделяют числа (например 1,5 (полтора))
@@ -46,13 +46,13 @@ class Dataset:
         '''
 
         digits = '0123456789'
-        
+
         if text[0] == ',':
              text = text[1:]
-        
+
         if text[-1] == ',':
              text = text[:-1]
-             
+
         if (',' in text):
 
             parts = text.split(',')
@@ -66,7 +66,7 @@ class Dataset:
 
         else:
              return text
-    
+
     @staticmethod
     def add_spaces(text):
         '''Разделить пробелом слова и числа
@@ -82,10 +82,10 @@ class Dataset:
                 result += text[i]
 
         result += text[-1]  # добавляем последний символ
-        
+
         text = re.sub(r'\s+', ' ', result) # заменяет подряд идущие пробелы на один пробел
         return text
-    
+
     @staticmethod
     def delete_big_nums(text):
         '''Удалить числа больше 3 знаков
@@ -93,7 +93,7 @@ class Dataset:
         text = re.sub(r'\b\d{3,}\b', '', text)
         text = re.sub(r'\s+', ' ', text)
         return text
-    
+
     @staticmethod
     def remove_russian_stopwords(text, russian_stopwords):
         '''Убрать ненужные слова (стоп-слова)
@@ -128,41 +128,41 @@ class Dataset:
     def process_russian_series(self, series, process_russian_text_type):
         '''Процессинг текстового столбца
 
-        Выход: 
+        Выход:
             result_series: нормализованный текстовых столбец
         '''
         result_series = series.copy()
 
         if process_russian_text_type == 'lemmatizer':
             result_series = result_series.apply(lambda x: Dataset.lemmatize_russian_text(x, self.mystem))
-        
+
         elif process_russian_text_type == 'stemmer':
              result_series = result_series.apply(lambda x: Dataset.stem_russian_text(x, self.mystem))
-        
+
         else:
              return "incorrect type"
-        
+
         return result_series
 
     def process_russian_sentence(self, sentence, process_russian_text_type):
         '''Процессинг текста
 
-        Выход: 
+        Выход:
             result_sentence: нормализованный текст
         '''
         result_sentence = ''
 
         if process_russian_text_type == 'lemmatizer':
             result_sentence = Dataset.lemmatize_russian_text(sentence, self.mystem)
-        
+
         elif process_russian_text_type == 'stemmer':
              result_sentence = Dataset.stem_russian_text(sentence, self.stemmer)
-        
+
         else:
              return "incorrect type"
-        
+
         return result_sentence
-    
+
     def prepare_dataset(self,
                         delete_punct=True,
                         replace_commas=True,
@@ -186,10 +186,10 @@ class Dataset:
 
         if remove_russian_stopwords:
             self.data[self.text_col] = self.data[self.text_col].apply(lambda x: Dataset.remove_russian_stopwords(x, self.russian_stopwords))
-        
+
         if process_russian_text_type:
             self.data[self.text_col] = self.process_russian_series(self.data[self.text_col], process_russian_text_type=process_russian_text_type)
-        
+
         self.drop_empty()
 
     def prepare_sentence(self,
@@ -203,7 +203,7 @@ class Dataset:
         '''Подготовить текстовый запрос
         '''
         sentence = sentence.lower()
-        
+
         if delete_punct:
             sentence = Dataset.delete_punct(sentence)
 
@@ -218,7 +218,7 @@ class Dataset:
 
         if remove_russian_stopwords:
             sentence = Dataset.remove_russian_stopwords(sentence, self.russian_stopwords)
-        
+
         if process_russian_text_type:
             sentence = self.process_russian_sentence(sentence, process_russian_text_type=process_russian_text_type)
 
