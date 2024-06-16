@@ -1,0 +1,24 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-top: 2.625em;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2em;
+}
+
+@media screen and (max-width: 551px) {
+    .list {
+        margin-top: 1.5em;
+    }
+
+    .footer {
+        flex-direction: column-reverse;
+        justify-content: center;
+        gap: 1.5em;
+    }
+}
