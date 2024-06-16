@@ -1,0 +1,44 @@
+{
+  "id": "идентификатор расчета",
+  "lotEntityId": "Идентификатор лота",
+  "CustomerId": "Идентификатор заказчика",
+  "rows": [
+    {
+      "DeliverySchedule": {
+        "dates": {
+          "end_date": "Дата окончания поставки",
+          "start_date": "Дата начала поставки"
+        },
+        "deliveryAmount": "Объем поставки",
+        "deliveryConditions": "Условия поставки",
+        "year": "Год"
+      },
+      "address": {
+        "gar_id": "Идентификатор ГАР",
+        "text": "Адрес в текстовой форме"
+      },
+      "entityId": "Сквозной идентификатор СПГЗ",
+      "id": "Идентификатор (версии) СПГЗ",
+      "nmc": "Сумма спецификации",
+      "okei_code": "Ед. измерения по ОКЕИ",
+      "purchaseAmount": "Объем поставки",
+      "spgzCharacteristics": [
+        {
+          "characteristicName": " ",
+          "characteristicSpgzEnums": [
+            {
+              "value": ""
+            }
+          ],
+          "conditionTypeId": "",
+          "kpgzCharacteristicId": "",
+          "okei_id": "",
+          "selectType": "",
+          "typeId": "",
+          "value1": "",
+          "value2": ""
+        }
+      ]
+    }
+  ]
+}

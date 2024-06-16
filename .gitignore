@@ -1,2 +1,20 @@
-.idea
-node_modules
+#Enviroment files
+*.env
+venv
+!*example.env
+
+# PyCharm
+.idea/
+
+#VS Code
+.vscode/
+
+# Docker volumes
+volumes/
+
+# NGINX
+nginx/*
+!nginx/server.conf
+
+# notebooks
+**.ipynb

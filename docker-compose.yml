@@ -1,0 +1,84 @@
+version: '3.11'
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+services:
+  postgres:
+    user: "0:0"
+    container_name: postgres_hack
+    image: postgres:latest
+    restart: unless-stopped
+    env_file:
+      - backend/src/.envs/db.env
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+    volumes:
+      - ./volumes/db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    privileged: true
+    networks:
+      network:
+        ipv4_address: 172.18.0.2
+
+  redis:
+    container_name: redis_hack
+    image: redis:latest
+    restart: unless-stopped
+    env_file:
+      - backend/src/.envs/redis.env
+    command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+    volumes:
+      - ./volumes/redis.conf:/etc/redis/redis.conf
+      - ./volumes/redis:/var/lib/redis/data
+    ports:
+      - 6379:6379
+    networks:
+      network:
+        ipv4_address: 172.18.0.3
+
+  backend:
+    container_name: backend_app
+    restart: unless-stopped
+    env_file:
+      - backend/src/.envs/app.env
+      - backend/src/.envs/auth.env
+    depends_on:
+      - postgres
+      - redis
+      - ml
+    ports:
+      - 8000:8000
+    build:
+      context: backend/src
+      dockerfile: Dockerfile
+    networks:
+      network:
+        ipv4_address: 172.18.0.4
+
+  ml:
+    container_name: ml_app
+    restart: unless-stopped
+    build:
+      context: ./ml
+      dockerfile: ml.dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./volumes/ml_data:/ml_data
+    networks:
+      network:
+        ipv4_address: 172.18.0.5
+
