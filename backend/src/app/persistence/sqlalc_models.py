@@ -43,7 +43,8 @@ class Balance(Base):
 class Purchase(Base):
 	__tablename__ = "purchase"
 
-	id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+	id_pk: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+	id: Mapped[str] = mapped_column()
 	user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'))
 	lotEntityId: Mapped[str] = mapped_column(String)
 	customerId: Mapped[str] = mapped_column(String)
@@ -54,7 +55,7 @@ class PurchasePosition(Base):
 	__tablename__ = "purchase_position"
 
 	id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
-	purchase_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('purchase.id'))
+	purchase_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('purchase.id_pk'))
 	DeliverySchedule__dates__end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 	DeliverySchedule__dates__start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 	DeliverySchedule__deliveryAmount: Mapped[Numeric] = mapped_column(Numeric(14, 2), default=0)

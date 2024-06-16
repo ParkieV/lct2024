@@ -46,14 +46,16 @@ class PositionDTO(BaseModel):
 		return values
 
 class PurchaseDTO(BaseModel):
-	id: uuid.UUID = uuid.uuid4()
+	id_pk: uuid.UUID = uuid.uuid4()
+	id: str | None = None
 	user_id: uuid.UUID
 	lotEntityId: str | None = None
 	customerId: str | None = None
 	positions: list[PositionDTO] | None
 
 class CreatePurchaseBodyDTO(BaseModel):
-	id: uuid.UUID = uuid.uuid4()
+	id_pk: uuid.UUID = uuid.uuid4()
+	id: str | None = None
 	user_id: uuid.UUID
 	lotEntityId: str | None = None
 	customerId: str | None = None

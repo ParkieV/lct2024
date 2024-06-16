@@ -279,7 +279,7 @@ class PurchaseRepository(AsyncPostgresRepository):
 						joins: Any = Purchase.positions) -> PurchaseDTO | None:
 
 		logger.debug("Getting object")
-		query = select(self.db_model).where(self.db_model.id == id)
+		query = select(self.db_model).where(self.db_model.id_pk == id)
 		if joins:
 			query = query.options(selectinload(joins))
 

@@ -32,11 +32,12 @@ CREATE TABLE "balance" (
 );
 
 CREATE TABLE "purchase" (
-  "id" uuid DEFAULT gen_random_uuid(),
+  "id_pk" uuid DEFAULT gen_random_uuid(),
+  "id" varchar(50),
   "user_id" uuid,
   "lotEntityId" varchar(40),
   "customerId" varchar(40),
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id_pk")
 );
 
 
@@ -75,4 +76,4 @@ ALTER TABLE "balance" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "purchase" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "purchase_position" ADD FOREIGN KEY ("purchase_id") REFERENCES "purchase" ("id");
+ALTER TABLE "purchase_position" ADD FOREIGN KEY ("purchase_id") REFERENCES "purchase" ("id_pk");

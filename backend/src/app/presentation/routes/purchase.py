@@ -45,7 +45,7 @@ async def create_purchase(body: CreatePurchaseBodyDTO, *, request: Request, db_s
 		logger.debug("Start create user")
 		purchase_repo = PurchaseRepository(Purchase)
 		logger.debug("Start check user in DB")
-		if await purchase_repo.get_object_by_id(body.id, out_schema=PurchaseDTO, session=db_session, joins=Purchase.positions):
+		if await purchase_repo.get_object_by_id(body.id_pk, out_schema=PurchaseDTO, session=db_session, joins=Purchase.positions):
 			raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
 								detail="User is existing")
 
