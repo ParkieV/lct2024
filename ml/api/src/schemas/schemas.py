@@ -33,3 +33,7 @@ class UserPickSchema(BaseModel):
     STE: str
     SPGZ_code: str | None
     SPGZ_name: str | None
+
+
+class ExcelSchema(BaseModel):
+    file: str
