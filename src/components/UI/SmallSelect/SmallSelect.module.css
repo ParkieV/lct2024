@@ -1,0 +1,18 @@
+.selectBlock {
+    width: fit-content;
+    height: fit-content;
+
+    display: flex;
+    gap: 0.5625em;
+
+    padding: 0.75em 1em;
+    background: white;
+    border: 2px solid #f0f0f2;
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+
+.selectBlock.selectBlockOpen {
+    display: grid;
+}
