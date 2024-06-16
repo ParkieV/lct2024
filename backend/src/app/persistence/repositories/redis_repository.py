@@ -64,3 +64,12 @@ class RedisRepository:
 		else:
 			raise KeyError(f"Can't find values for key {key}")
 
+	@classmethod
+	def delete_key(cls,
+				   key: str):
+		if result := cls.get_values_by_key(key):
+			logger.debug(f"num of results {len(result)}")
+			cls._service.delete_key(key)
+		else:
+			raise KeyError(f"Can't find values for key {key}")
+

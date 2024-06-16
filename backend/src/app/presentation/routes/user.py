@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from app.persistence.repositories.redis_repository import RedisRepository
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 import pytz
 
@@ -106,6 +107,34 @@ async def update_user(body: UpdateRequestBodyDTO, *, request: Request, db_sessio
 		raise err
 	except Exception as err:
 		raise HTTPException(status_code=500, detail=f"{err.__class__.__name__}: {err}")
+
+@router.delete("/",
+			 dependencies=[Depends(JWT.check_access_token)],
+			 tags=["User CRUD"])
+async def delete_user(user_id: uuid.UUID, *, request: Request, db_session = Depends(PostgresServiceFacade.get_async_session)) -> Response:
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+	print(payload.user_id != str(user_id))
+	if "add_user" not in payload.rights or payload.user_id == str(user_id):
+		raise HTTPException(403, "Action is unavailable")
+
+	try:
+		user_repo = UserRepository(User)
+		if not await user_repo.get_object_by_id(user_id, out_schema=UserDTO, session=db_session):
+			raise HTTPException(404, "User not found")
+		try:
+			RedisRepository.delete_key(str(user_id))
+		except:
+			pass
+		finally:
+			await user_repo.delete_object_by_id(user_id, session=db_session)
+			return Response(status_code=200, content="OK", media_type="text/plain")
+
+	except HTTPException as err:
+		raise err
+	except Exception as err:
+		raise HTTPException(status_code=500, detail=f"{err.__class__.__name__}: {err}")
+
 
 @router.get("/users",
 			 dependencies=[Depends(JWT.check_access_token)],
