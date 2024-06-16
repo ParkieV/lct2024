@@ -350,7 +350,7 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Сумма {self.leftover_name}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Сумма {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Сумма')
             plt.legend()
@@ -394,7 +394,7 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Количество {self.leftover_name}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Количество {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Количество')
             plt.legend()
@@ -580,56 +580,79 @@ class UserPickMLService:
             return {'state': 'Not regular', 'prediction': 0, 'plot_image': str()}
 
         df = self.get_history(100)
+        df = df[['year', 'quarter', 'month', 'Длительность', 'day_of_month', 'Оплачено, руб.']]
+
+        forecast_price = 0
 
         if period == 1:
-            df = df.groupby('year')['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            next_period = df.index[-1] + 1
-            df.loc[next_period] = forecast.values[0]
-
+            horizon = 'year'
         elif period == 2:
-            df = df.groupby(['year', 'quarter'])['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            last_year, last_quarter = df.index[-1]
-            next_period = (last_year, last_quarter % 4 + 1) if last_quarter < 4 else (last_year + 1, 1)
-            df.loc[next_period] = forecast.values[0]
-
+            horizon = 'quarter'
         elif period == 3:
-            df = df.groupby(['year', 'month'])['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            last_year, last_month = df.index[-1]
-            next_period = (last_year, last_month % 12 + 1) if last_month < 12 else (last_year + 1, 1)
-            df.loc[next_period] = forecast.values[0]
+            horizon = 'month'
+        else:
+            return {'state': 'Invalid period', 'prediction': 0, 'plot_image': str()}
 
+        try:
+            if horizon == 'month':
+                month_purchases = df.loc[df['month'] == 1]
+                month_purchases = month_purchases.groupby(['year', 'month']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = month_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                month_purchases.index = month_purchases['year'].astype(str) + '-' + month_purchases['month'].astype(int).astype(str)
+                next_period_label = f'2023-1'
+                month_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                df = month_purchases.copy()
+
+            elif horizon == 'quarter':
+                quarter_purchases = df.loc[df['quarter'] == 1]
+                quarter_purchases = quarter_purchases.groupby(['year', 'quarter']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = quarter_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                quarter_purchases.index = quarter_purchases['year'].astype(str) + '-Q' + quarter_purchases['quarter'].astype(int).astype(str)
+                next_period_label = f'2023-Q1'
+                quarter_purchases.loc[next_period_label] = forecast_price
+                quarter_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                print(quarter_purchases)
+                df = quarter_purchases.copy()
+
+            elif horizon == 'year':
+                year_purchases = df.groupby(['year']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = year_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                year_purchases.index = year_purchases['year'].astype(str)
+                next_period_label = '2023'
+                year_purchases.loc[next_period_label] = forecast_price
+                year_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                df = year_purchases.copy()
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            forecast_price = 0
+
+        # Plotting
         plt.figure(figsize=(10, 5))
-        if period == 1:
-            plt.plot(df.index[:-1], df.values[:-1], color='#B12725', label='История')
-            plt.plot([df.index[-2], df.index[-1]], [df.values[-2], df.values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+        if horizon == 'year':
+            plt.plot(df.index[:-1], df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].iloc[-2], df['Оплачено, руб.'].iloc[-1]], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Год')
             plt.xticks(df.index)
 
-        elif period == 2:
-            actual_index = [f'{year}-Q{quarter}' for year, quarter in df.index[:-1]]
-            forecast_index = [f'{year}-Q{quarter}' for year, quarter in [df.index[-2], df.index[-1]]]
-            plt.plot(actual_index, df.values[:-1], color='#B12725', label='История')
-            plt.plot(forecast_index, df.values[-2:], 'o--', color='#2B7A78', label='Прогноз')
+        elif horizon == 'quarter':
+            actual_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][:-1], df['quarter'][:-1])]
+            forecast_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][-2:], df['quarter'][-2:])]
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Квартал')
-            plt.xticks(actual_index + [forecast_index[-1]], rotation=45)
+            print(forecast_index)
+            plt.xticks(actual_index + forecast_index[-1:])
 
-        elif period == 3:
-            actual_index = [f'{year}-{month:02d}' for year, month in df.index[:-1]]
-            forecast_index = [f'{year}-{month:02d}' for year, month in [df.index[-2], df.index[-1]]]
-            plt.plot(actual_index, df.values[:-1], color='#B12725', label='История')
-            plt.plot(forecast_index, df.values[-2:], 'o--', color='#2B7A78', label='Прогноз')
+        elif horizon == 'month':
+            actual_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][:-1], df['month'][:-1])]
+            forecast_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][-2:], df['month'][-2:])]
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Месяц')
-            plt.xticks(actual_index + [forecast_index[-1]], rotation=45)
-
+            print(forecast_index)
+            plt.xticks(actual_index + forecast_index[-1:])
+        
         plt.title(f'Прогноз закупок\n{self.user_pick}')
         plt.ylabel('Цена')
         plt.legend()
@@ -644,7 +667,7 @@ class UserPickMLService:
 
         return {
             'state': 'Success',
-            'prediction': float(forecast.values[0]),
+            'prediction': float(forecast_price),
             'plot_image': plot_image
         }
     
