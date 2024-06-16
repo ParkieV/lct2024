@@ -25,6 +25,9 @@ class User(Base):
     access_token = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)
 
+    rights = Column(String, default="")
+    type = Column(String, default="user")
+
     def __init__(self, **kw: Any):
         super().__init__(**kw)
         self.access_token = ""

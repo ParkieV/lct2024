@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import AsyncSessionDB, session
+from config import session
 from db.db import User
 from handlers.choose_purchase import choosePurchaseActionList
 from res.action_list_text import *
@@ -19,8 +19,10 @@ from state.create_new_purchase_state import CreateNewPurchaseState
 creteNewPurchaseRouter = Router()
 
 
-@creteNewPurchaseRouter.message(AppState.actionList, F.text == CREATE_PURCHASE_BUTTON_TEXT)
-@creteNewPurchaseRouter.message(AppState.createNewPurchase, F.text == CREATE_PURCHASE_BUTTON_TEXT)
+@creteNewPurchaseRouter.message(AppState.actionList, F.text == CREATE_PURCHASE_BUTTON_TEXT,
+                                flags={"rights": "create_purchase"})
+@creteNewPurchaseRouter.message(AppState.createNewPurchase, F.text == CREATE_PURCHASE_BUTTON_TEXT,
+                                flags={"rights": "create_purchase"})
 async def createNewPurchaseInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.createNewPurchase)
 

@@ -98,7 +98,7 @@ async def __checkAuthentication(message: types.Message, state: FSMContext,
         await state.clear()
 
         if auth.isAuth:
-            session.add(User(id=message.chat.id, isAuth=auth.isAuth))
+            session.add(User(id=message.chat.id, isAuth=auth.isAuth, rights=auth.rights))
             user = await session.get(User, message.chat.id)
             user.setCookies(auth.cookies)
 
@@ -142,6 +142,8 @@ class AuthorizationCredentialsChecker(object):
         self.__login: str = login
         self.__password: str = password
         self.cookies: dict = {}
+        self.rights: str = ""
+        self.isAdmin: bool = "add_user" in self.rights
         self.isAuth: bool = False
 
     async def checkData(self) -> bool:
@@ -153,6 +155,7 @@ class AuthorizationCredentialsChecker(object):
                 }) as response:
                     if response.status == 200:
                         self.cookies = response.cookies
+                        self.rights = (await response.json())["rights"]
                         return True
         except Exception as e:
             print(e)

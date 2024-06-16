@@ -16,8 +16,10 @@ from state.product_state import ProductState
 productAnalysisRouter = Router()
 
 
-@productAnalysisRouter.message(ProductState.productWaitActions, F.text == ANALYZE_PRODUCT_BUTTON_TEXT)
-@productAnalysisRouter.message(AppState.productAnalysis, F.text == ANALYZE_PRODUCT_BUTTON_TEXT)
+@productAnalysisRouter.message(ProductState.productWaitActions, F.text == ANALYZE_PRODUCT_BUTTON_TEXT,
+                               flags={"rights": "analysis_product"})
+@productAnalysisRouter.message(AppState.productAnalysis, F.text == ANALYZE_PRODUCT_BUTTON_TEXT,
+                               flags={"rights": "analysis_product"})
 async def productAnalysisInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.productAnalysis)
 

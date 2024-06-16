@@ -18,9 +18,9 @@ from utils import isFloat
 balanceRouter = Router()
 
 
-@balanceRouter.message(default_state, F.text == BALANCE_BUTTON_TEXT)
-@balanceRouter.message(AppState.actionList, F.text == BALANCE_BUTTON_TEXT)
-@balanceRouter.message(AppState.balanceState, F.text == BALANCE_BUTTON_TEXT)
+@balanceRouter.message(default_state, F.text == BALANCE_BUTTON_TEXT, flags={"rights": "balance"})
+@balanceRouter.message(AppState.actionList, F.text == BALANCE_BUTTON_TEXT, flags={"rights": "balance"})
+@balanceRouter.message(AppState.balanceState, F.text == BALANCE_BUTTON_TEXT, flags={"rights": "balance"})
 async def balanceInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.balanceState)
 

@@ -27,4 +27,5 @@ async def main():
             print((await r.json()))
 
 
-asyncio.run(main())
+# asyncio.run(main())
+print(['1', '2'] in ['1',  '2', '3'])

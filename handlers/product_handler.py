@@ -135,7 +135,8 @@ async def productActionsInit(message: Message, state: FSMContext) -> None:
                                  reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
-@productRouter.message(ProductState.productWaitActions, F.text == SUGGESTED_PRODUCT_BUTTON_TEXT)
+@productRouter.message(ProductState.productWaitActions, F.text == SUGGESTED_PRODUCT_BUTTON_TEXT,
+                       flags={"rights": "permission_suggestion"})
 async def suggestProduct(message: Message, state: FSMContext) -> None:
     keyboard = ReplyKeyboardBuilder().row(
         KeyboardButton(text=YEAR_TEXT),
