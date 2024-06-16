@@ -1,6 +1,8 @@
 {$DOMAIN} {
 	handle /admin/* {
-		reverse_proxy frontend:3000
+		root * /srv
+		encode gzip
+		try_files {path} /index.html
 		file_server
 	}
 	handle_errors {
