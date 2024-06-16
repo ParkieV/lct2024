@@ -194,11 +194,27 @@ class PurchaseHistory:
 #
 #
 class UserPickMLService:
+    '''Класс для работы с выбранным пользователем товаром
+    
+    Вход:
+        user_pick: название товара
+    
+    Атрибуты:
+        user_pick: название товара
+        code: код товара
+        kpgz: код кпгз
+        leftover_name: название похожего на товар остатка на складе
+    '''
     def __init__(self, user_pick):
         self.user_pick = user_pick
         self.code, self.kpgz, self.leftover_name = find_similar_leftover(user_pick)
 
     def get_leftover_info(self):
+        '''Получить информацию об остатках на складе
+
+        Выход:
+            leftover_info: информация об остатках на складе
+        '''
         path_to_data = f'{SCRIPT_LOC}/data'
 
         if self.code == 404:
@@ -222,6 +238,11 @@ class UserPickMLService:
         return leftover_info
 
     def get_leftover_info_plot(self):
+        '''Получить график остатков на складе
+
+        Выход:
+            dictionary: статус операциии (Success, Wrong plot), информация об остатках на складе (если статус Success), график остатков на складе
+        '''
 
         path_to_data = f'{SCRIPT_LOC}/data'
 
@@ -287,6 +308,12 @@ class UserPickMLService:
         }
     
     def check_regular(self) -> bool:
+        '''Проверить товар на регулярность
+
+        Выход:
+            True: товар регулярный
+            False: товар нерегулярный
+        '''
         path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
         path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
 
@@ -301,6 +328,15 @@ class UserPickMLService:
         return ph.check_regular_purchase()
     
     def get_history(self, n: int):
+        '''Получить историю закупок с товаром
+
+        Вход:
+            n: количество записей
+
+        Выход:
+            output_df: история закупок
+        '''
+
         path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
         path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
 
@@ -316,7 +352,14 @@ class UserPickMLService:
         return output_df
 
     def get_credit_debit(self, summa: bool):
+        '''Получить информацию из ОС о дебете и кредите
 
+        Вход:
+            summa: True, если нужно получить сумму, False, если количество
+
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), информация о дебете и кредите, график
+        '''
         if self.code == 404:
             df = pd.DataFrame({'1Q2022|остаток кон|кредит|сумма': [0], '2Q2022|остаток кон|кредит|сумма': [0],
                                '3Q2022|остаток кон|кредит|сумма': [0], '4Q2022|остаток кон|кредит|сумма': [0],
@@ -350,7 +393,7 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Сумма {self.leftover_name}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Сумма {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Сумма')
             plt.legend()
@@ -394,7 +437,7 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Количество {self.leftover_name}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Количество {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Количество')
             plt.legend()
@@ -422,23 +465,17 @@ class UserPickMLService:
                 'debit': debit_df.to_dict(),
                 'plot_image': plot_image
             }
-        
-    def check_regular(self) -> bool:
-        path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
-        path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
-
-        contracts = pd.read_excel(path_contracts)
-        voc = pd.read_excel(path_voc)
-
-        ph = PurchaseHistory(self.user_pick, voc, contracts)
-
-        ph.get_purchases(include_rk=True, include_kpgz=True)
-        ph.generate_features()
-        ph.drop_cancelled()
-
-        return ph.check_regular_purchase()
     
     def get_purchase_stats(self, period: int, summa: bool):
+        '''Получить статистику закупок
+
+        Вход:
+            period: период, за который нужно получить статистику (1 - год, 2 - квартал, 3 - месяц)
+            summa: True, если нужно получить сумму, False, если количество
+        
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), информация о закупках, график
+        '''
 
         df = self.get_history(100)
 
@@ -576,60 +613,97 @@ class UserPickMLService:
             }
         
     def get_forecast(self, period):
+        '''Получить прогноз закупок
+
+        Вход:
+            period: период, за который нужно получить прогноз (1 - год, 2 - квартал, 3 - месяц)
+
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), прогноз, график
+        '''
         if self.check_regular() == False:
             return {'state': 'Not regular', 'prediction': 0, 'plot_image': str()}
 
         df = self.get_history(100)
+        df = df[['year', 'quarter', 'month', 'Длительность', 'day_of_month', 'Оплачено, руб.']]
+
+        forecast_price = 0
 
         if period == 1:
-            df = df.groupby('year')['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            next_period = df.index[-1] + 1
-            df.loc[next_period] = forecast.values[0]
-
+            horizon = 'year'
         elif period == 2:
-            df = df.groupby(['year', 'quarter'])['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            last_year, last_quarter = df.index[-1]
-            next_period = (last_year, last_quarter % 4 + 1) if last_quarter < 4 else (last_year + 1, 1)
-            df.loc[next_period] = forecast.values[0]
-
+            horizon = 'quarter'
         elif period == 3:
-            df = df.groupby(['year', 'month'])['Оплачено, руб.'].sum()
-            model = ARIMA(df, order=(1, 1, 1))
-            model_fit = model.fit()
-            forecast = model_fit.forecast(steps=1)
-            last_year, last_month = df.index[-1]
-            next_period = (last_year, last_month % 12 + 1) if last_month < 12 else (last_year + 1, 1)
-            df.loc[next_period] = forecast.values[0]
+            horizon = 'month'
+        else:
+            return {'state': 'Invalid period', 'prediction': 0, 'plot_image': str()}
 
+        try:
+            if horizon == 'month':
+                month_purchases = df.loc[df['month'] == 1]
+                month_purchases = month_purchases.groupby(['year', 'month']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = month_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                month_purchases.index = month_purchases['year'].astype(str) + '-' + month_purchases['month'].astype(int).astype(str)
+                next_period_label = f'2023-1'
+                month_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                month_purchases['year'] = month_purchases['year'].astype(int).astype(str)
+                month_purchases['month'] = month_purchases['month'].astype(int).astype(str)
+                df = month_purchases.copy()
+
+            elif horizon == 'quarter':
+                quarter_purchases = df.loc[df['quarter'] == 1]
+                quarter_purchases = quarter_purchases.groupby(['year', 'quarter']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = quarter_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                quarter_purchases.index = quarter_purchases['year'].astype(str) + '-Q' + quarter_purchases['quarter'].astype(int).astype(str)
+                next_period_label = f'2023-Q1'
+                quarter_purchases.loc[next_period_label] = forecast_price
+                quarter_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                print(quarter_purchases)
+                quarter_purchases['year'] = quarter_purchases['year'].astype(int).astype(str)
+                quarter_purchases['quarter'] = quarter_purchases['quarter'].astype(int).astype(str)
+                df = quarter_purchases.copy()
+
+            elif horizon == 'year':
+                year_purchases = df.groupby(['year']).sum()['Оплачено, руб.'].reset_index()
+                forecast_price = year_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
+                year_purchases.index = year_purchases['year'].astype(str)
+                next_period_label = '2023'
+                year_purchases.loc[next_period_label] = forecast_price
+                year_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                year_purchases['year'] = year_purchases['year'].astype(int).astype(str)
+                df = year_purchases.copy()
+
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            forecast_price = 0
+
+        # Plotting
         plt.figure(figsize=(10, 5))
-        if period == 1:
-            plt.plot(df.index[:-1], df.values[:-1], color='#B12725', label='История')
-            plt.plot([df.index[-2], df.index[-1]], [df.values[-2], df.values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+        if horizon == 'year':
+            plt.plot(df.index[:-1], df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
+            plt.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].iloc[-2], df['Оплачено, руб.'].iloc[-1]], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Год')
             plt.xticks(df.index)
 
-        elif period == 2:
-            actual_index = [f'{year}-Q{quarter}' for year, quarter in df.index[:-1]]
-            forecast_index = [f'{year}-Q{quarter}' for year, quarter in [df.index[-2], df.index[-1]]]
-            plt.plot(actual_index, df.values[:-1], color='#B12725', label='История')
-            plt.plot(forecast_index, df.values[-2:], 'o--', color='#2B7A78', label='Прогноз')
+        elif horizon == 'quarter':
+            actual_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][:-1], df['quarter'][:-1])]
+            forecast_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][-2:], df['quarter'][-2:])]
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
+            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Квартал')
-            plt.xticks(actual_index + [forecast_index[-1]], rotation=45)
+            print(forecast_index)
+            plt.xticks(actual_index + forecast_index[-1:])
 
-        elif period == 3:
-            actual_index = [f'{year}-{month:02d}' for year, month in df.index[:-1]]
-            forecast_index = [f'{year}-{month:02d}' for year, month in [df.index[-2], df.index[-1]]]
-            plt.plot(actual_index, df.values[:-1], color='#B12725', label='История')
-            plt.plot(forecast_index, df.values[-2:], 'o--', color='#2B7A78', label='Прогноз')
+        elif horizon == 'month':
+            actual_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][:-1], df['month'][:-1])]
+            forecast_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][-2:], df['month'][-2:])]
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
+            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Месяц')
-            plt.xticks(actual_index + [forecast_index[-1]], rotation=45)
-
+            print(forecast_index)
+            plt.xticks(actual_index + forecast_index[-1:])
+        
         plt.title(f'Прогноз закупок\n{self.user_pick}')
         plt.ylabel('Цена')
         plt.legend()
@@ -644,11 +718,17 @@ class UserPickMLService:
 
         return {
             'state': 'Success',
-            'prediction': float(forecast.values[0]),
+            'prediction': float(forecast_price),
             'plot_image': plot_image
         }
     
     def get_user_pick_info(self):
+        '''Получить информацию о выбранном товаре
+
+        Выход:
+            dictionary: информация о товаре (СТЕ, Код СПГЗ, СПГЗ)
+        '''
+
         df = pd.read_excel(f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx')
         df = df[df['Название СТЕ'] == self.user_pick]
 
@@ -660,3 +740,4 @@ class UserPickMLService:
             'SPGZ_code': spgz_code,
             'SPGZ_name': spgz_name
         }
+    
