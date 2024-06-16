@@ -12,7 +12,18 @@ from api.src.services.text_service import Dataset
 script_loc = os.path.dirname(os.path.realpath(__file__))
 
 class PromptMatching:
+    ''' Поиск похожих товаров по введенному пользователем запросу
+
+    Аттрибуты:
+        original_column: название колонки с оригинальными названиями товаров
+        processed_column: название колонки с обработанными названиями товаров
+        embeddings_column: название колонки с эмбеддингами товаров
+        preprocessor: объект класса Dataset для обработки текста
+    '''
     def __init__(self):
+        ''' Инициализация класса
+        
+        '''
         self.original_column = 'Название СТЕ'
         self.processed_column = 'Название СТЕ processed'
         self.embeddings_column = 'КПГЗ'
@@ -21,6 +32,14 @@ class PromptMatching:
         
 
     def get_embeddings(self, texts):
+        ''' Получить эмбеддинги текстов
+
+        Вход:
+            texts: список текстов
+
+        Выход:
+            embeddings: эмбеддинги текстов полученные с помощью модели RuBERT-Base
+        '''
         inputs = tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
         with torch.no_grad():
             outputs = model(**inputs)
@@ -29,6 +48,16 @@ class PromptMatching:
         return embeddings
 
     def match(self, user_prompt, top_n):
+        ''' Поиск похожих товаров по введенному пользователем запросу
+
+        Вход:
+            user_prompt: запрос пользователя
+            top_n: количество наиболее похожих товаров
+        
+        Выход:
+            {'values': список наиболее похожих товаров}
+        '''
+        
         df = pd.read_excel(f'{script_loc}/data/processed_names.xlsx')
 
         goods = df[self.processed_column].tolist()

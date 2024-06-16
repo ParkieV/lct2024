@@ -3,12 +3,14 @@ from io import BytesIO
 import base64
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 
 SCRIPT_LOC = os.path.dirname(os.path.realpath(__file__))
 
 def get_history():
+    '''Получение истории всех закупок'''
     path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
 
     contracts = pd.read_excel(path_contracts)
@@ -22,6 +24,16 @@ def get_history():
     return contracts
 
 def get_purchases(df, period, summa):
+    '''Получение статистики закупок
+    
+    Вход:
+        df: датафрейм с данными
+        period: период, по которому нужно получить статистику
+        summa: нужно ли считать сумму
+    
+    Выход:
+        dictianory: статус (Success или Wrong plot), датафрейм, изображение графика
+    '''
 
     df['year'] = df['Срок исполнения с'].dt.year
     df['quarter'] = df['Срок исполнения с'].dt.quarter
@@ -63,7 +75,7 @@ def get_purchases(df, period, summa):
         plt.bar(df.index, df.values, color='#B12725')
 
         for x, y in zip(df.index, df.values):
-            plt.text(x, y, f'{round(y) / 1000000} млн.', ha='center', va='bottom')
+            plt.text(x, y, f'{round(y) // 1000000} млн.', ha='center', va='bottom')
 
         plt.title(f'Статистика всех закупок')
         if period == 1:
@@ -75,8 +87,11 @@ def get_purchases(df, period, summa):
         elif period == 3:
             plt.xlabel('Месяц')
             plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
-        ytick_values = df.values
-        plt.yticks(ticks=ytick_values, labels=[f'{value} млн' for value in ytick_values if value % 1000000 == 0])
+
+        max_value = df.values.max()
+        ytick_values = np.linspace(0, max_value, 6)
+        plt.yticks(ticks=ytick_values, labels=[f'{int(value) // 1000000} млн' for value in ytick_values])
+
         plt.ylabel('Цена ГК, руб.')
         plt.grid(axis='y', linestyle='--', alpha=0.7)
 
@@ -146,6 +161,11 @@ def get_purchases(df, period, summa):
         elif period == 3:
             plt.xlabel('Месяц')
             plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+
+        max_value = df.values.max()
+        ytick_values = np.linspace(0, max_value, 6)
+        plt.yticks(ticks=ytick_values, labels=[f'{int(value)}' for value in ytick_values])
+
         plt.ylabel('Количество закупок')
         plt.grid(axis='y', linestyle='--', alpha=0.7)
 

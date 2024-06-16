@@ -194,11 +194,27 @@ class PurchaseHistory:
 #
 #
 class UserPickMLService:
+    '''Класс для работы с выбранным пользователем товаром
+    
+    Вход:
+        user_pick: название товара
+    
+    Атрибуты:
+        user_pick: название товара
+        code: код товара
+        kpgz: код кпгз
+        leftover_name: название похожего на товар остатка на складе
+    '''
     def __init__(self, user_pick):
         self.user_pick = user_pick
         self.code, self.kpgz, self.leftover_name = find_similar_leftover(user_pick)
 
     def get_leftover_info(self):
+        '''Получить информацию об остатках на складе
+
+        Выход:
+            leftover_info: информация об остатках на складе
+        '''
         path_to_data = f'{SCRIPT_LOC}/data'
 
         if self.code == 404:
@@ -222,6 +238,11 @@ class UserPickMLService:
         return leftover_info
 
     def get_leftover_info_plot(self):
+        '''Получить график остатков на складе
+
+        Выход:
+            dictionary: статус операциии (Success, Wrong plot), информация об остатках на складе (если статус Success), график остатков на складе
+        '''
 
         path_to_data = f'{SCRIPT_LOC}/data'
 
@@ -287,6 +308,12 @@ class UserPickMLService:
         }
     
     def check_regular(self) -> bool:
+        '''Проверить товар на регулярность
+
+        Выход:
+            True: товар регулярный
+            False: товар нерегулярный
+        '''
         path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
         path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
 
@@ -301,6 +328,15 @@ class UserPickMLService:
         return ph.check_regular_purchase()
     
     def get_history(self, n: int):
+        '''Получить историю закупок с товаром
+
+        Вход:
+            n: количество записей
+
+        Выход:
+            output_df: история закупок
+        '''
+
         path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
         path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
 
@@ -316,7 +352,14 @@ class UserPickMLService:
         return output_df
 
     def get_credit_debit(self, summa: bool):
+        '''Получить информацию из ОС о дебете и кредите
 
+        Вход:
+            summa: True, если нужно получить сумму, False, если количество
+
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), информация о дебете и кредите, график
+        '''
         if self.code == 404:
             df = pd.DataFrame({'1Q2022|остаток кон|кредит|сумма': [0], '2Q2022|остаток кон|кредит|сумма': [0],
                                '3Q2022|остаток кон|кредит|сумма': [0], '4Q2022|остаток кон|кредит|сумма': [0],
@@ -422,23 +465,17 @@ class UserPickMLService:
                 'debit': debit_df.to_dict(),
                 'plot_image': plot_image
             }
-        
-    def check_regular(self) -> bool:
-        path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
-        path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
-
-        contracts = pd.read_excel(path_contracts)
-        voc = pd.read_excel(path_voc)
-
-        ph = PurchaseHistory(self.user_pick, voc, contracts)
-
-        ph.get_purchases(include_rk=True, include_kpgz=True)
-        ph.generate_features()
-        ph.drop_cancelled()
-
-        return ph.check_regular_purchase()
     
     def get_purchase_stats(self, period: int, summa: bool):
+        '''Получить статистику закупок
+
+        Вход:
+            period: период, за который нужно получить статистику (1 - год, 2 - квартал, 3 - месяц)
+            summa: True, если нужно получить сумму, False, если количество
+        
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), информация о закупках, график
+        '''
 
         df = self.get_history(100)
 
@@ -576,6 +613,14 @@ class UserPickMLService:
             }
         
     def get_forecast(self, period):
+        '''Получить прогноз закупок
+
+        Вход:
+            period: период, за который нужно получить прогноз (1 - год, 2 - квартал, 3 - месяц)
+
+        Выход:
+            dictionary: статус операции (Success, Wrong plot), прогноз, график
+        '''
         if self.check_regular() == False:
             return {'state': 'Not regular', 'prediction': 0, 'plot_image': str()}
 
@@ -601,6 +646,8 @@ class UserPickMLService:
                 month_purchases.index = month_purchases['year'].astype(str) + '-' + month_purchases['month'].astype(int).astype(str)
                 next_period_label = f'2023-1'
                 month_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                month_purchases['year'] = month_purchases['year'].astype(int).astype(str)
+                month_purchases['month'] = month_purchases['month'].astype(int).astype(str)
                 df = month_purchases.copy()
 
             elif horizon == 'quarter':
@@ -612,6 +659,8 @@ class UserPickMLService:
                 quarter_purchases.loc[next_period_label] = forecast_price
                 quarter_purchases.loc[next_period_label] = (2023, 1, forecast_price)
                 print(quarter_purchases)
+                quarter_purchases['year'] = quarter_purchases['year'].astype(int).astype(str)
+                quarter_purchases['quarter'] = quarter_purchases['quarter'].astype(int).astype(str)
                 df = quarter_purchases.copy()
 
             elif horizon == 'year':
@@ -621,7 +670,9 @@ class UserPickMLService:
                 next_period_label = '2023'
                 year_purchases.loc[next_period_label] = forecast_price
                 year_purchases.loc[next_period_label] = (2023, 1, forecast_price)
+                year_purchases['year'] = year_purchases['year'].astype(int).astype(str)
                 df = year_purchases.copy()
+
 
         except Exception as e:
             print(f"Error occurred: {e}")
@@ -630,7 +681,7 @@ class UserPickMLService:
         # Plotting
         plt.figure(figsize=(10, 5))
         if horizon == 'year':
-            plt.plot(df.index[:-1], df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot(df.index[:-1], df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
             plt.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].iloc[-2], df['Оплачено, руб.'].iloc[-1]], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Год')
             plt.xticks(df.index)
@@ -638,7 +689,7 @@ class UserPickMLService:
         elif horizon == 'quarter':
             actual_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][:-1], df['quarter'][:-1])]
             forecast_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][-2:], df['quarter'][-2:])]
-            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
             plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Квартал')
             print(forecast_index)
@@ -647,7 +698,7 @@ class UserPickMLService:
         elif horizon == 'month':
             actual_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][:-1], df['month'][:-1])]
             forecast_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][-2:], df['month'][-2:])]
-            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История')
+            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
             plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
             plt.xlabel('Месяц')
             print(forecast_index)
@@ -672,6 +723,12 @@ class UserPickMLService:
         }
     
     def get_user_pick_info(self):
+        '''Получить информацию о выбранном товаре
+
+        Выход:
+            dictionary: информация о товаре (СТЕ, Код СПГЗ, СПГЗ)
+        '''
+
         df = pd.read_excel(f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx')
         df = df[df['Название СТЕ'] == self.user_pick]
 
@@ -683,3 +740,4 @@ class UserPickMLService:
             'SPGZ_code': spgz_code,
             'SPGZ_name': spgz_name
         }
+    
