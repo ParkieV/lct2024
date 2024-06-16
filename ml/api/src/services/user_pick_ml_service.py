@@ -72,135 +72,6 @@ def find_similar_leftover(user_pick: str) -> Tuple[int, str, str]:
 class PurchaseHistory:
     '''Класс для матчинга справочника и закупок
     '''
-
-    def __init__(self, name: str, voc: pd.DataFrame, contracts: pd.DataFrame) -> None:
-        '''Инициализация
-
-        Вход:
-            name: название товара из справочника
-            contracts: датасет истории закупок
-        '''
-        self.voc_rows = pd.DataFrame(voc.loc[voc['Название СТЕ'] == name])
-        self.contracts = contracts
-
-    def get_purchases(self, include_rk: bool=True, include_kpgz: bool=True) -> pd.DataFrame:
-        '''Выбрать историю закупок нужного товара из общей истории закупок
-
-        Вход:
-            include_rk: учитывать реестровый номер при отсеивании
-            include_kpgz: учитывать кпгз код при отсеивании
-
-        Выход
-            self.kpgz_contracts: закупки товара
-        '''
-        self.kpgz_contracts = self.contracts.copy()
-
-        if include_kpgz:
-            kpgz = self.voc_rows['КПГЗ код'].values[0]
-            self.kpgz_contracts = self.contracts.loc[self.contracts['Конечный код КПГЗ'].str.contains(kpgz).fillna(False)]
-
-        if include_rk:
-            rks = self.voc_rows['Реестровый номер в РК'].values
-            self.kpgz_contracts = self.kpgz_contracts.loc[self.kpgz_contracts['Реестровый номер в РК'].isin(rks)]
-
-        return self.kpgz_contracts
-
-    def drop_cancelled(self):
-        '''Удалить расторгнутые закупки
-        '''
-        self.kpgz_contracts = self.kpgz_contracts[self.kpgz_contracts['Статус контракта'] != 'Расторгнут']
-
-    def generate_features(self):
-        '''Сгенерировать временные признаки
-
-        Выход:
-            self.kpgz_contracts: история закупок товара с добавленными столбцами новых признаков
-        '''
-        contracts_cleaned = self.kpgz_contracts.copy()
-        contracts_cleaned = contracts_cleaned[contracts_cleaned['Статус контракта'] != 'Расторгнут']
-        contracts_cleaned['Срок исполнения с'] = pd.to_datetime(contracts_cleaned['Срок исполнения с'], format='%d.%m.%Y')
-        contracts_cleaned['Срок исполнения по'] = pd.to_datetime(contracts_cleaned['Срок исполнения по'], format='%d.%m.%Y')
-        contracts_cleaned['year'] = contracts_cleaned['Срок исполнения с'].dt.year
-        contracts_cleaned['quarter'] = contracts_cleaned['Срок исполнения с'].dt.quarter
-        contracts_cleaned['month'] = contracts_cleaned['Срок исполнения с'].dt.month
-        contracts_cleaned['day'] = contracts_cleaned['Срок исполнения с'].dt.day_of_year
-        contracts_cleaned['day_of_month'] = contracts_cleaned['Срок исполнения с'].dt.day
-        contracts_cleaned['Длительность'] = (contracts_cleaned['Срок исполнения по'] - contracts_cleaned['Срок исполнения с']).dt.days
-
-        self.kpgz_contracts = contracts_cleaned.copy()
-
-        return self.kpgz_contracts
-
-    def check_regular_purchase(self):
-        '''Проверить товара на регулярность
-
-        Выход:
-            True: товар регулярный
-            False: товар нерегулярный
-        '''
-        year_quarters = len((self.kpgz_contracts['year'].astype('str') + self.kpgz_contracts['quarter'].astype('str')).unique())
-
-        if year_quarters >= 3:
-            return True # Регулярная
-
-        else:
-            return False # Нерегулярная
-
-    def normalize_spgz(self):
-        '''Нормализовать СПГЗ (процессинг текста)
-
-        Выход:
-            self.normalized_spgz_contracts: данные с нормализованным спгз
-        '''
-        contracts_dataset = Dataset(self.kpgz_contracts.copy(), text_col='Наименование СПГЗ')
-        contracts_dataset.prepare_dataset()
-        self.normalized_spgz_contracts = contracts_dataset.data.copy()
-
-        return self.normalized_spgz_contracts
-
-    def normalize_ste(self):
-        '''Нормализовать СТЕ (процессинг текста)
-
-        Выход:
-            self.normalized_ste_voc: данные с нормализованным СТЕ
-        '''
-        voc_dataset = Dataset(self.voc_rows.copy(), text_col='Название СТЕ')
-        voc_dataset.prepare_dataset(voc_dataset)
-        self.normalized_ste_voc = voc_dataset.data.copy()
-
-        return self.normalized_ste_voc
-
-    def rank_ste_spgz(self):
-        '''Сматчить и отранжировать СТЕ и СПГЗ
-
-        Выход:
-            Отранжированные по релевантности позиции
-        '''
-        contract_embeds = []
-        for sent in self.normalized_spgz_contracts['Наименование СПГЗ']:
-            embed = get_embeddings([sent.lower()])
-            contract_embeds.append(embed)
-
-        contract_embeds_df = pd.DataFrame(contract_embeds, index=self.normalized_spgz_contracts.index)
-        contracts_merged = pd.merge(self.normalized_spgz_contracts, contract_embeds_df, left_index=True, right_index=True)
-
-        query_embed = get_embeddings([self.normalized_ste_voc['Название СТЕ'].values[0]])
-
-        cosine_similarities = []
-        for row in range(len(contracts_merged)):
-            sent = contract_embeds_df.iloc[row].values
-            cos = cosine_similarity(sent.reshape(1, -1), query_embed.reshape(1, -1))[0][0]
-            cosine_similarities.append(cos)
-
-        result = pd.DataFrame({'sent': self.normalized_spgz_contracts['Наименование СПГЗ'].values,
-                               'cos': np.array(cosine_similarities)})
-
-        return result.sort_values(by=['cos'], ascending=False)
-
-
-class PurchaseHistory:
-    '''Класс для матчинга справочника и закупок
-    '''
     def __init__(self, name: str, voc: pd.DataFrame, contracts: pd.DataFrame) -> None:
 
         self.voc_rows = pd.DataFrame(voc.loc[voc['Название СТЕ'] == name])
@@ -208,7 +79,7 @@ class PurchaseHistory:
 
     def get_purchases(self, include_rk: bool=True, include_kpgz: bool=True) -> pd.DataFrame:
         '''Инициализация
-
+ 
         Вход:
             name: название товара из справочника
             contracts: датасет истории закупок
@@ -575,13 +446,37 @@ class UserPickMLService:
             column_to_out = 'Цена ГК, руб.'
             if period == 1:
                 df = df.groupby('year')[column_to_out].sum()
+                full_range = range(int(df.index.min()), int(df.index.max()) + 1)
+                df = df.reindex(full_range, fill_value=0)
             elif period == 2:
                 df = df.groupby('quarter')[column_to_out].sum()
+                full_range = range(1, 5)  # Quarters range from 1 to 4
+                df = df.reindex(full_range, fill_value=0)
             elif period == 3:
                 df = df.groupby('month')[column_to_out].sum()
+                full_range = range(1, 13)  # Months range from 1 to 12
+                df = df.reindex(full_range, fill_value=0)
+                month_name = {
+                    1: "Январь",
+                    2: "Февраль",
+                    3: "Март",
+                    4: "Апрель",
+                    5: "Май",
+                    6: "Июнь",
+                    7: "Июль",
+                    8: "Август",
+                    9: "Сентябрь",
+                    10: "Октябрь",
+                    11: "Ноябрь",
+                    12: "Декабрь",
+                }
 
             plt.figure(figsize=(10, 5))
-            plt.plot(df.index, df.values, color='#B12725')
+            plt.bar(df.index, df.values, color='#B12725')
+
+            for x, y in zip(df.index, df.values):
+                plt.text(x, y, f'{y:.2f}', ha='center', va='bottom')
+
             plt.title(f'Статистика закупок\n{self.user_pick}')
             if period == 1:
                 plt.xlabel('Год')
@@ -591,8 +486,8 @@ class UserPickMLService:
                 plt.xticks(df.index)
             elif period == 3:
                 plt.xlabel('Месяц')
-                plt.xticks(df.index)
-            plt.ylabel('Цена')
+                plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+            plt.ylabel('Цена ГК, руб.')
             plt.grid(axis='y', linestyle='--', alpha=0.7)
 
             buf = BytesIO()
@@ -620,10 +515,30 @@ class UserPickMLService:
 
             if period == 1:
                 df = df.groupby('year')[column_to_out].count()
+                full_range = range(int(df.index.min()), int(df.index.max()) + 1)
+                df = df.reindex(full_range, fill_value=0)
             elif period == 2:
                 df = df.groupby('quarter')[column_to_out].count()
+                full_range = range(1, 5)  # Quarters range from 1 to 4
+                df = df.reindex(full_range, fill_value=0)
             elif period == 3:
                 df = df.groupby('month')[column_to_out].count()
+                full_range = range(1, 13)  # Months range from 1 to 12
+                df = df.reindex(full_range, fill_value=0)
+                month_name = {
+                    1: "Январь",
+                    2: "Февраль",
+                    3: "Март",
+                    4: "Апрель",
+                    5: "Май",
+                    6: "Июнь",
+                    7: "Июль",
+                    8: "Август",
+                    9: "Сентябрь",
+                    10: "Октябрь",
+                    11: "Ноябрь",
+                    12: "Декабрь",
+                }
             
             plt.figure(figsize=(10, 5))
             plt.bar(df.index, df.values, color='#B12725')
@@ -636,8 +551,8 @@ class UserPickMLService:
                 plt.xticks(df.index)
             elif period == 3:
                 plt.xlabel('Месяц')
-                plt.xticks(df.index)
-            plt.ylabel('Количество')
+                plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+            plt.ylabel('Количество закупок')
             plt.grid(axis='y', linestyle='--', alpha=0.7)
 
             buf = BytesIO()

@@ -34,14 +34,38 @@ def get_purchases(df, period, summa):
         column_to_out = 'Цена ГК, руб.'
         if period == 1:
             df = df.groupby('year')[column_to_out].sum()
+            full_range = range(int(df.index.min()), int(df.index.max()) + 1)
+            df = df.reindex(full_range, fill_value=0)
         elif period == 2:
             df = df.groupby('quarter')[column_to_out].sum()
+            full_range = range(1, 5)  # Quarters range from 1 to 4
+            df = df.reindex(full_range, fill_value=0)
         elif period == 3:
             df = df.groupby('month')[column_to_out].sum()
+            full_range = range(1, 13)  # Months range from 1 to 12
+            df = df.reindex(full_range, fill_value=0)
+            month_name = {
+                1: "Январь",
+                2: "Февраль",
+                3: "Март",
+                4: "Апрель",
+                5: "Май",
+                6: "Июнь",
+                7: "Июль",
+                8: "Август",
+                9: "Сентябрь",
+                10: "Октябрь",
+                11: "Ноябрь",
+                12: "Декабрь",
+            }
 
         plt.figure(figsize=(10, 5))
-        plt.plot(df.index, df.values, color='#B12725')
-        plt.title(f'Статистика по всем закупкам')
+        plt.bar(df.index, df.values, color='#B12725')
+
+        for x, y in zip(df.index, df.values):
+            plt.text(x, y, f'{round(y) / 1000000} млн.', ha='center', va='bottom')
+
+        plt.title(f'Статистика всех закупок')
         if period == 1:
             plt.xlabel('Год')
             plt.xticks(df.index)
@@ -50,8 +74,10 @@ def get_purchases(df, period, summa):
             plt.xticks(df.index)
         elif period == 3:
             plt.xlabel('Месяц')
-            plt.xticks(df.index)
-        plt.ylabel('Цена')
+            plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+        ytick_values = df.values
+        plt.yticks(ticks=ytick_values, labels=[f'{value} млн' for value in ytick_values if value % 1000000 == 0])
+        plt.ylabel('Цена ГК, руб.')
         plt.grid(axis='y', linestyle='--', alpha=0.7)
 
         buf = BytesIO()
@@ -79,14 +105,38 @@ def get_purchases(df, period, summa):
 
         if period == 1:
             df = df.groupby('year')[column_to_out].count()
+            full_range = range(int(df.index.min()), int(df.index.max()) + 1)
+            df = df.reindex(full_range, fill_value=0)
         elif period == 2:
             df = df.groupby('quarter')[column_to_out].count()
+            full_range = range(1, 5)  # Quarters range from 1 to 4
+            df = df.reindex(full_range, fill_value=0)
         elif period == 3:
             df = df.groupby('month')[column_to_out].count()
+            full_range = range(1, 13)  # Months range from 1 to 12
+            df = df.reindex(full_range, fill_value=0)
+            month_name = {
+                1: "Январь",
+                2: "Февраль",
+                3: "Март",
+                4: "Апрель",
+                5: "Май",
+                6: "Июнь",
+                7: "Июль",
+                8: "Август",
+                9: "Сентябрь",
+                10: "Октябрь",
+                11: "Ноябрь",
+                12: "Декабрь",
+            }
         
         plt.figure(figsize=(10, 5))
         plt.bar(df.index, df.values, color='#B12725')
-        plt.title(f'Статистика по всем закупкам')
+
+        for x, y in zip(df.index, df.values):
+            plt.text(x, y, f'{y}', ha='center', va='bottom')
+
+        plt.title(f'Статистика всех закупок')
         if period == 1:
             plt.xlabel('Год')
             plt.xticks(df.index)
@@ -95,8 +145,8 @@ def get_purchases(df, period, summa):
             plt.xticks(df.index)
         elif period == 3:
             plt.xlabel('Месяц')
-            plt.xticks(df.index)
-        plt.ylabel('Количество')
+            plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+        plt.ylabel('Количество закупок')
         plt.grid(axis='y', linestyle='--', alpha=0.7)
 
         buf = BytesIO()
