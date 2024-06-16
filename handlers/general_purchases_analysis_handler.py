@@ -17,6 +17,7 @@ commonPurchasesAnalysisRouter = Router()
 
 
 @commonPurchasesAnalysisRouter.message(default_state, F.text == COMMON_ANALYSIS_BUTTON_TEXT)
+@commonPurchasesAnalysisRouter.message(AppState.actionList, F.text == COMMON_ANALYSIS_BUTTON_TEXT)
 @commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == COMMON_ANALYSIS_BUTTON_TEXT)
 async def commonPurchaseAnalysisInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.commonPurchaseAnalysis)

@@ -77,7 +77,7 @@ async def finishCreatePurchase(message: Message, state: FSMContext) -> None:
     if 'isActivePurchaseEdit' in (await state.get_data()).keys():
         await state.update_data(active_purchase=purchaseProduct)
 
-        # Вызываем функцию, которую передали в качестве state_data в функции [active_purchase.py].editActivePurchase
+        # Вызываем функцию, которую передали в качестве state_data в функции [choose_purchase.py].editActivePurchase
         await (await state.get_data())['edit_active_purchase_callback'](message, state)
         return
 

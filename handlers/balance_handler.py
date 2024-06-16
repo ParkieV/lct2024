@@ -8,7 +8,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
+from res.action_list_text import BALANCE_BUTTON_TEXT
 from res.balance_text import *
 from res.general_text import *
 from state.app_state import AppState
@@ -18,8 +18,9 @@ from utils import isFloat
 balanceRouter = Router()
 
 
-@balanceRouter.message(default_state, F.text == COMMON_ANALYSIS_BUTTON_TEXT)
-@balanceRouter.message(AppState.balanceState, F.text == COMMON_ANALYSIS_BUTTON_TEXT)
+@balanceRouter.message(default_state, F.text == BALANCE_BUTTON_TEXT)
+@balanceRouter.message(AppState.actionList, F.text == BALANCE_BUTTON_TEXT)
+@balanceRouter.message(AppState.balanceState, F.text == BALANCE_BUTTON_TEXT)
 async def balanceInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.balanceState)
 

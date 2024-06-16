@@ -7,8 +7,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from res.active_purchase_text import CALLBACK_DATA_ACTIVE_PURCHASE_END
-
 
 class Pagination(object):
     CALLBACK_DATA_START_NEXT = "next_page_"
