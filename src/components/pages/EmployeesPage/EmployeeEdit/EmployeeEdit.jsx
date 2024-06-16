@@ -58,6 +58,7 @@ const EmployeeEdit = ({
         new InputUserData("Отчество (при наличии)", "Отчество", "middle_name",),
         new InputUserData("@никнейм", "Telegram", "telegram_nickname", true,),
         new InputUserData("В формате @mos.ru", "Адрес эл. почты", "email", true, "email"),
+        new InputUserData("Пароль", "Пароль", "password", true, "password"),
         new InputUserData("+7-ххх-ххх-хх-хх", "Номер телефона", "phone", false, "tel"),
         // Select
         new InputUserData("Выберите организацию", "Место работы", "work_org_id", true, "select",
