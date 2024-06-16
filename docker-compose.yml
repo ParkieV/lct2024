@@ -8,6 +8,17 @@ networks:
         - subnet: 172.18.0.0/16
 
 services:
+  proxy:
+    image: caddy:2-alpine
+    restart: always
+    cap_add: [ NET_ADMIN ]
+    ports: [ 80:80, 443:443 ]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file: [ .env ]
+
   postgres:
     user: "0:0"
     container_name: postgres_hack
@@ -82,3 +93,7 @@ services:
       network:
         ipv4_address: 172.18.0.5
 
+
+volumes:
+  caddy_data:
+  caddy_config:
