@@ -27,7 +27,7 @@ async def create_user(body: CreateRequestBodyDTO, *, request: Request, db_sessio
 	if not (payload := request.state.token_payload):
 		raise HTTPException(500, "Can't find token payload")
 
-	if "add_user" not in payload.rights and payload.user_id != body.id:
+	if "add_user" not in payload.rights and payload.user_id == body.id:
 		raise HTTPException(403, "Action is unavailable")
 
 	try:

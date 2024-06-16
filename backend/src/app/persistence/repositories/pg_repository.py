@@ -10,9 +10,9 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.persistence.repositories.db_repository import AbstractDBRepository
-from app.persistence.sqlalc_models import Balance, Base, Organization, Purchase, User
+from app.persistence.sqlalc_models import Balance, Base, Organization, Purchase, PurchasePosition, User
 from app.schemas.balance import BalanceDTO
-from app.schemas.purchase import PurchaseDTO
+from app.schemas.purchase import PositionDTO, PurchaseDTO
 from app.schemas.user import UserDTO
 from app.shared.logger import logger
 from app.schemas.organization import OrganizationDTO
@@ -101,6 +101,7 @@ class AsyncPostgresRepository(AbstractDBRepository):
 		logger.debug("Inserting object")
 		try:
 			db_model = self.db_model(**data.model_dump())
+			print("PIUPIUPAUPAU")
 			session.add(db_model)
 			await session.commit()
 			await session.refresh(db_model)
@@ -238,8 +239,8 @@ class PurchaseRepository(AsyncPostgresRepository):
 	async def insert_object(self,
 							data: BaseModel,
 							*,
-							out_schema: Type[BalanceDTO],
-							session: AsyncSession) -> BalanceDTO:
+							out_schema: Type[PurchaseDTO],
+							session: AsyncSession) -> PurchaseDTO:
 		return await super().insert_object(data, out_schema=out_schema, session=session)
 
 	async def get_objects_by_user_id(self,
@@ -268,3 +269,45 @@ class PurchaseRepository(AsyncPostgresRepository):
 		a=[out_schema.model_validate(obj, from_attributes=True) for obj in result]
 		logger.debug("Stop transform")
 		return a
+
+	async def get_object_by_id(self,
+						id: uuid.UUID,
+						*,
+						session: AsyncSession,
+						out_schema: Type[PurchaseDTO],
+						allow_none: bool = True,
+						joins: Any = Purchase.positions) -> PurchaseDTO | None:
+
+		logger.debug("Getting object")
+		query = select(self.db_model).where(self.db_model.id == id)
+		if joins:
+			query = query.options(selectinload(joins))
+
+		logger.debug("Start select")
+		if not (result := (await session.execute(query)).scalar_one_or_none()):
+			logger.debug(f"Finish select {result}")
+			if allow_none:
+				return None
+			raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+								detail=f"{self.db_model.__name__} not found")
+
+		logger.debug(f"Finish select {result}")
+		logger.debug("Start transform")
+		a=out_schema.model_validate(result, from_attributes=True)
+		logger.debug("Stop transform")
+		return a
+
+
+class PurchasePositionRepository(AsyncPostgresRepository):
+
+	def __init__(self, user_model: Type[PurchasePosition] = PurchasePosition) -> None:
+		super().__init__(user_model)
+		self.db_model: Type[Purchase]
+
+	async def insert_object(self,
+							data: BaseModel,
+							*,
+							out_schema: Type[PositionDTO],
+							session: AsyncSession) -> PositionDTO:
+		return await super().insert_object(data, out_schema=out_schema, session=session)
+
