@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {getOrganizations} from "./thunk";
+import { getEmployees, getOrganizations } from "./thunk";
 
 const initialState = {
     list: [{
@@ -65,7 +65,23 @@ export const employeeSlice = createSlice({
             //     console.log(item)
             //     state.organizations[item.value] = item;
             // });
-        })
+        }).addCase(getEmployees.fulfilled, (state, action) => {
+            if (!Array.isArray(action?.payload?.data)) {
+                return false;
+            }
+            state.list = action.payload.data;
+        }).addCase(patchUser.pending, (state) => {
+            state.loading = true;
+        }).addCase(patchUser.fulfilled, (state, action) => {
+            state.loading = false;
+            const index = state.list.findIndex(user => user.id === action.payload.id);
+            if (index !== -1) {
+                state.list[index] = action.payload;
+            }
+        }).addCase(patchUser.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        });
     }
 })
 

@@ -55,20 +55,38 @@ export const getOrganizations = createAsyncThunk(
         return res;
     });
 
+
 export const getEmployees = createAsyncThunk(
-    'user/getUsers', async ({recipe}, thunkAPI) => {
-        let response = await fetch(`${apiUrl}/update_recipe`, {
-            method: 'POST', headers: {
-                'Content-Type': 'application/json'
-            }, body: JSON.stringify(recipe),
-        });
-        return response.json();
+    'user/getUsers', async (_, thunkAPI) => {
+        let res = await axiosInstance.get(`/api/user/users`);
+        console.log(res);
+        return res;
     });
 
+// export const getEmployees = createAsyncThunk(
+//     'user/getUsers', async ({recipe}, thunkAPI) => {
+//         let response = await fetch(`${apiUrl}/update_recipe`, {
+//             method: 'POST', headers: {
+//                 'Content-Type': 'application/json'
+//             }, body: JSON.stringify(recipe),
+//         });
+//         return response.json();
+// });
+
 export const addUser = createAsyncThunk(
-    'user/addUser', async ({user}, thunkAPI) => {
+    'user/addUser', async ({ user }, thunkAPI) => {
         console.log(user);
         let res = await axiosInstance.post(`/api/user/`, {
+            ...user
+        });
+        console.log(res)
+        return res;
+});
+
+export const patchUser = createAsyncThunk(
+    'user/patchUser', async ({ user }, thunkAPI) => {
+        console.log(user);
+        let res = await axiosInstance.patch(`/api/user/`, {
             ...user
         });
         console.log(res)
