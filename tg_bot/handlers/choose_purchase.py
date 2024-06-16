@@ -10,6 +10,7 @@ from aiogram.types import Message, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from tg_bot.config import session
+from tg_bot.db.db import fillProductExample
 from tg_bot.db.db_utils import getUser
 from tg_bot.handlers.actions_list_handler import actionListHandlerInit
 from tg_bot.pagination import Pagination
@@ -86,8 +87,10 @@ async def choosePurchaseActionList(message: Message, state: FSMContext) -> None:
 async def downloadActivePurchase(message: Message, state: FSMContext) -> None:
     user = await getUser(message.chat.id)
 
-    purchases: dict = user.purchases[(await state.get_data())["active_purchase"]]
-    bytes_data = json.dumps(purchases).encode('utf-8')
+    purchases: dict = user.purchases[(await state.get_data())["active_purchase"]].copy()
+    for i in range(len(purchases['rows'])):
+        purchases['rows'][i] = fillProductExample(purchases['rows'][i])
+    bytes_data = json.dumps(purchases, ensure_ascii=False).encode('utf-8')
 
     with io.BytesIO(bytes_data) as jsonFile:
         await message.answer_document(BufferedInputFile(jsonFile.read(), filename=f"{purchases['id']}.json"))

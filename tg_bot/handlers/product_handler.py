@@ -7,7 +7,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import apiURL, bot
+from tg_bot.config import apiURL, bot, apiURL_ML
+from tg_bot.db.db import User
 from tg_bot.db.db_utils import getUserCookies, getUser
 from tg_bot.pagination import Pagination
 from tg_bot.res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
@@ -29,11 +30,19 @@ class ProductActions:
 
     @staticmethod
     async def pickProduct(message, product_name: str) -> int:
+        user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
             async with session.post(f"{apiURL}/api/search/set_user_pick", params={
                 "user_pick ": product_name
             }) as r:
-                return r.status
+                pass
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"{apiURL_ML}/api/v1/ml/matching/set_user_pick/", params={
+                "user_id": user.db_id,
+                "user_pick ": product_name
+            }) as r:
+                pass
 
     @staticmethod
     async def checkRegular(message, product_name: str) -> bool:
@@ -81,8 +90,8 @@ async def productInit(message: Message, state: FSMContext) -> None:
 @productRouter.message(ProductState.initActions, F.text == EDIT_BUTTON_TEXT)
 async def editExistedProduct(message: Message, state: FSMContext) -> None:
     user = await getUser(message.chat.id)
-    productList = [value['entityId'] for key, value in
-                   user.purchases[(await state.get_data())['active_purchase']]['rows']]
+    productList = user.getAllProducts((await state.get_data())['active_purchase'])
+
     if len(productList) == 0:
         await message.answer(text=NO_PRODUCTS_IN_PURCHASE_TEXT)
         await productInit(message, state)

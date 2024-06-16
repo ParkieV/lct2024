@@ -38,11 +38,12 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
         :return:
         """
         try:
-            user: User = await getUser(event.chat.id)
+
+            user: User = await self.session.get(User, event.chat.id)
             if user is None or user.access_token is None:
                 raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)
 
-            async with aiohttp.ClientSession(cookies=user.cookies) as session:
+            async with aiohttp.ClientSession(cookies={"refresh_token": user.refresh_token}) as session:
                 async with session.post(f"{apiURL}/api/auth/refresh") as response:
                     if response.status != 200:
                         raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)

@@ -38,7 +38,7 @@ class ProductAnalysisActions(object):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
             async with session.post(f"{apiURL}/api/search/set_user_pick", params={
-                "user_pick ": product_name,
+                "user_pick": product_name,
                 "user_id": user.db_id
             }) as r:
                 return r.status
@@ -86,6 +86,7 @@ productAnalysisRouter = Router()
                                flags={"rights": "analysis_product"})
 async def productAnalysisInit(message: Message, state: FSMContext) -> None:
     await state.set_state(AppState.productAnalysis)
+    print((await state.get_data())['productName'])
     await ProductAnalysisActions.pickProduct(message, (await state.get_data())['productName'])
 
     keyboard = ReplyKeyboardBuilder().row(

@@ -16,6 +16,7 @@ from tg_bot.res.general_text import BACK_BUTTON_TEXT
 from tg_bot.state.app_state import AppState
 from tg_bot.state.choose_purchase_state import ChoosePurchaseState
 from tg_bot.state.create_new_purchase_state import CreateNewPurchaseState
+from tg_bot.state.create_product_state import AddProductToPurchase
 from tg_bot.state.general_purchase_analysis_state import CommonPurchaseAnalysisState
 from tg_bot.state.info_state import InfoState
 from tg_bot.state.product_state import ProductState
@@ -199,6 +200,24 @@ async def backButtonCreateNewPurchase(message: Message, state: FSMContext) -> No
     """
     await state.set_state(AppState.actionList)
     await actionListHandlerInit(message, state)
+
+
+@backRouter.message(AppState.createNewPurchase, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.purchaseAmount, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.nmc, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.dateStart, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.dateEnd, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.deliveryConditions, F.text == BACK_BUTTON_TEXT)
+@backRouter.message(AddProductToPurchase.entityId, F.text == BACK_BUTTON_TEXT)
+async def backButtonAddingProductToPurchase(message: Message, state: FSMContext) -> None:
+    """
+    Кнопка назад в блоке <Создание новой закупки>:
+    :param message:
+    :param state:
+    :return:
+    """
+    await state.set_state(AppState.actionList)
+    await productActionsInit(message, state)
 
 
 @backRouter.message(CommonPurchaseAnalysisState.choosePeriod, F.text == BACK_BUTTON_TEXT)

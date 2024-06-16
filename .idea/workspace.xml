@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="move .gitignore" />
+    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="add prefix tgbot">
+      <change afterPath="$PROJECT_DIR$/tg_bot/state/create_product_state.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/db/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/db/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/db/tg.db" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/db/tg.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/back_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/back_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/choose_purchase.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/choose_purchase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/create_product_purchase.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/create_product_purchase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/login_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/login_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/product_analysis_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/product_analysis_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/product_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/product_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/middleware/auth_middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/middleware/auth_middleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/res/product_text.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/res/product_text.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,6 +69,7 @@
     &quot;Python.config.executor&quot;: &quot;Run&quot;,
     &quot;Python.db.executor&quot;: &quot;Run&quot;,
     &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.main2.executor&quot;: &quot;Run&quot;,
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
@@ -259,6 +273,8 @@
       <workItem from="1718533050914" duration="1710000" />
       <workItem from="1718535236103" duration="16264000" />
       <workItem from="1718561452851" duration="172000" />
+      <workItem from="1718561635003" duration="5164000" />
+      <workItem from="1718566826893" duration="2007000" />
     </task>
     <task id="LOCAL-00001" summary="add types">
       <option name="closed" value="true" />
@@ -524,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718561555123</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="add prefix tgbot">
+      <option name="closed" value="true" />
+      <created>1718561823617</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1718561823617</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -542,7 +566,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update code" />
     <MESSAGE value="add logout and assert error in tg bot" />
     <MESSAGE value="finish info handler" />
     <MESSAGE value="optimize user steps" />
@@ -567,18 +590,20 @@
     <MESSAGE value="finish all analytics" />
     <MESSAGE value="move to folder" />
     <MESSAGE value="move .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="move .gitignore" />
+    <MESSAGE value="add prefix tgbot" />
+    <option name="LAST_COMMIT_MESSAGE" value="add prefix tgbot" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$utils.coverage" NAME="utils Coverage Results" MODIFIED="1718554935816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$login.coverage" NAME="login Coverage Results" MODIFIED="1717700364112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/branches" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$test.coverage" NAME="test Coverage Results" MODIFIED="1718550299190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1718568834979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tg_bot" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$viewModel.coverage" NAME="viewModel Coverage Results" MODIFIED="1717700332286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$auth_state.coverage" NAME="auth_state Coverage Results" MODIFIED="1717855477705" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/state" />
     <SUITE FILE_PATH="coverage/forecastin_service_tg_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1717446647285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$db.coverage" NAME="db Coverage Results" MODIFIED="1717851394484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main2.coverage" NAME="main Coverage Results" MODIFIED="1717855411975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$config.coverage" NAME="config Coverage Results" MODIFIED="1717852937587" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1718561604233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1718561752674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
