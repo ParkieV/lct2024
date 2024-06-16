@@ -19,7 +19,7 @@ const ListOptions = (props) => {
 
     return (
         <div className={style.optionsBlock}>
-            <b>Всего пользователей: {employeeStore.list.length}</b>
+            <b>Всего пользователей: {employeeStore?.list?.length || 0}</b>
             <div className={style.optionsSelectBlock}>
                 <SmallSelect placeholder="Показать: "
                              options={filterStore.employeesTypeList}
