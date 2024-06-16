@@ -2,27 +2,36 @@ import io
 from typing import Any
 from fastapi.responses import StreamingResponse
 import requests
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from urllib.parse import quote
 
 from app.shared.config import SERVER_SETTINGS
 from app.shared.logger import logger
+from app.shared.jwt import JWT
 
 
 router = APIRouter(prefix="/search")
 
 @router.get("/catalog",
+			dependencies=[Depends(JWT.check_access_token)],
 			response_model= dict[str, Any],
 			summary="Get references to the search query")
-async def catalog(prompt: str) -> dict[str, Any]:
+async def catalog(prompt: str, *, request: Request) -> dict[str, Any]:
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
 	try:
-		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/show_reference", params={"prompt": prompt}).json()
+		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/matching/show_reference", params={"prompt": prompt,
+																								 "user_id": payload.user_id}).json()
 
 		logger.debug(f"Refereces result: {result}")
 		print(f"Refereces result: {result}")
 
-		answer = {prompt: result["values"]}
+		if "values" in result.keys():
+			answer = {prompt: result["values"]}
+		else:
+			answer = {prompt: []}
 
 		return answer
 	except HTTPException as http_err:
