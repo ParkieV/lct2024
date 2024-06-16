@@ -106,6 +106,8 @@ services:
   frontend:
     container_name: frontend_app
     restart: unless-stopped
+    depends_on:
+      - proxy
     build:
       context: frontend
       dockerfile: Dockerfile
