@@ -1,5 +1,7 @@
 \c lct_postgres
 
+CREATE EXTENSION pgcrypto;
+
 CREATE TABLE "users" (
   "id" uuid DEFAULT gen_random_uuid(),
   "email" varchar(255),
