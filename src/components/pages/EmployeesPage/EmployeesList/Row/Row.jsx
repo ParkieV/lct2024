@@ -63,7 +63,7 @@ const Row = ({
                 </div>
                 <div className={style.with_header}>
                     <p className={style.mobile_header_text}>ID</p>
-                    <p className={style.organization}>{organizations[employee.work_org_id].label}</p>
+                    <p className={style.organization}>{organizations.find(e => e.value === employee.work_org_id).label}</p>
                 </div>
                 <div className={style.with_header}>
                     <p className={style.mobile_header_text}>ID</p>

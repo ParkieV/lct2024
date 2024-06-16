@@ -40,11 +40,11 @@ const RowHeader = (props) => {
                 <p className={styleRow.position}>{filterStore.sortingList[2].label}</p>
                 <SortButton sort={filterStore.sortingList[2]}/>
             </div>
-            <div className={style.headerField}>
+            <div className={`${style.headerField} ${style.organizationField}`}>
                 <p className={styleRow.organization}>{filterStore.sortingList[3].label}</p>
                 <SortButton sort={filterStore.sortingList[3]}/>
             </div>
-            <div className={style.headerField}>
+            <div className={`${style.headerField} ${style.typeField}`}>
                 <p className={styleRow.type}>{filterStore.sortingList[4].label}</p>
                 <SortButton sort={filterStore.sortingList[4]}/>
             </div>

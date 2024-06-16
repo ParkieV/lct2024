@@ -2,7 +2,10 @@ const path = require("path");
 
 module.exports = {
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx'],
+        // fallback: {
+        //     util: require.resolve("util/")
+        // }
     },
     entry: "./src/index.js",
     mode: "development",

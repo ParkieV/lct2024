@@ -28,6 +28,8 @@
 
 .type,
 .organization {
+    text-align: center;
+    align-items: center;
 }
 
 .id {

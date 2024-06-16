@@ -71,7 +71,7 @@ const Select = ({
                     <input className={`${invalid && style.invalid}`}
                            ref={selectRef}
                            placeholder={placeholder}
-                           required={required && (block !== null || options.length > 0) || false}
+                           required={block === null && required || false}
                            value={optionLabel}
                            name={name}
                            style={selectStyle}

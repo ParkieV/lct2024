@@ -3,16 +3,15 @@ import {useDispatch, useSelector} from "react-redux";
 import * as style from './Login.module.css'
 import Input from "../../UI/Input/Input";
 import {useNavigate} from "react-router-dom";
+import {login} from "../../../store/thunk";
 import {EMPLOYEES_PAGE_URL} from "../../../constants";
-import {setLogin} from "../../../store/userSlice";
 
 const Login = (props) => {
     const navigate = useNavigate();
     const data = useSelector(state => state.data);
     const dispatch = useDispatch();
-    console.log(data);
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         const inputsData = Array
             .from(e.target.elements)
@@ -25,10 +24,20 @@ const Login = (props) => {
             });
         e.target.reset();
 
-        dispatch(setLogin(true))
+        let res = await dispatch(login({
+            user: {
+                email: inputsData[0].value,
+                password: inputsData[1].value
+            }
+        })).unwrap()
+
+        if (res.status === 200) {
+            navigate(EMPLOYEES_PAGE_URL);
+        }
+
+        // dispatch(setLogin(true))
         // TODO: заменить это на что-то другое
-        localStorage.setItem('isLogin', 'true');
-        navigate(EMPLOYEES_PAGE_URL);
+        // localStorage.setItem('isLogin', 'true');
     }
 
     return (
@@ -43,12 +52,14 @@ const Login = (props) => {
                            label="Логин"
                            required={true}
                            type="email"
-                           name="email"/>
+                           name="email"
+                           defaultValue={"user@mos.ru"}/>
                     <Input placeholder="Пароль"
                            label="Пароль"
                            required={true}
                            type="password"
-                           name="password"/>
+                           name="password"
+                           defaultValue={"test123"}/>
                 </div>
                 <button type="submit">Войти</button>
             </div>

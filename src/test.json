@@ -1,44 +1,25 @@
 {
-  "id": "идентификатор расчета",
-  "lotEntityId": "Идентификатор лота",
-  "CustomerId": "Идентификатор заказчика",
-  "rows": [
-    {
-      "DeliverySchedule": {
-        "dates": {
-          "end_date": "Дата окончания поставки",
-          "start_date": "Дата начала поставки"
-        },
-        "deliveryAmount": "Объем поставки",
-        "deliveryConditions": "Условия поставки",
-        "year": "Год"
-      },
-      "address": {
-        "gar_id": "Идентификатор ГАР",
-        "text": "Адрес в текстовой форме"
-      },
-      "entityId": "Сквозной идентификатор СПГЗ",
-      "id": "Идентификатор (версии) СПГЗ",
-      "nmc": "Сумма спецификации",
-      "okei_code": "Ед. измерения по ОКЕИ",
-      "purchaseAmount": "Объем поставки",
-      "spgzCharacteristics": [
-        {
-          "characteristicName": " ",
-          "characteristicSpgzEnums": [
-            {
-              "value": ""
-            }
-          ],
-          "conditionTypeId": "",
-          "kpgzCharacteristicId": "",
-          "okei_id": "",
-          "selectType": "",
-          "typeId": "",
-          "value1": "",
-          "value2": ""
-        }
-      ]
-    }
-  ]
+  "first_name": "string",
+  "middle_name": "string",
+  "last_name": "string",
+  "email": "user@example.com",
+  "password": "string",
+  "telegram_nickname": "string",
+  "phone": "string",
+  "work_org_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "position": "string",
+  "rights": ""
+}
+
+{
+  "last_name": "Исупов",
+  "first_name": "Григорий",
+  "middle_name": "Сергеевич",
+  "telegram_nickname": "@domster704",
+  "email": "domster704@mail.ru",
+  "password": "dan28dan",
+  "phone": "+79127458900",
+  "work_org_id": "Департамент транспорта г.Москвы",
+  "position": "Студент",
+  "rights": "permission_suggestion;create_purchase;analysis_common"
 }

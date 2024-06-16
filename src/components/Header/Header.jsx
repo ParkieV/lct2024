@@ -7,6 +7,7 @@ import Wrapper from "../UI/Wrapper/Wrapper";
 import {setLogin} from "../../store/userSlice";
 import {useNavigate} from "react-router-dom";
 import {LOGIN_PAGE_URL} from "../../constants";
+import {logout} from "../../store/thunk";
 
 const Header = (props) => {
     const userStore = useSelector(state => state.user);
@@ -14,8 +15,8 @@ const Header = (props) => {
 
     const navigate = useNavigate();
 
-    const logout = () => {
-        dispatch(setLogin(false))
+    const logoutHandler = () => {
+        dispatch(logout())
         localStorage.clear();
         navigate(LOGIN_PAGE_URL);
     }
@@ -26,8 +27,8 @@ const Header = (props) => {
                 <div className={style.header}>
                     <img className={!userStore.isLogin && style.isOnlyLogo || ""} src={headerLogo} alt="logo"/>
                     {userStore.isLogin && <div className={style.user}>
-                        <p>{userStore.name}</p>
-                        <button onClick={logout}>
+                        <p>{userStore?.user?.last_name} {userStore?.user?.first_name[0]}.{userStore?.user?.middle_name[0]}</p>
+                        <button onClick={logoutHandler}>
                             <img src={exitSvg} alt="exit"/>
                         </button>
                     </div>}

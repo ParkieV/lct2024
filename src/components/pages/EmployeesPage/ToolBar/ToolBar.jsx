@@ -10,6 +10,7 @@ import options_icon from './img/options.svg';
 import add_employee_icon from './img/add_employee.svg';
 import save_employee_icon from '../../../assets/img/save_employee.svg';
 import OptionsPanel from "./OptionsPanel/OptionsPanel";
+import {addUser} from "../../../../store/thunk";
 
 const ToolBar = () => {
     const [isOpenSaveEmployeeBlock, setIsOpenSaveEmployeeBlock] = React.useState(false);
@@ -17,6 +18,7 @@ const ToolBar = () => {
     const buttonFormSubmitRef = React.useRef(null);
 
     const filterStore = useSelector(state => state.filter);
+    const employeeStore = useSelector(state => state.employee);
     const dispatch = useDispatch();
 
     const findEmployee = (e, input) => {
@@ -40,15 +42,37 @@ const ToolBar = () => {
     const saveEmployeeHandler = (form) => {
         const inputsData = Array
             .from(form.elements)
-            .filter(elem => elem.tagName.toLowerCase() === 'input')
+            .filter(elem => elem.tagName.toLowerCase() === 'input' && elem.type !== 'checkbox')
             .map(input => {
                 return {
                     name: input.name, value: input.value
                 }
             });
+        const rightsData = Array
+            .from(form.elements)
+            .filter(elem => elem.tagName.toLowerCase() === 'input' && elem.type === 'checkbox')
+            .map(input => {
+                return {
+                    name: input.name, value: input.checked
+                }
+            });
+        const rightsStr = rightsData.filter(elem => elem.value === true).map(elem => {
+            return elem.name;
+        }).join(';');
+
+        let user = {}
+        for (const input of inputsData) {
+            if (input.name === 'work_org_id') {
+                user[input.name] = employeeStore.organizations.find(elem => elem.label === input.value).value;
+                continue;
+            }
+            user[input.name] = input.value;
+        }
+        user.rights = rightsStr;
         form.reset();
-        console.log(inputsData);
-    }
+
+        dispatch(addUser({user: user}));
+    };
 
     const showOptionsOnClick = (e) => {
         setIsOpenSaveEmployeeBlock(false);

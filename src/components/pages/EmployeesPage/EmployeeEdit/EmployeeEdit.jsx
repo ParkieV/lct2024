@@ -51,6 +51,7 @@ const EmployeeEdit = ({
                           description = ""
                       }) => {
     const formRef = React.useRef(null);
+    const employeeStore = useSelector(state => state.employee);
 
     const [field, setField] = React.useState([
         new InputUserData("Фамилия", "Фамилия", "last_name", true,),
@@ -62,17 +63,13 @@ const EmployeeEdit = ({
         new InputUserData("+7-ххх-ххх-хх-хх", "Номер телефона", "phone", false, "tel"),
         // Select
         new InputUserData("Выберите организацию", "Место работы", "work_org_id", true, "select",
-            [
-                {value: "1", label: "ПАО Яндекс"},
-                {value: "2", label: "ТОО Асмас"}
-            ]),
+            employeeStore.organizations),
         new InputUserData("Укажите полную должность", "Должность", "position", true, "text"),
         // Select
         new InputUserData("Настройте права", "Права в системе", "rights", true, "select",
             [{value: "1", label: "Администратор"}], <RightsBlock/>)
     ]);
 
-    const employeeStore = useSelector(state => state.employee);
     const dispatch = useDispatch();
 
     const onSubmit = (event) => {
@@ -81,7 +78,8 @@ const EmployeeEdit = ({
     }
 
     const checkValidation = (e) => {
-        const inputs = Array.from(formRef.current.elements).filter(elem => elem.tagName.toLowerCase() === 'input');
+        const inputs = Array.from(formRef.current.elements).filter(elem =>
+            elem.tagName.toLowerCase() === 'input' && e.type !== "checkbox");
         let isInvalid = false;
 
         let fieldLocal = [...field];
@@ -95,6 +93,21 @@ const EmployeeEdit = ({
                 fieldLocal[i].setInvalid();
                 isInvalid = true;
             }
+        }
+
+        const rights = Array.from(formRef.current.elements)
+            .filter(elem => elem.tagName.toLowerCase() === 'input' && elem.type === "checkbox");
+
+        let isAnyValid = false;
+        for (let i in rights) {
+            const right = rights[i];
+            if (right.checked) {
+                isAnyValid = true;
+                break;
+            }
+        }
+        if (!isAnyValid) {
+            fieldLocal.at(-1).setInvalid();
         }
 
         setField(fieldLocal);
