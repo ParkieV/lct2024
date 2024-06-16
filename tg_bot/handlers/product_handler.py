@@ -7,15 +7,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import apiURL, bot
-from db.db_utils import getUserCookies, getUser
-from pagination import Pagination
-from res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
-from res.general_text import *
-from res.product_text import *
-from state.choose_purchase_state import ChoosePurchaseState
-from state.product_state import ProductState
-from utils import base64ToBufferInputStream
+from tg_bot.config import apiURL, bot
+from tg_bot.db.db_utils import getUserCookies, getUser
+from tg_bot.pagination import Pagination
+from tg_bot.res.choose_purchase_text import EDIT_PURCHASE_BUTTON_TEXT
+from tg_bot.res.general_text import *
+from tg_bot.res.product_text import *
+from tg_bot.state.choose_purchase_state import ChoosePurchaseState
+from tg_bot.state.product_state import ProductState
+from tg_bot.utils import base64ToBufferInputStream
 
 
 class ProductActions:

@@ -11,14 +11,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from config import apiURL, session
-from db.db import User
-from db.db_utils import getUser
-from handlers.info_handler import infoHandlerInit
-from res.general_text import SOMETHING_WRONG
-from res.login_text import *
-from state.app_state import AppState
-from state.auth_state import AuthState
+from tg_bot.config import apiURL, session
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUser
+from tg_bot.handlers.info_handler import infoHandlerInit
+from tg_bot.res.general_text import SOMETHING_WRONG
+from tg_bot.res.login_text import *
+from tg_bot.state.app_state import AppState
+from tg_bot.state.auth_state import AuthState
 
 loginRouter = Router()
 

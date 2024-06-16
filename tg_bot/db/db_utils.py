@@ -1,7 +1,7 @@
 import aiohttp
 
-from config import apiURL, session
-from db.db import User
+from tg_bot.config import apiURL, session
+from tg_bot.db.db import User
 
 
 async def logout(chat_id: int) -> bool:

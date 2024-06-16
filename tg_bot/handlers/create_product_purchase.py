@@ -9,10 +9,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from handlers.product_handler import productActionsInit
-from res.general_text import SOMETHING_WRONG
-from res.product_text import *
-from state.product_state import ProductState
+from tg_bot.handlers.product_handler import productActionsInit
+from tg_bot.res.general_text import SOMETHING_WRONG
+from tg_bot.res.product_text import *
+from tg_bot.state.product_state import ProductState
 
 createPurchaseRouter = Router()
 

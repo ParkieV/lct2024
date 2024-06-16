@@ -7,16 +7,16 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import apiURL, bot, apiURL_ML
-from db.db import User
-from db.db_utils import getUserCookies, getUser
-from res.general_purchases_analysis_text import AMOUNT_OF_PURCHASES_BUTTON_TEXT, PRICE_OF_PURCHASES_BUTTON_TEXT
-from res.general_text import *
-from res.product_analysis_text import *
-from res.product_text import ANALYZE_PRODUCT_BUTTON_TEXT
-from state.app_state import AppState
-from state.product_state import ProductState
-from utils import base64ToBufferInputStream
+from tg_bot.config import apiURL, bot, apiURL_ML
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUserCookies, getUser
+from tg_bot.res.general_purchases_analysis_text import AMOUNT_OF_PURCHASES_BUTTON_TEXT, PRICE_OF_PURCHASES_BUTTON_TEXT
+from tg_bot.res.general_text import *
+from tg_bot.res.product_analysis_text import *
+from tg_bot.res.product_text import ANALYZE_PRODUCT_BUTTON_TEXT
+from tg_bot.state.app_state import AppState
+from tg_bot.state.product_state import ProductState
+from tg_bot.utils import base64ToBufferInputStream
 
 
 class ProductAnalysisActions(object):

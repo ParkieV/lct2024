@@ -8,13 +8,13 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from db.db_utils import logout
-from handlers.actions_list_handler import actionListHandlerInit
-from res.general_text import SOMETHING_WRONG
-from res.info_text import *
-from res.login_text import TRANSITION_BUTTON_TEXT
-from state.app_state import AppState
-from state.info_state import InfoState
+from tg_bot.db.db_utils import logout
+from tg_bot.handlers.actions_list_handler import actionListHandlerInit
+from tg_bot.res.general_text import SOMETHING_WRONG
+from tg_bot.res.info_text import *
+from tg_bot.res.login_text import TRANSITION_BUTTON_TEXT
+from tg_bot.state.app_state import AppState
+from tg_bot.state.info_state import InfoState
 
 infoRouter = Router()
 

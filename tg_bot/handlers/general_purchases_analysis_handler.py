@@ -8,15 +8,15 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import bot, apiURL_ML
-from db.db import User
-from db.db_utils import getUser
-from res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
-from res.general_purchases_analysis_text import *
-from res.general_text import *
-from state.app_state import AppState
-from state.general_purchase_analysis_state import CommonPurchaseAnalysisState
-from utils import base64ToBufferInputStream
+from tg_bot.config import bot, apiURL_ML
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUser
+from tg_bot.res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
+from tg_bot.res.general_purchases_analysis_text import *
+from tg_bot.res.general_text import *
+from tg_bot.state.app_state import AppState
+from tg_bot.state.general_purchase_analysis_state import CommonPurchaseAnalysisState
+from tg_bot.utils import base64ToBufferInputStream
 
 
 class GeneralPurchaseAnalysis(object):

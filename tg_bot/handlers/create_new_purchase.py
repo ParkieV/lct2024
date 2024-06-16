@@ -7,15 +7,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import session, apiURL
-from db.db import User
-from db.db_utils import getUser
-from handlers.choose_purchase import choosePurchaseActionList
-from res.action_list_text import *
-from res.create_new_purchase_text import *
-from res.info_text import *
-from state.app_state import AppState
-from state.create_new_purchase_state import CreateNewPurchaseState
+from tg_bot.config import session, apiURL
+from tg_bot.db.db import User
+from tg_bot.db.db_utils import getUser
+from tg_bot.handlers.choose_purchase import choosePurchaseActionList
+from tg_bot.res.action_list_text import *
+from tg_bot.res.create_new_purchase_text import *
+from tg_bot.state.app_state import AppState
+from tg_bot.state.create_new_purchase_state import CreateNewPurchaseState
 
 
 class CrateNewPurchaseActions:
