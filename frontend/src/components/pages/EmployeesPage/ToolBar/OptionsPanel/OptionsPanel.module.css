@@ -1,0 +1,60 @@
+@media screen and (max-width: 551px) {
+    .optionsContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        margin-top: 1.25em;
+        grid-column: span 2;
+    }
+
+    .pageElementsBlock button,
+    .typeEmployeesBlock button {
+        padding: 1em;
+
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #000;
+
+        border: 1px solid #b3b3b3;
+        border-radius: 0.75rem;
+        background: #fff;
+    }
+
+    .pageElementsButtons button {
+        aspect-ratio: 1/1;
+        width: 3.25em;
+        height: auto;
+    }
+
+    .sortBlock,
+    .typeEmployeesBlock,
+    .pageElementsButtons {
+        display: flex;
+        gap: 0.5em;
+    }
+
+    .optionsContainer button.active {
+
+        border: 1px solid #b12725;
+    }
+
+    .optionsContainer > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75em;
+    }
+
+    .pageElementsBlock {
+
+    }
+
+    .typeEmployeesButtons button {
+        width: 100%;
+    }
+
+    .typeEmployeesButtons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5em;
+    }
+}

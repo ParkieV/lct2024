@@ -7,27 +7,27 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import apiURL, bot, apiURL_ML
-from tg_bot.db.db import User
-from tg_bot.db.db_utils import getUserCookies, getUser
-from tg_bot.res.general_purchases_analysis_text import AMOUNT_OF_PURCHASES_BUTTON_TEXT, PRICE_OF_PURCHASES_BUTTON_TEXT
-from tg_bot.res.general_text import *
-from tg_bot.res.product_analysis_text import *
-from tg_bot.res.product_text import ANALYZE_PRODUCT_BUTTON_TEXT
-from tg_bot.state.app_state import AppState
-from tg_bot.state.product_state import ProductState
-from tg_bot.utils import base64ToBufferInputStream
+from config import apiURL, bot, apiURL_ML
+from db.db import User
+from db.db_utils import getUserCookies, getUser
+from res.general_purchases_analysis_text import AMOUNT_OF_PURCHASES_BUTTON_TEXT, PRICE_OF_PURCHASES_BUTTON_TEXT
+from res.general_text import *
+from res.product_analysis_text import *
+from res.product_text import ANALYZE_PRODUCT_BUTTON_TEXT
+from state.app_state import AppState
+from state.product_state import ProductState
+from utils import base64ToBufferInputStream
 
 
 class ProductAnalysisActions(object):
     @staticmethod
     async def debitCredit(message, credit: bool) -> bytes:
         async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
-            async with session.get(f"{apiURL}/api/search/debit_credit_info", params={
+            async with session.get(f"{apiURL}/search/debit_credit_info", params={
                 "credit": str(credit)
             }) as r:
                 res = await r.json()
-                print(res)
+
                 if res['state'] != 'Success':
                     return b''
 
@@ -37,17 +37,26 @@ class ProductAnalysisActions(object):
     async def pickProduct(message, product_name: str):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.post(f"{apiURL}/api/search/set_user_pick", params={
+            async with session.post(f"{apiURL}/search/set_user_pick", params={
                 "user_pick": product_name,
                 "user_id": user.db_id
             }) as r:
-                return r.status
+                print(await r.json())
+
+        async with aiohttp.ClientSession(headers={
+            'accept': 'application/json',
+        }) as session:
+            async with session.post(f"{apiURL_ML}/v1/ml/matching/set_user_pick/", params={
+                "user_id": user.db_id,
+                "user_pick": product_name
+            }) as r:
+                print(await r.json())
 
     @staticmethod
     async def lastNPurchase(message, n) -> bytes:
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics/history", params={
+            async with session.get(f"{apiURL_ML}/v1/ml/analytics/history", params={
                 "user_id": user.db_id,
                 "n": str(n),
             }) as r:
@@ -58,7 +67,7 @@ class ProductAnalysisActions(object):
     async def statisticPurchase(message, period, price: bool) -> bytes:
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics/purchase_stats", params={
+            async with session.get(f"{apiURL_ML}/v1/ml/analytics/purchase_stats", params={
                 "period": period,
                 "user_id": user.db_id,
                 "summa": str(price),
@@ -70,7 +79,7 @@ class ProductAnalysisActions(object):
     async def remainsProduct(message) -> bytes:
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics/leftover_info", params={
+            async with session.get(f"{apiURL_ML}/v1/ml/analytics/leftover_info", params={
                 "user_id": user.db_id,
             }) as r:
                 res = await r.json()
@@ -110,7 +119,6 @@ async def howManyItemsLeft(message: Message, state: FSMContext) -> None:
                          photo=BufferedInputFile(remainsProduct, filename="remains.png"))
 
 
-
 @productAnalysisRouter.message(AppState.productAnalysis, F.text == LAST_N_PURCHASE_BUTTON_TEXT)
 async def lastNPurchase(message: Message, state: FSMContext) -> None:
     lastNPurchase = await ProductAnalysisActions.lastNPurchase(message, 5)
@@ -124,6 +132,8 @@ async def debitCreditProduct(message: Message, state: FSMContext) -> None:
     keyboard = ReplyKeyboardBuilder().row(
         KeyboardButton(text=PRICE_BUTTON_TEXT),
         KeyboardButton(text=AMOUNT_BUTTON_TEXT)
+    ).row(
+        KeyboardButton(text=BACK_BUTTON_TEXT)
     )
 
     await message.answer(text=DEBIT_CREDIT_PRODUCT_MESSAGE_TEXT,

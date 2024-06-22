@@ -7,14 +7,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import session, apiURL
-from tg_bot.db.db import User
-from tg_bot.db.db_utils import getUser
-from tg_bot.handlers.choose_purchase import choosePurchaseActionList
-from tg_bot.res.action_list_text import *
-from tg_bot.res.create_new_purchase_text import *
-from tg_bot.state.app_state import AppState
-from tg_bot.state.create_new_purchase_state import CreateNewPurchaseState
+from config import session, apiURL, AsyncSessionDB
+from db.db import User
+from db.db_utils import getUser
+from handlers.choose_purchase import choosePurchaseActionList
+from res.action_list_text import *
+from res.create_new_purchase_text import *
+from state.app_state import AppState
+from state.create_new_purchase_state import CreateNewPurchaseState
 
 
 class CrateNewPurchaseActions:
@@ -22,7 +22,7 @@ class CrateNewPurchaseActions:
     async def createNewPurchase(message, purchaseHeader):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.post(f"{apiURL}/api/user/purchase/", json={
+            async with session.post(f"{apiURL}/user/purchase/", json={
                 "id": purchaseHeader['id'],
                 "user_id": user.id,
                 "lotEntityId": purchaseHeader['lotEntityId'],
@@ -76,9 +76,9 @@ async def enterLotId(message: Message, state: FSMContext) -> None:
     }
     await CrateNewPurchaseActions.createNewPurchase(message, purchaseHeader)
 
-    (await session.get(User, message.chat.id)).createPurchase(purchaseHeader)
-    await session.commit()
-    await session.close()
+    async with AsyncSessionDB() as sessionDB:
+        user: User = await sessionDB.get(User, message.chat.id)
+        await user.createPurchase(purchaseHeader, sessionDB)
 
     await state.update_data(active_purchase=purchaseHeader['id'])
     await message.answer(text=CREATE_NEW_PURCHASE_SUCCESS_TEXT)

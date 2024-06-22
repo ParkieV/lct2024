@@ -9,16 +9,16 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, KeyboardButton, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import session
-from tg_bot.db.db import fillProductExample
-from tg_bot.db.db_utils import getUser
-from tg_bot.handlers.actions_list_handler import actionListHandlerInit
-from tg_bot.pagination import Pagination
-from tg_bot.res.action_list_text import CHOOSE_PURCHASE_BUTTON_TEXT
-from tg_bot.res.choose_purchase_text import *
-from tg_bot.res.general_text import BACK_BUTTON_TEXT, SOMETHING_WRONG
-from tg_bot.state.app_state import AppState
-from tg_bot.state.choose_purchase_state import ChoosePurchaseState
+from config import session
+from db.db import fillProductExample
+from db.db_utils import getUser
+from handlers.actions_list_handler import actionListHandlerInit
+from pagination import Pagination
+from res.action_list_text import CHOOSE_PURCHASE_BUTTON_TEXT
+from res.choose_purchase_text import *
+from res.general_text import BACK_BUTTON_TEXT, SOMETHING_WRONG
+from state.app_state import AppState
+from state.choose_purchase_state import ChoosePurchaseState
 
 choosePurchaseRouter = Router()
 

@@ -1,4 +1,4 @@
-from tg_bot.res.general_text import BACK_BUTTON_TEXT
+from res.general_text import BACK_BUTTON_TEXT
 
 PRODUCT_ACTION_HELLO_TEXT = f"""Выберите нужное действие"""
 

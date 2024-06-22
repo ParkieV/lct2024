@@ -6,7 +6,7 @@ from .v1.other_router import other_router
 from .v1.analytics_pick_router import analytics_router
 from .v1.analytics_all_router import analytics_all_router
 
-v1_router = APIRouter(tags=["v1"], prefix="/api/v1/ml")
+v1_router = APIRouter(tags=["v1"], prefix="/v1/ml")
 
 v1_router.include_router(matching_router)
 v1_router.include_router(forecast_router)

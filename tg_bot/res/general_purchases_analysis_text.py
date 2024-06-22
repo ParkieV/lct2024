@@ -1,4 +1,4 @@
-from tg_bot.res.general_text import BACK_BUTTON_TEXT
+from res.general_text import BACK_BUTTON_TEXT
 
 PURCHASES_STATISTIC_BUTTON_TEXT = "Статистика по закупкам"
 TOP_EXPENSIVE_BUTTON_TEXT = "Самые дорогие закупки"

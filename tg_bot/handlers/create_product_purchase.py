@@ -9,13 +9,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import session
-from tg_bot.db.db import User
-from tg_bot.db.db_utils import getUser
-from tg_bot.handlers.product_handler import productActionsInit
-from tg_bot.res.product_text import *
-from tg_bot.state.create_product_state import AddProductToPurchase
-from tg_bot.state.product_state import ProductState
+from config import AsyncSessionDB
+from db.db import User
+from db.db_utils import getUser
+from handlers.product_handler import productActionsInit
+from res.product_text import *
+from state.create_product_state import AddProductToPurchase
+from state.product_state import ProductState
 
 createPurchaseRouter = Router()
 
@@ -73,10 +73,17 @@ async def deliveryConditions(message: Message, state: FSMContext) -> None:
         "deliveryConditions": (await state.get_data())['deliveryConditions'],
         "entityId": (await state.get_data())['productName'],
     }
+    purchaseId = (await state.get_data())['active_purchase']
 
-    user: User = await getUser(message.chat.id)
-    user.putProduct(productData, (await state.get_data())['active_purchase'])
-    await session.commit()
+    async with AsyncSessionDB() as session:
+        user: User = await getUser(message.chat.id)
+        await user.putProduct(productData, purchaseId, session)
+    # user: User = await getUser(message.chat.id)
+    # print(user.purchases)
+    # user.putProduct(productData, purchaseId)
+    # print(user.purchases)
+    # await session.commit()
+    # print(user.purchases)
 
     await message.answer(text=ADDING_SUCCESS)
     await productActionsInit(message, state)

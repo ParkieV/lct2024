@@ -1,6 +1,14 @@
 {$DOMAIN} {
+
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+	handle /api_ml/* {
+		reverse_proxy ml:8080
+	}
 	handle {
 		root * /srv
+		encode gzip
 		try_files {path} /index.html
 		file_server
 	}

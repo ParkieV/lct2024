@@ -1,4 +1,4 @@
-from tg_bot.res.general_text import BACK_BUTTON_TEXT
+from res.general_text import BACK_BUTTON_TEXT
 
 INFO_BALANCE_BUTTON_TEXT = "Информация о балансе"
 EDIT_BALANCE_BUTTON_TEXT = "Редактировать баланс"

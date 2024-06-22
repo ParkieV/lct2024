@@ -6,9 +6,9 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import TelegramObject
 from sqlalchemy.orm import Session
 
-from tg_bot.db.db import User
-from tg_bot.db.db_utils import getUser
-from tg_bot.res.general_text import PERMISSION_RIGHTS_ERROR_TEXT, SOMETHING_WRONG
+from db.db import User
+from db.db_utils import getUser
+from res.general_text import PERMISSION_RIGHTS_ERROR_TEXT, SOMETHING_WRONG
 
 
 class RightsCheckMiddleware(BaseMiddleware):
@@ -26,7 +26,6 @@ class RightsCheckMiddleware(BaseMiddleware):
             rights = get_flag(data, "rights")
             user: User = await getUser(event.chat.id)
 
-            print(rights, user.rights, user.type)
             if rights is not None and user.type != 'admin':
                 isValid: bool = True
                 for right in rights:

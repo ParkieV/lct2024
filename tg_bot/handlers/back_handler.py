@@ -7,19 +7,19 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message
 
-from tg_bot.handlers.actions_list_handler import actionListHandlerInit
-from tg_bot.handlers.choose_purchase import choosePurchaseInit, choosePurchaseActionList
-from tg_bot.handlers.general_purchases_analysis_handler import commonPurchaseAnalysisInit
-from tg_bot.handlers.info_handler import infoHandlerInit
-from tg_bot.handlers.product_handler import productInit, productActionsInit, enterProductName
-from tg_bot.res.general_text import BACK_BUTTON_TEXT
-from tg_bot.state.app_state import AppState
-from tg_bot.state.choose_purchase_state import ChoosePurchaseState
-from tg_bot.state.create_new_purchase_state import CreateNewPurchaseState
-from tg_bot.state.create_product_state import AddProductToPurchase
-from tg_bot.state.general_purchase_analysis_state import CommonPurchaseAnalysisState
-from tg_bot.state.info_state import InfoState
-from tg_bot.state.product_state import ProductState
+from handlers.actions_list_handler import actionListHandlerInit
+from handlers.choose_purchase import choosePurchaseInit, choosePurchaseActionList
+from handlers.general_purchases_analysis_handler import commonPurchaseAnalysisInit
+from handlers.info_handler import infoHandlerInit
+from handlers.product_handler import productInit, productActionsInit, enterProductName
+from res.general_text import BACK_BUTTON_TEXT
+from state.app_state import AppState
+from state.choose_purchase_state import ChoosePurchaseState
+from state.create_new_purchase_state import CreateNewPurchaseState
+from state.create_product_state import AddProductToPurchase
+from state.general_purchase_analysis_state import CommonPurchaseAnalysisState
+from state.info_state import InfoState
+from state.product_state import ProductState
 
 backRouter = Router()
 
@@ -242,7 +242,7 @@ async def backButtonEditPurchase(message: Message, state: FSMContext) -> None:
     :return:
     """
     await state.set_state(AppState.actionList)
-    await choosePurchaseActionList(message, state)
+    await choosePurchaseInit(message, state)
 
 
 @backRouter.message(ProductState.productStatisticChoosePeriod, F.text == BACK_BUTTON_TEXT)

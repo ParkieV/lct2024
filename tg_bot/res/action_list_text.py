@@ -1,4 +1,4 @@
-from tg_bot.res.general_text import BACK_BUTTON_TEXT
+from res.general_text import BACK_BUTTON_TEXT
 
 ENTER_PRODUCT_NAME_BUTTON_TEXT = "Введите название товара"
 ACTIVE_PURCHASE_BUTTON_TEXT = "Активные закупки"

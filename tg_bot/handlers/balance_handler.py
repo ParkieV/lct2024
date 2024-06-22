@@ -8,12 +8,12 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.res.action_list_text import BALANCE_BUTTON_TEXT
-from tg_bot.res.balance_text import *
-from tg_bot.res.general_text import *
-from tg_bot.state.app_state import AppState
-from tg_bot.state.balance_state import BalanceState
-from tg_bot.utils import isFloat
+from res.action_list_text import BALANCE_BUTTON_TEXT
+from res.balance_text import *
+from res.general_text import *
+from state.app_state import AppState
+from state.balance_state import BalanceState
+from utils import isFloat
 
 balanceRouter = Router()
 

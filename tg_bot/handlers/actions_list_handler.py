@@ -8,9 +8,9 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.res.action_list_text import *
-from tg_bot.res.info_text import *
-from tg_bot.state.app_state import AppState
+from res.action_list_text import *
+from res.info_text import *
+from state.app_state import AppState
 
 actionListRouter = Router()
 

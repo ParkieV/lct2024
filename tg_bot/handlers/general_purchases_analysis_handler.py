@@ -8,15 +8,15 @@ from aiogram.fsm.state import default_state
 from aiogram.types import KeyboardButton, Message, BufferedInputFile
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from tg_bot.config import bot, apiURL_ML
-from tg_bot.db.db import User
-from tg_bot.db.db_utils import getUser
-from tg_bot.res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
-from tg_bot.res.general_purchases_analysis_text import *
-from tg_bot.res.general_text import *
-from tg_bot.state.app_state import AppState
-from tg_bot.state.general_purchase_analysis_state import CommonPurchaseAnalysisState
-from tg_bot.utils import base64ToBufferInputStream
+from config import bot, apiURL_ML
+from db.db import User
+from db.db_utils import getUser
+from res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
+from res.general_purchases_analysis_text import *
+from res.general_text import *
+from state.app_state import AppState
+from state.general_purchase_analysis_state import CommonPurchaseAnalysisState
+from utils import base64ToBufferInputStream
 
 
 class GeneralPurchaseAnalysis(object):
@@ -24,7 +24,7 @@ class GeneralPurchaseAnalysis(object):
     async def allStatistics(message: Message, period, price):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics_all/purchase_stats", params={
+            async with session.get(f"{apiURL_ML}/v1/ml/analytics_all/purchase_stats", params={
                 "period": period,
                 "summa": str(price),
             }) as r:
@@ -39,7 +39,7 @@ class GeneralPurchaseAnalysis(object):
     async def allHistoryAnalysis(message: Message):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
-            async with session.get(f"{apiURL_ML}/api/v1/ml/analytics_all/history", params={
+            async with session.get(f"{apiURL_ML}/v1/ml/analytics_all/history", params={
                 "n": 15,
             }) as r:
                 res = await r.json()

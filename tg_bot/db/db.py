@@ -3,7 +3,7 @@ from http.cookies import SimpleCookie
 from typing import Any
 
 from sqlalchemy import Column, Integer, Boolean, JSON, String
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import declarative_base
 
@@ -73,7 +73,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     db_id = Column(String, nullable=False)
     isAuth = Column(Boolean, nullable=False, default=False)
-    purchases = Column("purchases", MutableDict.as_mutable(JSON), default={})
+    purchases = Column("purchases", MutableDict.as_mutable(JSON()), default={})
 
     access_token = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)
@@ -87,7 +87,7 @@ class User(Base):
         self.refresh_token = ""
         self.json = {}
 
-    def createPurchase(self, json: dict[str, str]):
+    async def createPurchase(self, json: dict[str, str], session: AsyncSession):
         """Создание закупки"""
 
         self.purchases[json['id']] = {
@@ -97,20 +97,28 @@ class User(Base):
             "rows": [
             ]
         }
+        session.add(self)
+        await session.commit()
 
-    def putProduct(self, json: dict[str, str], purchaseId: str):
-        for i, row in enumerate(self.purchases[purchaseId]['rows']):
+    async def putProduct(self, json: dict[str, str], purchase_id: str, session: AsyncSession):
+        purchase = self.purchases.get(purchase_id, {})
+        rows = purchase.get('rows', [])
+
+        for i, row in enumerate(rows):
             if row['entityId'] == json['entityId']:
-                self.purchases[purchaseId]['rows'][i] = json
-                return
+                rows[i] = json
+                break
+        else:
+            rows.append(json)
 
-        self.purchases[purchaseId]['rows'].append(json)
-        print(json)
-        print(self.purchases[purchaseId])
+        purchase['rows'] = rows
+        self.purchases[purchase_id] = purchase
 
-    def getAllProducts(self, purchaseId: str) -> list[str]:
-        print(self.purchases[purchaseId])
-        return [row['entityId'] for row in self.purchases[purchaseId]['rows']]
+        session.add(self)
+        await session.commit()
+
+    def getAllProducts(self, purchase_id: str) -> list[str]:
+        return [row['entityId'] for row in self.purchases[purchase_id]['rows']]
 
     def deletePurchase(self, id: str):
         """Удаление закупки"""
@@ -118,10 +126,12 @@ class User(Base):
             return
         self.purchases.pop(id)
 
-    def setCookies(self, cookies: SimpleCookie):
+    async def setCookies(self, cookies: SimpleCookie, session: AsyncSession):
         """"Установка cookies"""
         self.access_token = cookies.get('access_token').value
         self.refresh_token = cookies.get('refresh_token').value
+        session.add(self)
+        await session.commit()
 
     @property
     def cookies(self):

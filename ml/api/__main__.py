@@ -127,7 +127,8 @@ def create_application():
         responses={404: {"description": "Not Found!"}},
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
-        openapi_tags=tags_metadata
+        openapi_tags=tags_metadata,
+	root_path="/api_ml"
     )
 
 app = create_application()

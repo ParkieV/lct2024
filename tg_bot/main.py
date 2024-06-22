@@ -34,6 +34,7 @@ async def startBot(message: Message, state: FSMContext) -> None:
     """
 
     await state.set_state(AppState.login)
+    print(message.chat.id)
 
     if await session.get(User, message.chat.id) is None:
         with open('res/img/hello.jpg', 'rb') as photo:
@@ -75,4 +76,5 @@ if __name__ == "__main__":
         loginRouter,
         *routerListForAuthRequired
     )
+
     asyncio.run(dp.start_polling(bot))

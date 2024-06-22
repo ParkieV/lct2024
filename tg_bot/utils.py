@@ -17,4 +17,3 @@ def base64ToBufferInputStream(img_base_64: str) -> bytes:
     print()
     print()
     return base64.decodebytes(imgBytes)
-
