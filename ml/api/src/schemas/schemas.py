@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import date
 
 class LeftoverSchema(BaseModel):
     state: str
@@ -40,3 +41,9 @@ class ExcelSchema(BaseModel):
 
 class AudioSchema(BaseModel):
     audio: str
+
+class ForecastJSONSchema(BaseModel):
+    start_date: date
+    end_date: date
+    nmc: int
+    deliveryAmount: int

@@ -2,6 +2,7 @@ import re
 import os
 import base64
 from io import BytesIO
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ from thefuzz import process
 import matplotlib.pyplot as plt
 from typing import Tuple
 from statsmodels.tsa.arima.model import ARIMA
+from fastapi import HTTPException
 
 from api.src.services.text_service import Dataset
 from api.src.configurations.models import model as MODEL, tokenizer as TOKENIZER
@@ -760,4 +762,39 @@ class UserPickMLService:
             'SPGZ_code': spgz_code,
             'SPGZ_name': spgz_name
         }
+    
+    def forecast_next_purchase(self):
+
+        path_contracts = f'{SCRIPT_LOC}/data/Выгрузка контрактов по Заказчику.xlsx'
+        path_voc = f'{SCRIPT_LOC}/data/КПГЗ ,СПГЗ, СТЕ.xlsx'
+
+        contracts = pd.read_excel(path_contracts)
+        voc = pd.read_excel(path_voc)
+        name = self.user_pick
+  
+        ph = PurchaseHistory(name, voc, contracts)
+        ph.get_purchases(include_rk=True, include_kpgz=True)
+        ph.drop_cancelled()
+        frame = ph.generate_features()
+
+        month_purchases = frame[['Оплачено, руб.', 'month', 'day_of_month', 'Длительность']].copy()
+        forecast_price = month_purchases.ewm(span=5).mean().round()
+
+        forecast = forecast_price.iloc[-1].astype(int)
+        start_date = pd.to_datetime(f'2023-{forecast["month"]}-{forecast["day_of_month"]}', format='%Y-%m-%d')
+        end_date = start_date + datetime.timedelta(int(forecast['Длительность']))
+        nmc = forecast['Оплачено, руб.']
+        deliveryAmount = forecast['Длительность']
+
+        print(start_date, end_date, nmc, deliveryAmount)
+        print(type(start_date), type(end_date), type(nmc), type(deliveryAmount))
+
+        result = {
+            'start_date': start_date.strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d'),
+            'nmc': int(nmc),
+            'deliveryAmount': int(deliveryAmount)
+        }
+
+        return result
     

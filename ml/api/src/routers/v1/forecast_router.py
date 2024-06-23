@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from matplotlib import pyplot as plt
 
 from api.src.configurations.users import get_user_session
-from api.src.schemas.schemas import ForecastSchema
+from api.src.schemas.schemas import ForecastSchema, ForecastJSONSchema
 
 
 forecast_router = APIRouter(
@@ -18,3 +18,11 @@ def get_forecast(period: int, user_id: str = Query(...), user_session=Depends(ge
         raise HTTPException(status_code=400, detail="Invalid period value. Must be 1, 2, or 3")
     
     return user_session['ml_service'].get_forecast(period)
+
+
+@forecast_router.get("/forecast_next_purchase", response_model=ForecastJSONSchema)
+def get_forecast(user_id: str = Query(...), user_session=Depends(get_user_session)):
+    if not user_session['ml_service'].check_regular():
+        raise HTTPException(status_code=404, detail='Pick is not regular!')
+    
+    return user_session['ml_service'].forecast_next_purchase()
