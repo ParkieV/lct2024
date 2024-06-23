@@ -18,7 +18,7 @@ function createAxios() {
         baseURL: apiUrl,
         withCredentials: true,
         jar: jar,
-        proxy: "https://purchasing-assistant.itatmisis.ru"
+        proxy: "http://localhost:8000"
     }));
 }
 
@@ -85,10 +85,10 @@ export const addUser = createAsyncThunk(
 
 export const patchUser = createAsyncThunk(
     'user/patchUser', async ({ user }, thunkAPI) => {
-        console.log(user);
+        console.log("user", user);
         let res = await axiosInstance.patch(`/api/user/`, {
             ...user
         });
-        console.log(res)
+        console.log("res", res)
         return res;
     })

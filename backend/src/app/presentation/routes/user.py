@@ -60,7 +60,7 @@ async def create_user(body: CreateRequestBodyDTO, *, request: Request, db_sessio
 async def update_user(body: UpdateRequestBodyDTO, *, request: Request, db_session = Depends(PostgresServiceFacade.get_async_session)) -> Response:
 	if not (payload := request.state.token_payload):
 		raise HTTPException(500, "Can't find token payload")
-	print(payload.user_id != str(body.id))
+	print("Asap", payload.user_id, str(body.id))
 	if "add_user" not in payload.rights and payload.user_id != str(body.id):
 		raise HTTPException(403, "Action is unavailable")
 
@@ -80,7 +80,11 @@ async def update_user(body: UpdateRequestBodyDTO, *, request: Request, db_sessio
 		if body.rights:
 			payload.rights = body.rights
 
-		await user_repo.update_object_by_id(payload.user_id, body, session=db_session)
+		if body.id:
+			await user_repo.update_object_by_id(body.id, body, session=db_session)
+		else:
+			await user_repo.update_object_by_id(payload.user_id, body, session=db_session)
+
 
 
 		time_temp: int = int(datetime.datetime.now(pytz.timezone('Europe/Moscow')).timestamp())

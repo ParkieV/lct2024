@@ -5,7 +5,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.18.0.0/16
+        - subnet: 172.22.0.0/16
 
 services:
   postgres:
@@ -26,7 +26,7 @@ services:
     privileged: true
     networks:
       network:
-        ipv4_address: 172.18.0.2
+        ipv4_address: 172.22.0.2
 
   redis:
     container_name: redis_hack
@@ -47,7 +47,7 @@ services:
       - 6379:6379
     networks:
       network:
-        ipv4_address: 172.18.0.3
+        ipv4_address: 172.22.0.3
 
   ml:
     container_name: ml_app
@@ -61,7 +61,7 @@ services:
       - ./volumes/ml_data:/ml_data
     networks:
       network:
-        ipv4_address: 172.18.0.4
+        ipv4_address: 172.22.0.4
 
   backend:
     container_name: backend_app
@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile
     networks:
       network:
-        ipv4_address: 172.18.0.5
+        ipv4_address: 172.22.0.5
 
   tg_bot:
     container_name: telegram_bot
@@ -90,7 +90,7 @@ services:
       dockerfile: Dockerfile
     networks:
       network:
-        ipv4_address: 172.18.0.6
+        ipv4_address: 172.22.0.6
 
   frontend:
     container_name: frontend_app
@@ -100,7 +100,7 @@ services:
       dockerfile: Dockerfile
     networks:
       network:
-        ipv4_address: 172.18.0.7
+        ipv4_address: 172.22.0.7
     cap_add: [ NET_ADMIN ]
     ports: [ 80:80, 443:443 ]
     volumes:

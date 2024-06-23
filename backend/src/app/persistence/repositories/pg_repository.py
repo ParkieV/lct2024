@@ -124,6 +124,9 @@ class AsyncPostgresRepository(AbstractDBRepository):
 								  *,
 								  session: AsyncSession
 								  ) -> None:
+
+		if updated_object.id:
+			del updated_object.id
 		query = (update(self.db_model)
 			.where(self.db_model.id == id)
 			.values(updated_object.model_dump(exclude_unset=True))

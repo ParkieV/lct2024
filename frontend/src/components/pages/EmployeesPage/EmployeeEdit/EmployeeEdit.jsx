@@ -41,45 +41,41 @@ class InputUserData {
  * @constructor
  */
 const EmployeeEdit = ({
-                          employee = null,
-                          isClosable = false,
-                          closeHandler = (e) => {
-                          },
-                          submitFormHandler = (form) => {
-                          },
-                          buttonFormSubmitRef = React.useRef(null),
-                          description = ""
-                      }) => {
+    employee = null,
+    isClosable = false,
+    closeHandler = (e) => {},
+    submitFormHandler = (form) => {},
+    buttonFormSubmitRef = React.useRef(null),
+    description = "",
+    isEdit = false,
+}) => {
     const formRef = React.useRef(null);
-    const employeeStore = useSelector(state => state.employee);
+    const employeeStore = useSelector((state) => state.employee);
 
     const [field, setField] = React.useState([
-        new InputUserData("Фамилия", "Фамилия", "last_name", true,),
-        new InputUserData("Имя", "Имя", "first_name", true,),
-        new InputUserData("Отчество (при наличии)", "Отчество", "middle_name",),
-        new InputUserData("@никнейм", "Telegram", "telegram_nickname", true,),
+        new InputUserData("Фамилия", "Фамилия", "last_name", true),
+        new InputUserData("Имя", "Имя", "first_name", true),
+        new InputUserData("Отчество (при наличии)", "Отчество", "middle_name"),
+        new InputUserData("@никнейм", "Telegram", "telegram_nickname", true),
         new InputUserData("В формате @mos.ru", "Адрес эл. почты", "email", true, "email"),
         new InputUserData("Пароль", "Пароль", "password", true, "password"),
         new InputUserData("+7-ххх-ххх-хх-хх", "Номер телефона", "phone", false, "tel"),
         // Select
-        new InputUserData("Выберите организацию", "Место работы", "work_org_id", true, "select",
-            employeeStore.organizations),
+        new InputUserData("Выберите организацию", "Место работы", "work_org_id", true, "select", employeeStore.organizations),
         new InputUserData("Укажите полную должность", "Должность", "position", true, "text"),
         // Select
-        new InputUserData("Настройте права", "Права в системе", "rights", true, "select",
-            [{value: "1", label: "Администратор"}], <RightsBlock/>)
+        new InputUserData("Настройте права", "Права в системе", "rights", true, "select", [{ value: "1", label: "Администратор" }], <RightsBlock />),
     ]);
 
     const dispatch = useDispatch();
 
     const onSubmit = (event) => {
         event.preventDefault();
-        submitFormHandler(formRef.current)
-    }
+        submitFormHandler(formRef.current);
+    };
 
     const checkValidation = (e) => {
-        const inputs = Array.from(formRef.current.elements).filter(elem =>
-            elem.tagName.toLowerCase() === 'input' && e.type !== "checkbox");
+        const inputs = Array.from(formRef.current.elements).filter((elem) => elem.tagName.toLowerCase() === "input" && e.type !== "checkbox");
         let isInvalid = false;
 
         let fieldLocal = [...field];
@@ -95,8 +91,7 @@ const EmployeeEdit = ({
             }
         }
 
-        const rights = Array.from(formRef.current.elements)
-            .filter(elem => elem.tagName.toLowerCase() === 'input' && elem.type === "checkbox");
+        const rights = Array.from(formRef.current.elements).filter((elem) => elem.tagName.toLowerCase() === "input" && elem.type === "checkbox");
 
         let isAnyValid = false;
         for (let i in rights) {
@@ -111,31 +106,33 @@ const EmployeeEdit = ({
         }
 
         setField(fieldLocal);
-    }
+    };
 
     return (
         <div className={style.employeeEditContainer}>
             <div className={style.employeeEditHeader}>
                 <b>{description}</b>
-                {isClosable &&
+                {isClosable && (
                     <button onClick={closeHandler}>
-                        <img src={closeSvg} alt=""/>
+                        <img src={closeSvg} alt="" />
                     </button>
-                }
+                )}
             </div>
             <form ref={formRef} className={style.employeeEditForm} onSubmit={onSubmit}>
-                {
-                    field.map((item, index) => {
-                        return (
-                            item.type !== "select" && <Input placeholder={item.placeholder}
-                                                             label={item.label}
-                                                             required={item.required}
-                                                             type={item.type}
-                                                             name={item.name}
-                                                             key={index}
-                                                             defaultValue={employee && employee[item.name] || ""}
-                                                             invalid={item.invalid}/>
-                            ||
+                {field.map((item, index) => {
+                    return (
+                        (item.type !== "select" && (
+                            <Input
+                                placeholder={item.placeholder}
+                                label={item.label}
+                                required={item.required}
+                                type={item.type}
+                                name={item.name}
+                                key={index}
+                                defaultValue={(employee && employee[item.name]) || ""}
+                                invalid={item.invalid}
+                            />
+                        )) || (
                             <Select
                                 placeholder={item.placeholder}
                                 label={item.label}
@@ -145,16 +142,15 @@ const EmployeeEdit = ({
                                 key={index}
                                 defaultValue={employee && employee[item.name]}
                                 invalid={item.invalid}
-                                block={item.block}/>
+                                block={item.block}
+                            />
                         )
-                    })
-                }
-                <button ref={buttonFormSubmitRef}
-                        type="submit"
-                        onClick={checkValidation}></button>
+                    );
+                })}
+                <button ref={buttonFormSubmitRef} type="submit" onClick={checkValidation}></button>
             </form>
         </div>
     );
-}
+};
 
 export default EmployeeEdit;
