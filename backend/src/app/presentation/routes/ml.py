@@ -1,5 +1,7 @@
 import io
+import json
 from typing import Any
+from app.schemas.token import SpeechRequestDTO
 from fastapi.responses import StreamingResponse
 import requests
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -218,6 +220,24 @@ async def get_all_purchase_stats(period: int, summa: bool, *, request: Request):
 		result = requests.get(f"{SERVER_SETTINGS.ml_uri}/v1/ml/analytics_all/purchase_stats", params={"period": period, "summa": summa})
 
 		return result
+	except HTTPException as http_err:
+		raise http_err
+	except Exception as err:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+							detail=err)
+
+@router.post("/transcribe_speech",
+			dependencies=[Depends(JWT.check_access_token)])
+async def get_text_from_speech(body: SpeechRequestDTO, *, request: Request):
+	if not (payload := request.state.token_payload):
+		raise HTTPException(500, "Can't find token payload")
+
+
+	try:
+		result = requests.post(f"{SERVER_SETTINGS.ml_uri}/v1/ml/s2t/transcribe",
+			params={"user_id": payload.user_id},
+			json={"audio": body.speech_file})
+		return Response(content=json.dumps(result.json()), media_type="application/json")
 	except HTTPException as http_err:
 		raise http_err
 	except Exception as err:
