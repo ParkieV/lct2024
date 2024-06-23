@@ -71,6 +71,7 @@ matplotlib==3.8.3
 matplotlib-inline==0.1.6
 mdurl==0.1.2
 ml-dtypes==0.3.2
+more-itertools==10.3.0
 mplcyberpunk==0.7.1
 mpmath==1.3.0
 murmurhash==1.0.10
@@ -80,6 +81,7 @@ networkx==3.2.1
 nltk==3.8.1
 numba==0.59.1
 numpy==1.26.4
+openai-whisper==20231117
 openpyxl==3.1.3
 opt-einsum==3.3.0
 optree==0.11.0
@@ -132,6 +134,7 @@ shellingham==1.5.4
 six==1.16.0
 smart-open==7.0.4
 sniffio==1.3.1
+soundfile==0.12.1
 spacy==3.7.5
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
@@ -152,6 +155,7 @@ termcolor==2.4.0
 thefuzz==0.22.1
 thinc==8.2.4
 threadpoolctl==3.4.0
+tiktoken==0.7.0
 tokenizers==0.19.1
 torch==2.3.1
 tornado==6.4

@@ -28,10 +28,10 @@ tags_metadata = [
         "description": """
 Эндпоинты для поиска похожих товаров и инициализации модели с выбранным товаром
         
-## /api/v1/ml/matching/show_reference
+## /v1/ml/matching/show_reference
 Поиск похожих в справочнике товаров по введенному запросу
 
-## /api/v1/ml/matching/set_user_pick
+## /v1/ml/matching/set_user_pick
 Инициализация модели с выбранным пользователем товаром
 
 ***Внимание! Без вызова данного запроса не будут работать запросы к API во вкладках Forecast Service, Other Endpoints, Analytics Endpoints for User Pick!***
@@ -42,7 +42,7 @@ tags_metadata = [
         "description": """
 Эндпоинты для прогнозирования
 
-## /api/v1/ml/forecast/forecast
+## /v1/ml/forecast/forecast
 Прогнозирование следующих закупок выбранного товара
 
 Принимает на вход period (1 - год, 2 - квартал, 3 - месяц)
@@ -53,13 +53,13 @@ tags_metadata = [
         "description": """
 Другие эндпоинты ML сервиса
 
-## /api/v1/ml/other/leftover_name
+## /v1/ml/other/leftover_name
 Получить похожий на выбранный товар остаток на складе
 
-## /api/v1/ml/other/check_regularity
+## /v1/ml/other/check_regularity
 Проверка товара на регулярность в закупках
 
-## /api/v1/ml/other/get_user_pick_info
+## /v1/ml/other/get_user_pick_info
 Получить информацию о выбранном товаре (СТЕ, Код, Наименование)
         """
     },
@@ -68,24 +68,24 @@ tags_metadata = [
         "description": """
 Эндпоинты аналитики для выбранного пользователем товара
 
-## /api/v1/ml/analytics/leftover_info
+## /v1/ml/analytics/leftover_info
 Получить информацию об остатках похожего товара на складе
 
 Возращает json со статусом запроса (Success или Wrong plot), датафреймом и изображением графика (в base64 формате)
 
-## /api/v1/ml/analytics/history
+## /v1/ml/analytics/history
 Вернуть N последних закупок выбранного товара
 
 Возращает json с файлом excel в base64 формате
 
-## /api/v1/ml/analytics/debit_credit_info
+## /v1/ml/analytics/debit_credit_info
 Получить информацию об ОС ведомости с выбранным товаром
 
 Ожидает bool параметр credit (True - сумма, False - количество)
 
 Возращает json со статусом запроса (Success или Wrong plot), датафреймом кредита/дебета, и изображением графика (в base64 формате)
 
-## /api/v1/ml/analytics/purchase_stats
+## /v1/ml/analytics/purchase_stats
 Получить статистику закупок по выбранному товару по годам, кварталам или месяцам
 
 Принимает на вход period (1 - год, 2 - квартал, 3 - месяц) и summa (True - сумма, False - количество)
@@ -98,18 +98,31 @@ tags_metadata = [
         "description": """
 Аналитика для всех товаров
 
-## /api/v1/ml/analytics_all/history
+## /v1/ml/analytics_all/history
 Вернуть N последних закупок всех товаров
 
 Возращает json с файлом excel в base64 формате
 
-## /api/v1/ml/analytics_all/purchase_stats
+## /v1/ml/analytics_all/purchase_stats
 Получить статистику закупок по всем товарам по годам, кварталам или месяцам
 
 Принимает на вход period (1 - год, 2 - квартал, 3 - месяц) и summa (True - сумма, False - количество)
 
 Возращает json со статусом запроса (Success или Wrong plot), датафреймом и изображением графика (в base64 формате)
 
+        """
+    },
+    {
+        "name": "Speech2Text Endpoints",
+        "description": """
+Сервис для расшифровки голосовых запросов
+
+## /v1/ml/s2t/transcribe
+Расшифровка голосового запроса
+
+Принимает в теле на вход аудио файл зашифрованный в base64 формате
+
+Возвращает расшифровку данного аудио
         """
     },
 ]
@@ -128,7 +141,7 @@ def create_application():
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
         openapi_tags=tags_metadata,
-	root_path="/api_ml"
+        root_path="/api_ml"
     )
 
 app = create_application()

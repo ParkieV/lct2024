@@ -37,3 +37,6 @@ class UserPickSchema(BaseModel):
 
 class ExcelSchema(BaseModel):
     file: str
+
+class AudioSchema(BaseModel):
+    audio: str

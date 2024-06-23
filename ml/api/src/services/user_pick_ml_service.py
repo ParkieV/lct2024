@@ -271,7 +271,7 @@ class UserPickMLService:
 
         plt.figure(figsize=(10, 5))
         bars = plt.bar(column_names, df[columns_to_out].values[0], color='#B12725') 
-        plt.title(f'Остатки на складе\n{self.user_pick}')
+        plt.title(f'Остатки на складе (Количество)\n{self.user_pick}')
         plt.xlabel('Квартал')
         plt.ylabel('Количество')
         plt.grid(axis='y', linestyle='--', alpha=0.7)
@@ -279,6 +279,15 @@ class UserPickMLService:
         for bar in bars:
             yval = bar.get_height()
             plt.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2), ha='center', va='bottom')
+
+        max_value = int(bar.get_height().max())
+        if max_value <= 2:
+            ytick_values = np.linspace(0, max_value, 3)
+        elif max_value <= 4:
+            ytick_values = np.linspace(0, max_value, 4)
+        else:
+            ytick_values = np.linspace(0, max_value, 5)
+        plt.yticks(ticks=ytick_values, labels=[f'{int(value)}' for value in ytick_values])
 
         plt.show()
 
@@ -323,6 +332,7 @@ class UserPickMLService:
         ph = PurchaseHistory(self.user_pick, voc, contracts)
 
         ph.get_purchases(include_rk=True, include_kpgz=True)
+        ph.generate_features()
         ph.drop_cancelled()
 
         return ph.check_regular_purchase()
@@ -393,10 +403,11 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Сумма {self.user_pick}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Сумма с товаром {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Сумма')
             plt.legend()
+            plt.grid(axis='y', linestyle='--', alpha=0.7)
 
             buf = BytesIO()
             plt.savefig(buf, format='png')
@@ -405,7 +416,7 @@ class UserPickMLService:
 
             plot_image = base64.b64encode(buf.read()).decode('utf-8')
 
-            if self.code == 404:
+            if self.code == 404 or ((sum(credit_df.to_dict().values()) == 0) and ((sum(debit_df.to_dict().values()) == 0))):
                 return {
                     'state': 'Wrong plot',
                     'credit': None,
@@ -437,7 +448,7 @@ class UserPickMLService:
             plt.figure(figsize=(10, 5))
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], credit_values, color='#B12725', label='Кредит')
             plt.bar(['1Q2022', '2Q2022', '3Q2022', '4Q2022'], debit_values, color='#2B7A78', label='Дебет')
-            plt.title(f'Оборотно-сальдовая ведомость\n Количество {self.user_pick}')
+            plt.title(f'Оборотно-сальдовая ведомость\n Количество товара {self.user_pick}')
             plt.xlabel('Квартал')
             plt.ylabel('Количество')
             plt.legend()
@@ -452,7 +463,7 @@ class UserPickMLService:
 
             plot_image = base64.b64encode(buf.read()).decode('utf-8')
 
-            if self.code == 404:
+            if self.code == 404 or ((sum(credit_df.to_dict().values()) == 0) and ((sum(debit_df.to_dict().values()) == 0))):
                 return {
                     'state': 'Wrong plot',
                     'credit': None,
@@ -514,16 +525,23 @@ class UserPickMLService:
             for x, y in zip(df.index, df.values):
                 plt.text(x, y, f'{y:.2f}', ha='center', va='bottom')
 
-            plt.title(f'Статистика закупок\n{self.user_pick}')
             if period == 1:
+                plt.title(f'Статистика закупок по годам\n Сумма закупок с {self.user_pick}')
                 plt.xlabel('Год')
                 plt.xticks(df.index)
             elif period == 2:
+                plt.title(f'Статистика закупок по кварталам\n Сумма закупок с {self.user_pick}')
                 plt.xlabel('Квартал')
                 plt.xticks(df.index)
             elif period == 3:
+                plt.title(f'Статистика закупок по месяцам\n Сумма закупок с {self.user_pick}')
                 plt.xlabel('Месяц')
                 plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
+
+            max_value = df.values.max()
+            ytick_values = np.linspace(0, max_value, 6)
+            plt.yticks(ticks=ytick_values, labels=[f'{int(value)}' for value in ytick_values])
+
             plt.ylabel('Цена ГК, руб.')
             plt.grid(axis='y', linestyle='--', alpha=0.7)
 
@@ -579,14 +597,16 @@ class UserPickMLService:
             
             plt.figure(figsize=(10, 5))
             plt.bar(df.index, df.values, color='#B12725')
-            plt.title(f'Статистика закупок\n{self.user_pick}')
             if period == 1:
+                plt.title(f'Статистика закупок по годам\nКоличество закупок с {self.user_pick}')
                 plt.xlabel('Год')
                 plt.xticks(df.index)
             elif period == 2:
+                plt.title(f'Статистика закупок по кварталам\nКоличество закупок с {self.user_pick}')
                 plt.xlabel('Квартал')
                 plt.xticks(df.index)
             elif period == 3:
+                plt.title(f'Статистика закупок по месяцам\nКоличество закупок с {self.user_pick}')
                 plt.xlabel('Месяц')
                 plt.xticks(list(month_name.keys()), list(month_name.values()), rotation=45)
             plt.ylabel('Количество закупок')
