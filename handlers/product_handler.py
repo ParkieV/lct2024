@@ -52,6 +52,8 @@ async def productInit(message: Message, state: FSMContext) -> None:
         KeyboardButton(text=CREATE_BUTTON_TEXT),
         KeyboardButton(text=EDIT_BUTTON_TEXT),
     ).row(
+        KeyboardButton(text=REGULAR_PRODUCTS_BUTTON_TEXT)
+    ).row(
         KeyboardButton(text=BACK_BUTTON_TEXT)
     )
 
@@ -69,6 +71,11 @@ async def editExistedProduct(message: Message, state: FSMContext) -> None:
         return
 
     await showProductNameSuggestedList(message, state, items=productList)
+
+
+@productRouter.message(ProductState.initActions, F.text == REGULAR_PRODUCTS_BUTTON_TEXT)
+async def regularProductList(message: Message, state: FSMContext) -> None:
+    await message.answer(text=REGULAR_PRODUCTS_LIST)
 
 
 @productRouter.message(ProductState.initActions, F.text == CREATE_BUTTON_TEXT)
