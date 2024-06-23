@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #Enviroment files
 *.env
 venv
@@ -16,8 +15,3 @@ volumes/
 # NGINX
 nginx/*
 !nginx/server.conf
-=======
-.idea
-.venv
-__pycache__
->>>>>>> origin/tgbot
