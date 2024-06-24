@@ -25,19 +25,19 @@ from utils import ApiActions
 class ProductActions:
     @staticmethod
     async def getSuggestedList(message, product_name):
-        # async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
-        #     async with session.get(f"{apiURL}/search/catalog", params={
-        #         "prompt": product_name
-        #     }) as r:
-        #         return (await r.json())[product_name]
-
-        user: User = await getUser(message.chat.id)
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f"{apiURL_ML}/v1/ml/matching/show_reference", params={
-                "prompt": product_name,
-                "user_id": user.db_id
+        async with aiohttp.ClientSession(cookies=await getUserCookies(message.chat.id)) as session:
+            async with session.get(f"{apiURL}/search/catalog", params={
+                "prompt": product_name
             }) as r:
-                return (await r.json())['values']
+                return (await r.json())[product_name]
+
+        # user: User = await getUser(message.chat.id)
+        # async with aiohttp.ClientSession() as session:
+        #     async with session.get(f"{apiURL_ML}/v1/ml/matching/show_reference", params={
+        #         "prompt": product_name,
+        #         "user_id": user.db_id
+        #     }) as r:
+        #         return (await r.json())['values']
 
     @staticmethod
     async def pickProduct(message, product_name: str) -> None:
