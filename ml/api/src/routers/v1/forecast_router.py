@@ -21,7 +21,7 @@ def get_forecast(period: int, user_id: str = Query(...), user_session=Depends(ge
 
 
 @forecast_router.get("/forecast_next_purchase", response_model=ForecastJSONSchema)
-def get_forecast(user_id: str = Query(...), user_session=Depends(get_user_session)):
+def get_next_forecast(user_id: str = Query(...), user_session=Depends(get_user_session)):
     if not user_session['ml_service'].check_regular():
         raise HTTPException(status_code=404, detail='Pick is not regular!')
     
