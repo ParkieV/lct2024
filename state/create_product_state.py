@@ -13,5 +13,3 @@ class AddProductToPurchase(StatesGroup):
     dateStart = State()  # Состояние ввода даты начала поставки
     dateEnd = State()  # Состояние ввода даты окончания поставки
     deliveryConditions = State()  # Состояние ввода условий поставки
-    entityId = State()  # Состояние ввода сквозного идентификатора СПГЗ (название товара)
-    finish = State()  # Состояние завершения закупки товара

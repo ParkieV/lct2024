@@ -15,17 +15,12 @@ class ProductState(StatesGroup):
     # Выбор действия над товаром
     productActions = State()
     productWaitActions = State()
-    productAnalysis = State()
-    productSuggestion = State()
-    productPurchase = State()
 
     predictChoosePeriod = State()
     predictChooseType = State()
 
     # Создание закупки с заказом
     waitPurchaseActions = State()
-    cretePurchase = State()
-    inputSubAccount = State()
 
     # Анализ товара
     productStatistic = State()

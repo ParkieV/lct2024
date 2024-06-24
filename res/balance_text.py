@@ -25,7 +25,7 @@ def INFO_BALANCE_MESSAGE_TEXT(purchases_list: list[list[str | int]], balance: in
 
 Сейчас на вашем балансе <b>{balance} руб</b>.
 
-В настоящее время стоимость ваших закупки:
+В настоящее время стоимость ваших закупок:
 {getPurchaseInfo()}
 Общая стоимость всех закупок <b>{getAllPurchasePrice()} руб</b>
   
