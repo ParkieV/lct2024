@@ -1,4 +1,4 @@
-export const apiUrl = "http://localhost:8000";
+export const apiUrl = "https://purchasing-assistant.itatmisis.ru";
 
 export const LOGIN_PAGE_URL = '/';
 export const EMPLOYEES_PAGE_URL = '/employees';
