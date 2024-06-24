@@ -39,6 +39,9 @@ cretePurchaseRouter = Router()
 @cretePurchaseRouter.message(AppState.createPurchase, F.text == CREATE_PURCHASE_BUTTON_TEXT,
                              flags={"rights": "create_purchase"})
 async def createNewPurchaseInit(message: Message, state: FSMContext) -> None:
+    """
+    Приветственное меню раздела <Создание закупки>
+    """
     await state.set_state(AppState.createPurchase)
 
     keyboard = ReplyKeyboardBuilder().row(
@@ -51,6 +54,9 @@ async def createNewPurchaseInit(message: Message, state: FSMContext) -> None:
 
 @cretePurchaseRouter.message(CreateNewPurchaseState.id, F.text != BACK_BUTTON_TEXT)
 async def enterId(message: Message, state: FSMContext) -> None:
+    """
+    Ввод идентификатор закупки
+    """
     id: str = message.text
     await state.update_data(id=id)
     await state.set_state(CreateNewPurchaseState.lotId)
@@ -58,15 +64,21 @@ async def enterId(message: Message, state: FSMContext) -> None:
 
 @cretePurchaseRouter.message(CreateNewPurchaseState.lotId, F.text != BACK_BUTTON_TEXT)
 async def enterLotId(message: Message, state: FSMContext) -> None:
+    """
+    Ввод идентификатор лота
+    """
     lotId: str = message.text
     await state.update_data(lotEntityId=lotId)
     await state.set_state(CreateNewPurchaseState.customerId)
 
 
 @cretePurchaseRouter.message(CreateNewPurchaseState.customerId, F.text != BACK_BUTTON_TEXT)
-async def enterLotId(message: Message, state: FSMContext) -> None:
-    CustomerId: str = message.text
-    await state.update_data(CustomerId=CustomerId)
+async def enterCustomerId(message: Message, state: FSMContext) -> None:
+    """
+    Ввод идентификатор покупателя
+    """
+    customerId: str = message.text
+    await state.update_data(CustomerId=customerId)
     await state.set_state(CreateNewPurchaseState.customerId)
 
     purchaseHeader: dict[str, str] = {

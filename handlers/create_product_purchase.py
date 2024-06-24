@@ -25,6 +25,9 @@ createPurchaseRouter = Router()
 class CreateProductPurchaseActions(object):
     @staticmethod
     async def predictNextPurchaseValues(message: Message):
+        """
+        Прогноз данных товара для следующей закупки
+        """
         user: User = await getUser(message.from_user.id)
         async with ClientSession() as session:
             async with session.get(f"{apiURL_ML}/v1/ml/forecast/forecast_next_purchase", params={

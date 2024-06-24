@@ -71,9 +71,7 @@ if __name__ == "__main__":
             storage=stateStorage
         ))
         # Устанавливаем middleware для проверки прав
-        router.message.middleware(RightsCheckMiddleware(
-            storage=stateStorage
-        ))
+        router.message.middleware(RightsCheckMiddleware())
 
     dp.include_routers(
         loginRouter,

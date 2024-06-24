@@ -8,6 +8,7 @@ from db.db import User
 
 async def logout(chat_id: int) -> bool:
     """
+    Деаутентификация пользователя
     :param chat_id: - идентификатор чата для получения объекта пользователя из БД
     :return: bool - успешный выход из аккаунта или нет
     """
@@ -31,15 +32,20 @@ async def logout(chat_id: int) -> bool:
 
 
 async def getUser(chat_id: int) -> User:
+    """
+    Получение объекта пользователя из БД
+    :param chat_id: - идентификатор чата для получения объекта пользователя из БД
+    :return: User - объект пользователя
+    """
     async with AsyncSessionDB() as session:
         user: User = await session.get(User, chat_id)
         return user
 
 
-async def getUserBySession(chat_id: int, session: AsyncSessionDB) -> User:
-    user: User = await session.get(User, chat_id)
-    return user
-
-
 async def getUserCookies(chat_id: int) -> dict[str, str]:
+    """
+    Получение cookies пользователя из БД
+    :param chat_id: - идентификатор чата для получения объекта пользователя из БД
+    :return: dict[str, str] - cookies пользователя
+    """
     return (await getUser(chat_id)).cookies

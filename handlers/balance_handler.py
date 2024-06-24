@@ -24,6 +24,9 @@ balanceRouter = Router()
 @balanceRouter.message(AppState.generalActions, F.text == BALANCE_BUTTON_TEXT, flags={"rights": "balance"})
 @balanceRouter.message(AppState.balance, F.text == BALANCE_BUTTON_TEXT, flags={"rights": "balance"})
 async def balanceInit(message: Message, state: FSMContext) -> None:
+    """
+    Приветственное меню раздела <Баланс>
+    """
     await state.set_state(AppState.balance)
 
     keyboard = ReplyKeyboardBuilder().row(
@@ -40,6 +43,9 @@ async def balanceInit(message: Message, state: FSMContext) -> None:
 @balanceRouter.message(default_state, F.text == INFO_BALANCE_BUTTON_TEXT)
 @balanceRouter.message(AppState.balance, F.text == INFO_BALANCE_BUTTON_TEXT)
 async def infoBalance(message: Message, state: FSMContext) -> None:
+    """
+    Информация о балансе стоимости закупок
+    """
     await state.set_state(AppState.balance)
 
     user: User = await getUser(message.from_user.id)
@@ -55,12 +61,19 @@ async def infoBalance(message: Message, state: FSMContext) -> None:
 @balanceRouter.message(default_state, F.text == EDIT_BALANCE_BUTTON_TEXT)
 @balanceRouter.message(AppState.balance, F.text == EDIT_BALANCE_BUTTON_TEXT)
 async def editBalanceAccount(message: Message, state: FSMContext) -> None:
+    """
+    Начало редактирования баланса
+    """
     await state.set_state(BalanceState.editBalance)
     await message.answer(text=INPUT_BALANCE_SUM_MESSAGE_TEXT)
 
 
 @balanceRouter.message(BalanceState.editBalance)
 async def completeEditBalance(message: Message, state: FSMContext) -> None:
+    """
+    Завершение редактирования баланса
+    """
+
     try:
         balanceSum: int = int(message.text)
 

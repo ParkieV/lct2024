@@ -31,10 +31,6 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
         """
         Если пользователь не авторизован, то отправляет пользователю сообщение с текстом {PERMISSION_AUTH_ERROR_TEXT}.
         Если пользователь авторизован, то вызывает функцию {handler}.
-        :param handler:
-        :param event:
-        :param data:
-        :return:
         """
         try:
             async with AsyncSessionDB() as sessionDB:

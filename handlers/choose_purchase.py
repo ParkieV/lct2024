@@ -27,6 +27,9 @@ choosePurchaseRouter = Router()
 @choosePurchaseRouter.message(AppState.generalActions, F.text == CHOOSE_PURCHASE_BUTTON_TEXT)
 @choosePurchaseRouter.message(ChoosePurchaseState.choosePurchase, F.text == CHOOSE_PURCHASE_BUTTON_TEXT)
 async def choosePurchaseInit(message: Message, state: FSMContext) -> None:
+    """
+    Приветственное меню раздела <Выбор закупки>
+    """
     user = await getUser(message.chat.id)
     purchases_list = [key for key, value in user.purchases.items()]
 
@@ -51,6 +54,9 @@ async def choosePurchaseInit(message: Message, state: FSMContext) -> None:
 
 @choosePurchaseRouter.message(ChoosePurchaseState.choosePurchase, F.text != BACK_BUTTON_TEXT)
 async def choosePurchaseFromList(message: Message, state: FSMContext) -> None:
+    """
+    Выбор закупки из списка
+    """
     try:
         index: int = int(message.text) - 1
         pagination: Pagination = (await state.get_data())["pagination"]
@@ -65,6 +71,9 @@ async def choosePurchaseFromList(message: Message, state: FSMContext) -> None:
 
 @choosePurchaseRouter.message(ChoosePurchaseState.actionsList, F.text != BACK_BUTTON_TEXT)
 async def choosePurchaseActionList(message: Message, state: FSMContext) -> None:
+    """
+    Список кнопок с действиями над закупкой
+    """
     await state.set_state(ChoosePurchaseState.chooseActionsFromList)
 
     keyboard = ReplyKeyboardBuilder().row(
@@ -82,6 +91,9 @@ async def choosePurchaseActionList(message: Message, state: FSMContext) -> None:
 
 @choosePurchaseRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == DOWNLOAD_PURCHASE_BUTTON_TEXT)
 async def downloadActivePurchase(message: Message, state: FSMContext) -> None:
+    """
+    Скачивание закупки в файл JSON
+    """
     user = await getUser(message.chat.id)
 
     purchases: dict = user.purchases[(await state.get_data())["active_purchase"]].copy()
@@ -98,18 +110,12 @@ async def downloadActivePurchase(message: Message, state: FSMContext) -> None:
 
 @choosePurchaseRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == DELETE_PURCHASE_BUTTON_TEXT)
 async def deleteActivePurchase(message: Message, state: FSMContext) -> None:
+    """
+    Удаление закупки
+    """
     user = await getUser(message.chat.id)
     async with AsyncSessionDB() as sessionDB:
         await user.deletePurchase((await state.get_data())["active_purchase"], sessionDB)
 
     await message.answer(text=DELETE_PURCHASE_SUCCESS_MESSAGE)
     await actionListHandlerInit(message, state)
-
-# @choosePurchaseRouter.message(ChoosePurchaseState.chooseActionsFromList, F.text == EDIT_PURCHASE_BUTTON_TEXT)
-# async def editPurchase(message: Message, state: FSMContext) -> None:
-#     keyword = ReplyKeyboardBuilder().add(
-#         KeyboardButton(text=BACK_BUTTON_TEXT),
-#         KeyboardButton(text=DELETE_PURCHASE_BUTTON_TEXT),
-#     ).row(
-#         KeyboardButton(text=BACK_BUTTON_TEXT),
-#     )
