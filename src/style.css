@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    font-size: max(1em, 1vw);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+:root {
+    --font-family: "Graphik LCG", sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background: #f0f0f2;
+}
+
+button, input, select, textarea {
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+/*Нужно для того, что при автозаполнении от браузера input не выделялся желтым цветом*/
+input:-webkit-autofill {
+    transition: all 9999999999s ease-in-out;
+}
+
+button {
+    cursor: pointer;
+}
+
+input, textarea {
+    cursor: text;
+}
+
+img, button {
+    user-select: none;
+}
