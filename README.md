@@ -24,10 +24,9 @@
   - График по обороту дебет/кредит по годам/кварталам/месяцам и по цене/количеству.
   - График с остатками товара на складе.
 
-<br/>
+|Аудио|Баланс|Прогнозирование|
+|:-:|:-:|:-:|
+|![](https://github.com/ParkieV/lct2024/assets/61056244/4f9ab7ea-b43b-4420-b7cd-5dbf9d955666)|![](https://github.com/ParkieV/lct2024/assets/61056244/483381e0-994b-4adb-a533-3e0509ef9078)|![](https://github.com/ParkieV/lct2024/assets/61056244/877ddd42-0d58-487d-b2a9-39074f1ff169)|
 
-<img src="https://github.com/ParkieV/lct2024/assets/61056244/4f9ab7ea-b43b-4420-b7cd-5dbf9d955666" width="33%">
-<img src="https://github.com/ParkieV/lct2024/assets/61056244/483381e0-994b-4adb-a533-3e0509ef9078" width="33%">
-<img src="https://github.com/ParkieV/lct2024/assets/61056244/877ddd42-0d58-487d-b2a9-39074f1ff169" width="33%">
 
 
