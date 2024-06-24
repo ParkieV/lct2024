@@ -11,8 +11,8 @@ from config import apiURL, AsyncSessionDB
 from db.db import User
 from db.db_utils import getUser
 from handlers.choose_purchase import choosePurchaseActionList
-from res.general_actions_text import *
 from res.create_new_purchase_text import *
+from res.general_actions_text import *
 from state.app_state import AppState
 from state.create_new_purchase_state import CreateNewPurchaseState
 

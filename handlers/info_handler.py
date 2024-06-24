@@ -9,7 +9,6 @@ from aiogram.types import KeyboardButton, Message, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from db.db_utils import logout
-from handlers.general_actions import actionListHandlerInit
 from res.general_text import SOMETHING_WRONG, BACK_BUTTON_TEXT
 from res.info_text import *
 from res.login_text import TRANSITION_BUTTON_TEXT
