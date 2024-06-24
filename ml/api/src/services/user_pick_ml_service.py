@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from statsmodels.tsa.arima.model import ARIMA
 from fastapi import HTTPException
+import matplotlib
 
 from api.src.services.text_service import Dataset
 from api.src.configurations.models import model as MODEL, tokenizer as TOKENIZER
@@ -660,74 +661,118 @@ class UserPickMLService:
         else:
             return {'state': 'Invalid period', 'prediction': 0, 'plot_image': str()}
 
-        try:
-            if horizon == 'month':
+        if horizon == 'month':
+            try:
                 month_purchases = df.loc[df['month'] == 1]
                 month_purchases = month_purchases.groupby(['year', 'month']).sum()['Оплачено, руб.'].reset_index()
                 forecast_price = month_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
-                month_purchases.index = month_purchases['year'].astype(str) + '-' + month_purchases['month'].astype(int).astype(str)
-                next_period_label = f'2023-1'
-                month_purchases.loc[next_period_label] = (2023, 1, forecast_price)
-                month_purchases['year'] = month_purchases['year'].astype(int).astype(str)
-                month_purchases['month'] = month_purchases['month'].astype(int).astype(str)
+                month_purchases.index = month_purchases['year'].astype('str') + '-' + month_purchases['month'].astype('str')
+            except:
+                forecast_price = 0
+
+            finally:
+                month_purchases.loc[f'2023-{1}'] = forecast_price
                 df = month_purchases.copy()
 
-            elif horizon == 'quarter':
+        elif horizon == 'quarter':
+            try:
                 quarter_purchases = df.loc[df['quarter'] == 1]
                 quarter_purchases = quarter_purchases.groupby(['year', 'quarter']).sum()['Оплачено, руб.'].reset_index()
                 forecast_price = quarter_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
-                quarter_purchases.index = quarter_purchases['year'].astype(str) + '-Q' + quarter_purchases['quarter'].astype(int).astype(str)
-                next_period_label = f'2023-Q1'
-                quarter_purchases.loc[next_period_label] = forecast_price
-                quarter_purchases.loc[next_period_label] = (2023, 1, forecast_price)
-                print(quarter_purchases)
-                quarter_purchases['year'] = quarter_purchases['year'].astype(int).astype(str)
-                quarter_purchases['quarter'] = quarter_purchases['quarter'].astype(int).astype(str)
+                quarter_purchases.index = quarter_purchases['year'].astype('str') + '-Q' + quarter_purchases['quarter'].astype('str')
+            except:
+                forecast_price = 0
+
+            finally:
+                quarter_purchases.loc[f'2023-Q{1}'] = forecast_price
                 df = quarter_purchases.copy()
 
-            elif horizon == 'year':
-                year_purchases = df.groupby(['year']).sum()['Оплачено, руб.'].reset_index()
+        elif horizon == 'year':
+
+            try:
+                year_purchases = df.copy()
+                year_purchases = year_purchases.groupby(['year']).sum()['Оплачено, руб.'].reset_index()
                 forecast_price = year_purchases['Оплачено, руб.'].ewm(span=3).mean().iloc[-1].round()
-                year_purchases.index = year_purchases['year'].astype(str)
-                next_period_label = '2023'
-                year_purchases.loc[next_period_label] = forecast_price
-                year_purchases.loc[next_period_label] = (2023, 1, forecast_price)
-                year_purchases['year'] = year_purchases['year'].astype(int).astype(str)
+                year_purchases.index = year_purchases['year'].astype('str')
+
+            except:
+                forecast_price = 0
+
+            finally:
+                year_purchases.loc['2023'] = forecast_price
                 df = year_purchases.copy()
 
-
-        except Exception as e:
-            print(f"Error occurred: {e}")
-            forecast_price = 0
+        else:
+            pass
 
         # Plotting
-        plt.figure(figsize=(10, 5))
         if horizon == 'year':
-            plt.plot(df.index[:-1], df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
-            plt.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].iloc[-2], df['Оплачено, руб.'].iloc[-1]], 'o--', color='#2B7A78', label='Прогноз')
+            fig, ax = plt.subplots(1, figsize=[10,5], sharex=True)
+
+            ax.plot(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            if df.shape[0] > 1:
+                ax.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].values[-2], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+            else:
+                ax.plot([df.index[-1], df.index[-1]], [df['Оплачено, руб.'].values[-1], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+
+            for i, (x, y) in enumerate(zip(df.index.values, df['Оплачено, руб.'].values)):
+                plt.annotate(round(y), (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+
+            ax.scatter(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            ax.get_yaxis().set_major_formatter(
+            matplotlib.ticker.FuncFormatter(lambda x, p: str(round(x))))
+
+            print(df.columns)
+            print(df)
+
             plt.xlabel('Год')
-            plt.xticks(df.index)
 
         elif horizon == 'quarter':
-            actual_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][:-1], df['quarter'][:-1])]
-            forecast_index = [f'{year}-Q{quarter}' for year, quarter in zip(df['year'][-2:], df['quarter'][-2:])]
-            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
-            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
+            fig, ax = plt.subplots(1, figsize=[10,5], sharex=True)
+
+            ax.plot(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            if df.shape[0] > 1:
+                ax.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].values[-2], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+            else:
+                ax.plot([df.index[-1], df.index[-1]], [df['Оплачено, руб.'].values[-1], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+
+            for i, (x, y) in enumerate(zip(df.index.values, df['Оплачено, руб.'].values)):
+                plt.annotate(round(y), (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+
+            ax.scatter(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            ax.get_yaxis().set_major_formatter(
+            matplotlib.ticker.FuncFormatter(lambda x, p: str(round(x))))
+
+            print(df.columns)
+            print(df)
+
             plt.xlabel('Квартал')
-            print(forecast_index)
-            plt.xticks(actual_index + forecast_index[-1:])
 
         elif horizon == 'month':
-            actual_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][:-1], df['month'][:-1])]
-            forecast_index = [f'{int(year)}-{int(month):02d}' for year, month in zip(df['year'][-2:], df['month'][-2:])]
-            plt.plot(actual_index, df['Оплачено, руб.'].iloc[:-1], color='#B12725', label='История', marker='o')
-            plt.plot(forecast_index, df['Оплачено, руб.'].iloc[-2:], 'o--', color='#2B7A78', label='Прогноз')
+            
+            fig, ax = plt.subplots(1, figsize=[10,5], sharex=True)
+
+            ax.plot(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            print(df.shape[0])
+            if df.shape[0] > 1:
+                ax.plot([df.index[-2], df.index[-1]], [df['Оплачено, руб.'].values[-2], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+            else:
+                ax.plot([df.index[-1], df.index[-1]], [df['Оплачено, руб.'].values[-1], df['Оплачено, руб.'].values[-1]], 'o--', color='#2B7A78', label='Прогноз')
+
+            for i, (x, y) in enumerate(zip(df.index.values, df['Оплачено, руб.'].values)):
+                plt.annotate(round(y), (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+
+            ax.scatter(df.index[:-1], df['Оплачено, руб.'].values[:-1], color='#B12725', label='История')
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            ax.get_yaxis().set_major_formatter(
+            matplotlib.ticker.FuncFormatter(lambda x, p: str(round(x))))
+
             plt.xlabel('Месяц')
-            print(forecast_index)
-            plt.xticks(actual_index + forecast_index[-1:])
         
         plt.title(f'Прогноз закупок\n{self.user_pick}')
-        plt.ylabel('Цена')
+        plt.ylabel('Сумма, руб')
         plt.legend()
         plt.grid(axis='y', linestyle='--', alpha=0.7)
 
