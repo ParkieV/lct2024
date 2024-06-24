@@ -22,4 +22,3 @@ stateStorage = MemoryStorage()
 dp = Dispatcher(storage=stateStorage)
 
 AsyncSessionDB = async_sessionmaker(bind=engine)
-session = AsyncSessionDB()

@@ -1,3 +1,4 @@
+import traceback
 from typing import Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware
@@ -18,8 +19,7 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
     Middleware проверяет авторизован ли пользователь.
     """
 
-    def __init__(self, session: AsyncSessionDB, storage: MemoryStorage):
-        self.session: AsyncSessionDB = session
+    def __init__(self, storage: MemoryStorage):
         self.storage: MemoryStorage = storage
 
     async def __call__(
@@ -31,26 +31,20 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
         """
         Если пользователь не авторизован, то отправляет пользователю сообщение с текстом {PERMISSION_AUTH_ERROR_TEXT}.
         Если пользователь авторизован, то вызывает функцию {handler}.
-        :param handler:
-        :param event:
-        :param data:
-        :return:
         """
         try:
-            user: User | None = None
-
             async with AsyncSessionDB() as sessionDB:
                 user: User = await sessionDB.get(User, event.chat.id)
-                if user is None or user.access_token is None:
+
+                if user is None or user.access_token is None or user.isAuth is False:
                     raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)
 
-                async with aiohttp.ClientSession(cookies={"refresh_token": user.refresh_token}) as session:
+                async with aiohttp.ClientSession(cookies=user.cookies) as session:
                     async with session.post(f"{apiURL}/auth/refresh") as response:
                         if response.status != 200:
                             raise PermissionError(PERMISSION_AUTH_ERROR_TEXT)
 
                         await user.setCookies(response.cookies, sessionDB)
-                        await sessionDB.commit()
 
             return await handler(event, data)
         except PermissionError as pe:
@@ -64,5 +58,5 @@ class AuthorizationCheckMiddleware(BaseMiddleware):
 
             return await event.answer(pe.__str__(), reply_markup=builder.as_markup())
         except Exception as e:
-            print(type(e), e)
+            traceback.print_exception(e)
             return await event.answer(SOMETHING_WRONG)

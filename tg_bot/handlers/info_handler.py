@@ -9,7 +9,6 @@ from aiogram.types import KeyboardButton, Message, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from db.db_utils import logout
-from handlers.actions_list_handler import actionListHandlerInit
 from res.general_text import SOMETHING_WRONG, BACK_BUTTON_TEXT
 from res.info_text import *
 from res.login_text import TRANSITION_BUTTON_TEXT
@@ -27,7 +26,7 @@ async def infoHandlerInit(message: Message, state: FSMContext) -> None:
     :param message:
     :param state:
     """
-    await state.set_state(AppState.info, )
+    await state.set_state(AppState.info)
 
     keyboard = ReplyKeyboardBuilder().add(
         KeyboardButton(text=CONTINUE_BUTTON_TEXT)
@@ -79,7 +78,7 @@ async def sendAssertedError(message: Message, state: FSMContext) -> None:
     :param state:
     :return:
     """
-    print(message.text)
+
     await state.set_state(AppState.info)
     await message.reply(text=ASSERT_MESSAGE_SUCCESS)
     await infoHandlerInit(message, state)
@@ -101,16 +100,3 @@ async def exitFromAccount(message: Message, state: FSMContext) -> None:
         await state.clear()
     else:
         await message.answer(text=SOMETHING_WRONG)
-
-
-@infoRouter.message(default_state, F.text == CONTINUE_BUTTON_TEXT)
-@infoRouter.message(AppState.info, F.text == CONTINUE_BUTTON_TEXT)
-async def continueAction(message: Message, state: FSMContext) -> None:
-    """
-    Функция для перехода к следующему разделу <Общий список действий>.
-    :param message:
-    :param state:
-    :return:
-    """
-    await state.set_state(AppState.actionList)
-    await actionListHandlerInit(message, state)

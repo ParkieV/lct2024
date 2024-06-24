@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import traceback
 from http.cookies import SimpleCookie
 
 import aiohttp
@@ -12,7 +13,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from config import apiURL, session
+from config import apiURL, AsyncSessionDB
 from db.db import User
 from db.db_utils import getUser
 from handlers.info_handler import infoHandlerInit
@@ -35,7 +36,8 @@ async def loginHandlerInit(message: types.Message, state: FSMContext) -> None:
     :return:
     """
     user: User = await getUser(message.chat.id)
-    if user is not None and user.access_token is not None:
+    if user is not None and user.access_token is not None and user.isAuth:
+        print(user.db_id)
         await goToInfoHandler(message, state)
         return
 
@@ -65,7 +67,7 @@ async def getLogin(message: types.Message, state: FSMContext) -> None:
     :param message:
     :param state:
     """
-    await state.update_data(login=message.text.lower())
+    await state.update_data(login=message.text)
     await message.answer(ENTER_PASSWORD)
     await state.set_state(AuthState.password)
 
@@ -78,9 +80,9 @@ async def getPassword(message: types.Message, state: FSMContext) -> None:
     :param message:
     :param state:
     """
-    await state.update_data(password=message.text.lower())
+    await state.update_data(password=message.text)
     auth: AuthorizationCredentialsChecker = AuthorizationCredentialsChecker(**await state.get_data())
-    auth.isAuth = await auth.checkData()
+    await auth.checkData()
     await __checkAuthentication(message, state, auth)
 
 
@@ -99,21 +101,25 @@ async def __checkAuthentication(message: types.Message, state: FSMContext,
     try:
         await state.clear()
 
-        if auth.isAuth:
-            user: User = await getUser(message.chat.id)
+        if not auth.isAuth:
+            raise PermissionError(WRONG_LOGIN_OR_PASSWORD)
+
+        async with AsyncSessionDB() as sessionDB:
+            user: User = await sessionDB.get(User, message.chat.id)
             if user is None:
-                session.add(User(id=message.chat.id, isAuth=auth.isAuth, rights=auth.rights,
-                                 type='admin' if auth.isAdmin else 'user', db_id=auth.db_id))
-            user = await session.get(User, message.chat.id)
-            await user.setCookies(auth.cookies, session)
+                sessionDB.add(User(id=message.chat.id, isAuth=auth.isAuth, rights=auth.rights,
+                                   type='admin' if auth.isAdmin else 'user', db_id=auth.db_id))
+                await sessionDB.commit()
 
-            await session.commit()
+                user = await sessionDB.get(User, message.chat.id)
+                await user.setCookies(auth.cookies, sessionDB)
+            else:
+                user.isAuth = True
+                await user.setCookies(auth.cookies, sessionDB)
+                await sessionDB.commit()
 
-            await message.answer(RIGHT_LOGIN_AND_PASSWORD)
-            await goToInfoHandler(message, state)
-            return
-
-        raise PermissionError(WRONG_LOGIN_OR_PASSWORD)
+        await message.answer(RIGHT_LOGIN_AND_PASSWORD)
+        await goToInfoHandler(message, state)
     except PermissionError as pe:
         builder = InlineKeyboardBuilder()
         builder.add(InlineKeyboardButton(
@@ -123,7 +129,7 @@ async def __checkAuthentication(message: types.Message, state: FSMContext,
 
         await message.answer(pe.__str__(), reply_markup=builder.as_markup())
     except Exception as e:
-        print(e)
+        traceback.print_exception(e)
         await message.answer(SOMETHING_WRONG)
 
 
@@ -146,13 +152,13 @@ class AuthorizationCredentialsChecker(object):
     def __init__(self, login: str, password: str, **kwargs):
         self.__login: str = login
         self.__password: str = password
-        self.cookies: SimpleCookie = None
+        self.cookies: SimpleCookie | None = None
         self.rights: str = ""
         self.isAdmin: bool = False
         self.isAuth: bool = False
         self.db_id: str = ""
 
-    async def checkData(self) -> bool:
+    async def checkData(self) -> None:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(f"{apiURL}/auth/login/", json={
@@ -160,13 +166,16 @@ class AuthorizationCredentialsChecker(object):
                     "password": self.__password
                 }) as response:
                     jsonRes = await response.json()
+
                     if response.status == 200:
+                        self.isAuth = False
                         self.cookies = response.cookies
                         self.rights = jsonRes["rights"]
                         self.isAdmin = "add_user" in self.rights.split(";")
                         self.db_id = jsonRes["id"]
-                        return True
+                        self.isAuth = True
+                        return
         except Exception as e:
-            print(e)
+            traceback.print_exception(e)
 
-        return False
+        self.isAuth = False

@@ -19,12 +19,16 @@ class ProductState(StatesGroup):
     productSuggestion = State()
     productPurchase = State()
 
-    choosePeriod = State()
+    predictChoosePeriod = State()
+    predictChooseType = State()
 
     # Создание закупки с заказом
     waitPurchaseActions = State()
     cretePurchase = State()
     inputSubAccount = State()
 
+    # Анализ товара
     productStatistic = State()
     productStatisticChoosePeriod = State()
+    productDebitCredit = State()
+    enterLastNProducts = State()

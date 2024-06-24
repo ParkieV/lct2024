@@ -9,12 +9,12 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 class Pagination(object):
-    CALLBACK_DATA_START_NEXT = "next_page_"
-    CALLBACK_DATA_START_PREV = "prev_page_"
-
     """
     Класс для генерации постраничного меню
     """
+
+    CALLBACK_DATA_START_NEXT = "next_page_"
+    CALLBACK_DATA_START_PREV = "prev_page_"
 
     def __init__(
             self,
@@ -30,6 +30,7 @@ class Pagination(object):
         будет {self.CALLBACK_DATA_START_NEXT}{self.callback_data_end} и
         {self.CALLBACK_DATA_START_PREV}{self.callback_data_end} соответственно callback_data.
         По умолчанию будет callback_data_end - пустая строка.
+        По умолчанию используются функции pagination.py:nextPageProduct и pagination.py:prevPageProduct
         """
         self.items: list = items
         self.__max_items_per_page: int = max_items_per_page
@@ -94,6 +95,9 @@ paginationRouter = Router()
 @paginationRouter.callback_query(
     F.data == f"{Pagination.CALLBACK_DATA_START_NEXT}")
 async def nextPageProduct(callback: types.CallbackQuery, state: FSMContext) -> None:
+    """
+    Функция, которая будет вызвана при нажатии на кнопку `Вперед`
+    """
     pagination: Pagination = (await state.get_data())["pagination"]
     await callback.message.edit_text(**pagination
                                      .nextPage()
@@ -102,7 +106,10 @@ async def nextPageProduct(callback: types.CallbackQuery, state: FSMContext) -> N
 
 @paginationRouter.callback_query(
     F.data == f"{Pagination.CALLBACK_DATA_START_PREV}")
-async def nextPageProduct(callback: types.CallbackQuery, state: FSMContext) -> None:
+async def prevPageProduct(callback: types.CallbackQuery, state: FSMContext) -> None:
+    """
+    Функция, которая будет вызвана при нажатии на кнопку `Назад`
+    """
     pagination: Pagination = (await state.get_data())["pagination"]
     await callback.message.edit_text(**pagination
                                      .prevPage()

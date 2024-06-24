@@ -1,6 +1,5 @@
 import asyncio
 from http.cookies import SimpleCookie
-from typing import Any
 
 from sqlalchemy import Column, Integer, Boolean, JSON, String
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -51,6 +50,9 @@ PRODUCT_JSON_EXAMPLE = {
 
 
 def fillProductExample(json_local: dict[str, str]):
+    """
+    Заполнение данных из User.purchase в формате JSON по шаблону {PRODUCT_JSON_EXAMPLE} для rows
+    """
     jsonExample = PRODUCT_JSON_EXAMPLE.copy()
     jsonExample['purchaseAmount'] = json_local['purchaseAmount']
     jsonExample['DeliverySchedule']['dates'] = {
@@ -70,25 +72,75 @@ class User(Base):
     """
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
-    db_id = Column(String, nullable=False)
-    isAuth = Column(Boolean, nullable=False, default=False)
-    purchases = Column("purchases", MutableDict.as_mutable(JSON()), default={})
+    id = Column(Integer, primary_key=True)  # id пользователя в локальной базы данных
+    db_id = Column(String, nullable=False)  # id пользователя в базе данных на сервере
+    isAuth = Column(Boolean, nullable=False, default=False)  # Флаг авторизации. Если авторизован, то True
+    purchases = Column("purchases", MutableDict.as_mutable(JSON()), default={})  # Список закупок в формате JSON
 
-    access_token = Column(String, nullable=True)
-    refresh_token = Column(String, nullable=True)
+    access_token = Column(String, nullable=True, default="")
+    refresh_token = Column(String, nullable=True, default="")
 
-    rights = Column(String, default="")
-    type = Column(String, default="")
+    rights = Column(String, default="")  # Список прав доступа в виде строки `right1;right2;...`
+    type = Column(String, default="")  # Тип пользователя. Администратор - admin, Пользователь - user
 
-    def __init__(self, **kw: Any):
-        super().__init__(**kw)
-        self.access_token = ""
-        self.refresh_token = ""
-        self.json = {}
+    balance = Column(Integer, default=0)  # Баланс пользователя в локальной базе данных
+
+    def getAllProducts(self, purchase_id: str) -> list[str]:
+        """
+        Получение списка всех наименований/id товаров в закупке
+        :param purchase_id: id закупки
+        :return: Список наименований/id товаров в закупке
+        """
+        return [row['entityId'] for row in self.purchases[purchase_id]['rows']]
+
+    def getAllPurchasesWithPrices(self) -> list[list[str | int]]:
+        """
+        Получение списка всех закупок с ценами
+        :return: Список закупок в формате [['id закупки', 'Сумма'], ['id закупки', 'Сумма'], ...]
+        """
+        purchasesList: list[list[str | int]] = []
+        for purchaseName in self.purchases.keys():
+            price: int = 0
+            for row in self.purchases[purchaseName]['rows']:
+                price += int(row['nmc'])
+            purchasesList.append([purchaseName, price])
+
+        return purchasesList
+
+    def getProductInPurchase(self, purchase_id: str, product_id: str) -> dict[str, str] | None:
+        """
+        Получение товара в закупке
+        :param purchase_id: id закупки
+        :param product_id: id товара
+        :return: Словарь с данными товара
+        """
+        for row in self.purchases[purchase_id]['rows']:
+            if row['entityId'] == product_id:
+                return row
+        return None
+
+    async def setBalance(self, balance: int, session: AsyncSession):
+        """
+        Установка баланса пользователя
+        """
+        self.balance = balance
+        session.add(self)
+        await session.commit()
+
+    async def setCookies(self, cookies: SimpleCookie, session: AsyncSession):
+        """"
+        Установка cookies
+        """
+        self.access_token = cookies.get('access_token').value
+        self.refresh_token = cookies.get('refresh_token').value
+
+        session.add(self)
+        await session.commit()
 
     async def createPurchase(self, json: dict[str, str], session: AsyncSession):
-        """Создание закупки"""
+        """
+        Создание закупки
+        """
 
         self.purchases[json['id']] = {
             'id': json['id'],
@@ -101,6 +153,9 @@ class User(Base):
         await session.commit()
 
     async def putProduct(self, json: dict[str, str], purchase_id: str, session: AsyncSession):
+        """
+        Добавление/изменение товара в закупке
+        """
         purchase = self.purchases.get(purchase_id, {})
         rows = purchase.get('rows', [])
 
@@ -117,19 +172,16 @@ class User(Base):
         session.add(self)
         await session.commit()
 
-    def getAllProducts(self, purchase_id: str) -> list[str]:
-        return [row['entityId'] for row in self.purchases[purchase_id]['rows']]
-
-    def deletePurchase(self, id: str):
-        """Удаление закупки"""
+    async def deletePurchase(self, id: str, session: AsyncSession):
+        """
+        Удаление закупки
+        """
         if self.purchases is None or id not in self.purchases.keys():
             return
-        self.purchases.pop(id)
+        purchase = self.purchases.copy()
+        purchase.pop(id)
+        self.purchases = purchase
 
-    async def setCookies(self, cookies: SimpleCookie, session: AsyncSession):
-        """"Установка cookies"""
-        self.access_token = cookies.get('access_token').value
-        self.refresh_token = cookies.get('refresh_token').value
         session.add(self)
         await session.commit()
 
@@ -139,12 +191,6 @@ class User(Base):
             'access_token': self.access_token,
             'refresh_token': self.refresh_token,
         }
-
-    def updatePurchase(self):
-        pass
-
-    def __repr__(self):
-        return f"<User(id={self.id}, isAuth={self.isAuth})>"
 
 
 async def init_tables():

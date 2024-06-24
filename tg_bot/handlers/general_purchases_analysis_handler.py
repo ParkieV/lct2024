@@ -11,7 +11,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from config import bot, apiURL_ML
 from db.db import User
 from db.db_utils import getUser
-from res.action_list_text import COMMON_ANALYSIS_BUTTON_TEXT
+from res.general_actions_text import COMMON_ANALYSIS_BUTTON_TEXT
 from res.general_purchases_analysis_text import *
 from res.general_text import *
 from state.app_state import AppState
@@ -29,21 +29,21 @@ class GeneralPurchaseAnalysis(object):
                 "summa": str(price),
             }) as r:
                 res = await r.json()
-                print(res)
+
                 if res['state'] != 'Success':
                     return b''
 
                 return base64ToBufferInputStream(res['plot_image'])
 
     @staticmethod
-    async def allHistoryAnalysis(message: Message):
+    async def allHistoryAnalysis(message: Message, n: int):
         user: User = await getUser(message.chat.id)
         async with aiohttp.ClientSession(cookies=user.cookies) as session:
             async with session.get(f"{apiURL_ML}/v1/ml/analytics_all/history", params={
-                "n": 15,
+                "n": n,
             }) as r:
                 res = await r.json()
-                print(res)
+
                 if r.status != 200:
                     return b''
 
@@ -55,7 +55,7 @@ commonPurchasesAnalysisRouter = Router()
 
 @commonPurchasesAnalysisRouter.message(default_state, F.text == COMMON_ANALYSIS_BUTTON_TEXT,
                                        flags={"rights": "analysis_common"})
-@commonPurchasesAnalysisRouter.message(AppState.actionList, F.text == COMMON_ANALYSIS_BUTTON_TEXT,
+@commonPurchasesAnalysisRouter.message(AppState.generalActions, F.text == COMMON_ANALYSIS_BUTTON_TEXT,
                                        flags={"rights": "analysis_common"})
 @commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == COMMON_ANALYSIS_BUTTON_TEXT,
                                        flags={"rights": "analysis_common"})
@@ -68,20 +68,35 @@ async def commonPurchaseAnalysisInit(message: Message, state: FSMContext) -> Non
     ).row(
         KeyboardButton(text=BACK_BUTTON_TEXT)
     )
-    print(await state.get_state())
+
     await message.answer(text=COMMON_PURCHASES_STATISTIC_HELLO_TEXT,
                          reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
-@commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == PURCHASES_STATISTIC_BUTTON_TEXT)
-async def purchaseStatistics(message: Message, state: FSMContext) -> None:
-    allHistoryAnalysis = await GeneralPurchaseAnalysis.allHistoryAnalysis(message)
-
-    await bot.send_document(message.chat.id,
-                            document=BufferedInputFile(allHistoryAnalysis, filename="all_history.xlsx"))
-
-
 @commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == TOP_EXPENSIVE_BUTTON_TEXT)
+async def purchaseTopExpensiveEnterN(message: Message, state: FSMContext) -> None:
+    keyboard = ReplyKeyboardBuilder().row(
+        KeyboardButton(text=BACK_BUTTON_TEXT)
+    )
+
+    await state.set_state(CommonPurchaseAnalysisState.enterN)
+    await message.answer(text=ENTER_N_EXPENSIVE_PURCHASES_MESSAGE_TEXT,
+                         reply_markup=keyboard.as_markup(resize_keyboard=True))
+
+
+@commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.enterN, F.text != BACK_BUTTON_TEXT)
+async def purchaseTopExpensiveShowExcelFile(message: Message, state: FSMContext) -> None:
+    try:
+        n: int = int(message.text)
+        allHistoryAnalysis = await GeneralPurchaseAnalysis.allHistoryAnalysis(message, n)
+
+        await bot.send_document(message.chat.id,
+                                document=BufferedInputFile(allHistoryAnalysis, filename="all_history.xlsx"))
+    except Exception as e:
+        await message.answer(text=SOMETHING_WRONG)
+
+
+@commonPurchasesAnalysisRouter.message(AppState.commonPurchaseAnalysis, F.text == PURCHASES_STATISTIC_BUTTON_TEXT)
 async def suggestProduct(message: Message, state: FSMContext) -> None:
     keyboard = ReplyKeyboardBuilder().row(
         KeyboardButton(text=YEAR_TEXT),
@@ -92,7 +107,7 @@ async def suggestProduct(message: Message, state: FSMContext) -> None:
     )
 
     await state.set_state(CommonPurchaseAnalysisState.choosePeriod)
-    await message.answer(text=CHOSE_PERIOD_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
+    await message.answer(text=CHOSE_STATISTIC_PERIOD_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
 @commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.choosePeriod, F.text == YEAR_TEXT)
@@ -117,7 +132,7 @@ async def suggestProductYear(message: Message, state: FSMContext) -> None:
         period = 3
 
     await state.update_data(allPurchaseAnalysis_period=period)
-    await message.answer(text=CHOSE_TYPE_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
+    await message.answer(text=GENERAL_STATISTIC_CHOSE_TYPE_TEXT, reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 
 @commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.chooseStatisticType,
@@ -127,7 +142,8 @@ async def suggestProductYear(message: Message, state: FSMContext) -> None:
     allStatisticsAmount = await GeneralPurchaseAnalysis.allStatistics(message, period, False)
 
     await bot.send_photo(message.chat.id,
-                         photo=BufferedInputFile(allStatisticsAmount, filename="amount.png"))
+                         photo=BufferedInputFile(allStatisticsAmount, filename="amount.png"),
+                         caption=PURCHASES_STATISTIC_AMOUNT_TEXT)
 
 
 @commonPurchasesAnalysisRouter.message(CommonPurchaseAnalysisState.chooseStatisticType,
@@ -137,4 +153,5 @@ async def suggestProductYear(message: Message, state: FSMContext) -> None:
     allStatisticsPrice = await GeneralPurchaseAnalysis.allStatistics(message, period, True)
 
     await bot.send_photo(message.chat.id,
-                         photo=BufferedInputFile(allStatisticsPrice, filename="price.png"))
+                         photo=BufferedInputFile(allStatisticsPrice, filename="price.png"),
+                         caption=PURCHASES_STATISTIC_PRICE_TEXT)

@@ -5,8 +5,8 @@ class ChoosePurchaseState(StatesGroup):
     """
     Класс для описания состояний в разделе <Выбор закупки>
     """
-    purchaseList = State()  # Состояние выбора активной закупки
+
     choosePurchase = State()  # Состояние выбора активной закупки
-    actionsList = State()  # Состояние выбора активной закупки
-    chooseActionsFromList = State()  # Состояние выбора активной закупки
-    editPurchase = State()  # Состояние ввода пароля
+    actionsList = State()  # Состояние отображения действий над закупкой
+    chooseActionsFromList = State()  # Состояние выбора действия над закупкой
+    editPurchase = State()  # Состояние редактирования закупки

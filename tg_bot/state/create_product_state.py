@@ -1,21 +1,17 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-# Название товара
-# 1. "purchaseAmount": "Объем поставки"
-# 2. "nmc": "Сумма спецификации"
-# 3. Дата начала поставки:
-# 4. Дата окончания поставки:
-# 5. "deliveryConditions": "Условия поставки"
-# 6. "entityId": "Сквозной идентификатор СПГЗ"
 class AddProductToPurchase(StatesGroup):
     """
     Класс для описания состояний в разделе <Добавление товара в закупку>
     """
+    chooseAction = State()  # Состояние выбора действия
 
-    purchaseAmount = State()
-    nmc = State()
-    dateStart = State()
-    dateEnd = State()
-    deliveryConditions = State()
-    entityId = State()
+    initAdding = State()  # Состояние начального состояния
+    purchaseAmount = State()  # Состояние ввода объема поставки
+    nmc = State()  # Состояние ввода суммы спецификации (цена товара)
+    dateStart = State()  # Состояние ввода даты начала поставки
+    dateEnd = State()  # Состояние ввода даты окончания поставки
+    deliveryConditions = State()  # Состояние ввода условий поставки
+    entityId = State()  # Состояние ввода сквозного идентификатора СПГЗ (название товара)
+    finish = State()  # Состояние завершения закупки товара
