@@ -192,12 +192,6 @@ class User(Base):
             'refresh_token': self.refresh_token,
         }
 
-    def updatePurchase(self):
-        pass
-
-    def __repr__(self):
-        return f"<User(id={self.id}, isAuth={self.isAuth})>"
-
 
 async def init_tables():
     async with engine.begin() as conn:
