@@ -4,36 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="add prefix tgbot">
+    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Caddyfile" beforeDir="false" afterPath="$PROJECT_DIR$/Caddyfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/.envs/app.example.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/.envs/app.example.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/.envs/auth.example.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/.envs/auth.example.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/034a7f0b85fc713481e8ddbc182b877e.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/29cf8c918f037bd3844448b250a51ab1.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/397a36f16fecd61c3c8022b3aaaf4135.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/73830f2bde045008536990c7ae234931.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/8018d401d9041a01e1e4814f2da3b41e.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/9d9ec77ea1bec65e29a4571849523025.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/a5ec59fd464f5353afd536bc24a4d5a9.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/a67367ee5e94d24596ae624ebfae4b7f.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/a89f3c7d41f2309f4214c990c48e9c15.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/b0377fa8fcda663a755989a0ff45c2dd.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/cc9b6d712c38ecb8788c04f3cdf39992.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/e01747ad446348a49133aa3f5623183e.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/e61f9f8e4c1ccf81d79cc61beb6e0800.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/f43e8e16e99e978d8952c72cdb86b367.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/favicon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/fe02c00a08896afc1459f2557322eea3.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/main.bundle.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/main.bundle.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/store/thunk.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/store/thunk.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ml/ml.dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/ml/ml.dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,9 +39,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="99048d6c-8e12-4f23-bd29-f9325f54d948" />
+    <option name="SET_USER_NAME_GLOBALLY" value="false" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -296,7 +266,7 @@
       <workItem from="1718566826893" duration="2007000" />
       <workItem from="1727375300153" duration="124000" />
       <workItem from="1727375425106" duration="595000" />
-      <workItem from="1733220048552" duration="4891000" />
+      <workItem from="1733220048552" duration="5529000" />
     </task>
     <task id="LOCAL-00001" summary="add types">
       <option name="closed" value="true" />
@@ -570,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718561823617</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1733226489593</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1733226489593</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -588,7 +566,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="add logout and assert error in tg bot" />
     <MESSAGE value="finish info handler" />
     <MESSAGE value="optimize user steps" />
     <MESSAGE value="add common_purchases_analysis and fix info logic" />
@@ -613,7 +590,8 @@
     <MESSAGE value="move to folder" />
     <MESSAGE value="move .gitignore" />
     <MESSAGE value="add prefix tgbot" />
-    <option name="LAST_COMMIT_MESSAGE" value="add prefix tgbot" />
+    <MESSAGE value="fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$utils.coverage" NAME="utils Coverage Results" MODIFIED="1718554935816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
