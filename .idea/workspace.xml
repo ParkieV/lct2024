@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fixes">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -266,7 +266,7 @@
       <workItem from="1718566826893" duration="2007000" />
       <workItem from="1727375300153" duration="124000" />
       <workItem from="1727375425106" duration="595000" />
-      <workItem from="1733220048552" duration="5529000" />
+      <workItem from="1733220048552" duration="5901000" />
     </task>
     <task id="LOCAL-00001" summary="add types">
       <option name="closed" value="true" />
@@ -548,7 +548,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733226489593</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1733227083274</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1733227083274</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
