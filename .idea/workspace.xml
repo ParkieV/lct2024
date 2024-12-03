@@ -5,18 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="add prefix tgbot">
-      <change afterPath="$PROJECT_DIR$/tg_bot/state/create_product_state.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/db/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/db/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/db/tg.db" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/db/tg.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/back_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/back_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/choose_purchase.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/choose_purchase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/create_product_purchase.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/create_product_purchase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/login_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/login_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/product_analysis_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/product_analysis_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/handlers/product_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/handlers/product_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/middleware/auth_middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/middleware/auth_middleware.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tg_bot/res/product_text.py" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/res/product_text.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Caddyfile" beforeDir="false" afterPath="$PROJECT_DIR$/Caddyfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/.envs/app.example.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/.envs/app.example.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/.envs/auth.example.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/.envs/auth.example.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/034a7f0b85fc713481e8ddbc182b877e.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/29cf8c918f037bd3844448b250a51ab1.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/397a36f16fecd61c3c8022b3aaaf4135.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/73830f2bde045008536990c7ae234931.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/8018d401d9041a01e1e4814f2da3b41e.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/9d9ec77ea1bec65e29a4571849523025.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/a5ec59fd464f5353afd536bc24a4d5a9.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/a67367ee5e94d24596ae624ebfae4b7f.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/a89f3c7d41f2309f4214c990c48e9c15.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/b0377fa8fcda663a755989a0ff45c2dd.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/cc9b6d712c38ecb8788c04f3cdf39992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/e01747ad446348a49133aa3f5623183e.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/e61f9f8e4c1ccf81d79cc61beb6e0800.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/f43e8e16e99e978d8952c72cdb86b367.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/favicon.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/fe02c00a08896afc1459f2557322eea3.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/main.bundle.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/main.bundle.js.LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/store/thunk.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/store/thunk.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ml/ml.dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/ml/ml.dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tg_bot/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/tg_bot/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +45,7 @@
       <list>
         <option value="JavaScript File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -63,39 +81,40 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.auth_state.executor&quot;: &quot;Run&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;Python.db.executor&quot;: &quot;Run&quot;,
-    &quot;Python.login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
-    &quot;Python.viewModel.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;tgbot&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/isupo/YandexDisk/Programming/MyProject/forecasting-service/forecasting-service-tg-bot&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.auth_state.executor": "Run",
+    "Python.config.executor": "Run",
+    "Python.db.executor": "Run",
+    "Python.login.executor": "Run",
+    "Python.main (1).executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.main2.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.utils.executor": "Run",
+    "Python.viewModel.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "/Users/parukie/Projects/lct2024",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
     ],
-    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL Dialect&quot;: [
-      &quot;SQLite&quot;
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/SQL Dialect": [
+      "SQLite"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot" />
@@ -235,8 +254,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
-        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
+        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
       </set>
     </attachedChunks>
   </component>
@@ -275,6 +294,9 @@
       <workItem from="1718561452851" duration="172000" />
       <workItem from="1718561635003" duration="5164000" />
       <workItem from="1718566826893" duration="2007000" />
+      <workItem from="1727375300153" duration="124000" />
+      <workItem from="1727375425106" duration="595000" />
+      <workItem from="1733220048552" duration="4891000" />
     </task>
     <task id="LOCAL-00001" summary="add types">
       <option name="closed" value="true" />

@@ -1,3 +1,6 @@
+{
+    auto_https off
+}
 {$DOMAIN} {
 
 	handle /api/* {

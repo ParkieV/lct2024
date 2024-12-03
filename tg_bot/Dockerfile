@@ -14,6 +14,8 @@ WORKDIR /.
 COPY ./requirements.txt ./requirements.txt
 RUN  pip install -r requirements.txt
 
+FROM base AS base_with_req
+
 COPY . .
 
 CMD ["python", "-m", "main"]

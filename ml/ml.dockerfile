@@ -14,6 +14,8 @@ WORKDIR /api
 COPY ./api/requirements.txt ./api/requirements.txt
 RUN pip install -r ./api/requirements.txt
 
+FROM base AS base_with_req
+
 COPY . .
 
 CMD ["uvicorn", "api.__main__:app", "--host", "0.0.0.0", "--port", "8080"]

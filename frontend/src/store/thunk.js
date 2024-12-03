@@ -44,7 +44,7 @@ export const login = createAsyncThunk(
 export const logout = createAsyncThunk(
     'user/logout', async (_, thunkAPI) => {
         let res = await axiosInstance.get(`/api/auth/logout`);
-        return res;
+        return res;res
     });
 
 

@@ -1,11 +1,11 @@
 # Используем базовый образ с Node.js
-FROM node:20 as build
+FROM node:20 AS build
 
 # Устанавливаем рабочую директорию в контейнере
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Копируем package.json и package-lock.json для установки зависимостей
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Устанавливаем зависимости
 RUN npm install
@@ -16,6 +16,6 @@ COPY . .
 # Выполняем сборку приложения
 RUN npm run build
 
-FROM caddy:2-alpine as serve
+FROM caddy:2-alpine AS serve
 
-COPY --from=build /app/build /srv
+COPY --from=build /usr/src/app/build /srv

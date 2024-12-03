@@ -1,16 +1,6 @@
-version: "3.11"
-
-networks:
-  network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.22.0.0/16
-
 services:
-  postgres:
+  database:
     user: "0:0"
-    container_name: postgres_hack
     image: postgres:latest
     restart: unless-stopped
     env_file:
@@ -21,15 +11,11 @@ services:
       timeout: 3s
       retries: 2
     volumes:
-      - ./volumes/db-data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     privileged: true
-    networks:
-      network:
-        ipv4_address: 172.22.0.2
 
-  redis:
-    container_name: redis_hack
+  inmemory_db:
     image: redis:latest
     restart: unless-stopped
     env_file:
@@ -41,70 +27,47 @@ services:
       timeout: 3s
       retries: 2
     volumes:
-      - ./volumes/redis.conf:/etc/redis/redis.conf
-      - ./volumes/redis:/var/lib/redis/data
+      - inmemory_db_data:/var/lib/redis/data
     ports:
       - 6379:6379
-    networks:
-      network:
-        ipv4_address: 172.22.0.3
 
   ml:
-    container_name: ml_app
     restart: unless-stopped
     build:
       context: ./ml
       dockerfile: ml.dockerfile
     ports:
       - 8080:8080
-    volumes:
-      - ./volumes/ml_data:/ml_data
-    networks:
-      network:
-        ipv4_address: 172.22.0.4
 
   backend:
-    container_name: backend_app
     restart: unless-stopped
     env_file:
       - backend/src/.envs/app.env
       - backend/src/.envs/auth.env
     depends_on:
-      - postgres
-      - redis
+      - database
+      - inmemory_db
       - ml
     ports:
       - 8000:8000
     build:
       context: backend/src
       dockerfile: Dockerfile
-    networks:
-      network:
-        ipv4_address: 172.22.0.5
 
   tg_bot:
-    container_name: telegram_bot
     restart: unless-stopped
     build:
       context: tg_bot
       dockerfile: Dockerfile
-    networks:
-      network:
-        ipv4_address: 172.22.0.6
 
   frontend:
-    container_name: frontend_app
     restart: unless-stopped
     build:
       context: frontend
       dockerfile: Dockerfile
-    networks:
-      network:
-        ipv4_address: 172.22.0.7
-    cap_add: [ NET_ADMIN ]
     ports: [ 80:80, 443:443 ]
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     env_file: [ .env ]
@@ -113,3 +76,5 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  db_data:
+  inmemory_db_data:
