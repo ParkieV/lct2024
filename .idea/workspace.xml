@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fixes" />
+    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fix SQL" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +95,7 @@
       <recent name="C:\Users\isupo\YandexDisk\Programming\MyProject\forecasting-service\forecasting-service-tg-bot\db" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.main (1)">
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="forecasting-service-tg-bot" />
       <option name="ENV_FILES" value="" />
@@ -211,6 +211,15 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.utils" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.utils" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -566,7 +575,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733312283480</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="fix SQL">
+      <option name="closed" value="true" />
+      <created>1733317460067</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1733317460067</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -584,7 +601,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="finish info handler" />
     <MESSAGE value="optimize user steps" />
     <MESSAGE value="add common_purchases_analysis and fix info logic" />
     <MESSAGE value="add comments" />
@@ -609,7 +625,8 @@
     <MESSAGE value="move .gitignore" />
     <MESSAGE value="add prefix tgbot" />
     <MESSAGE value="fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixes" />
+    <MESSAGE value="fix SQL" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix SQL" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/forecasting_service_tg_bot$utils.coverage" NAME="utils Coverage Results" MODIFIED="1718554935816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
