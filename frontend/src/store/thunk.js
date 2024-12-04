@@ -18,7 +18,7 @@ function createAxios() {
         baseURL: apiUrl,
         withCredentials: true,
         jar: jar,
-        proxy: "http://localhost:8000"
+        proxy: "http://backend:8000"
     }));
 }
 
