@@ -1,5 +1,3 @@
-\c lct_postgres
-
 CREATE EXTENSION pgcrypto;
 
 CREATE TABLE "users" (
@@ -17,6 +15,28 @@ CREATE TABLE "users" (
   PRIMARY KEY ("id")
 );
 
+INSERT INTO "users" (
+  "email",
+  "password",
+  "first_name",
+  "middle_name",
+  "last_name",
+  "telegram_nickname",
+  "phone",
+  "position",
+  "rights"
+)
+VALUES (
+  'user@mos.ru',
+  '123456',
+  'Иван',
+  'Иванович',
+  'Иванов',
+  'ivan_telegram',
+  '79991234567',
+  'Менеджер',
+  'user'
+);
 CREATE TABLE "organization" (
   "id" uuid DEFAULT gen_random_uuid(),
   "name" varchar(150),
