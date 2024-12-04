@@ -1,5 +1,3 @@
-\c lct_postgres
-
 CREATE EXTENSION pgcrypto;
 
 CREATE TABLE "users" (
