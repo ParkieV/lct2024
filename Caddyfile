@@ -7,7 +7,7 @@
 		reverse_proxy backend:8000
 	}
 	handle /api_ml/* {
-		reverse_proxy ml:8080
+		reverse_proxy ml:8010
 	}
 	handle {
 		root * /srv

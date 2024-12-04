@@ -37,7 +37,7 @@ services:
       context: ./ml
       dockerfile: ml.dockerfile
     ports:
-      - 8010:8080
+      - 8010:8010
 
   backend:
     restart: unless-stopped
