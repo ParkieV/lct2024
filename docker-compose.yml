@@ -44,10 +44,11 @@ services:
     env_file:
       - backend/src/.envs/app.env
       - backend/src/.envs/auth.env
+      - backend/src/.envs/db.env
+      - backend/src/.envs/redis.env
     depends_on:
       - database
       - inmemory_db
-      - ml
     ports:
       - 8000:8000
     build:

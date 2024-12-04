@@ -1,5 +1,4 @@
-import os.path
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.persistence.sqlalc_models import Base
 
@@ -23,6 +22,8 @@ class AuthSettings(BaseSettings):
 	algorithm: str
 	access_expired_minutes: int
 	refresh_expired_days: int
+
+	model_config = SettingsConfigDict(env_prefix='AUTH_')
 
 
 class PostgresSettings(BaseSettings):
