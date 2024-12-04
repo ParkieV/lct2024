@@ -65,7 +65,7 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-    ports: [ 8080:80, 8443:443 ]
+    ports: [ 9080:80, 9443:443 ]
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
