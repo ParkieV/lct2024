@@ -12,8 +12,8 @@
 
 ## команда
 
-- Исупов Григорий - FrontEnd & DevOps
-- Пискунов Степан - BackEnd & DevOps
+- Исупов Григорий - FrontEnd, DevOps
+- Пискунов Степан - BackEnd, DevOps
 - Кадомцев Андрей - ML Developer
 - Плешаков Иван - ML Developer, TeamLead
 - Шубина Светлана - UI/UX Designer, Project Manager
