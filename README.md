@@ -16,7 +16,7 @@
 - Пискунов Степан - BackEnd & DevOps
 - Кадомцев Андрей - ML Developer
 - Плешаков Иван - ML Developer, TeamLead
-- Шубина Светлана - UI/UX Designer
+- Шубина Светлана - UI/UX Designer, Project Manager
 
 ## Инструкция для запуска
 
