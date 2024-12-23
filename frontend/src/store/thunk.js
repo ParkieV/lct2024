@@ -18,7 +18,7 @@ function createAxios() {
         baseURL: apiUrl,
         withCredentials: true,
         jar: jar,
-        proxy: "https://91.107.123.188"
+        proxy: "http://91.107.123.188"
     }));
 }
 

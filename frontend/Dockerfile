@@ -13,6 +13,8 @@ RUN npm install
 # Копируем исходный код приложения в контейнер
 COPY . .
 
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+
 # Выполняем сборку приложения
 RUN npm run build
 
