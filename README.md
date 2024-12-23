@@ -10,7 +10,16 @@
 2. [**Ссылка на чат-бота**](https://t.me/Purchasing_Assistant_bot)
 3. [**Скринкаст работы сервиса**](#)
 
+## Команда
+
+- Исупов Григорий - FrontEnd, DevOps
+- Пискунов Степан - BackEnd, DevOps
+- Кадомцев Андрей - ML Developer
+- Плешаков Иван - ML Developer, TeamLead
+- Шубина Светлана - UI/UX Designer, Project Manager
+
 ## Инструкция для запуска
+
 ```
 1. git clone https://github.com/ParkieV/lct2024.git && cd lct2024
 2. настройка переменных окружения и конфигураций
