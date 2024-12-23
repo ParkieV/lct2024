@@ -18,7 +18,7 @@ function createAxios() {
         baseURL: apiUrl,
         withCredentials: true,
         jar: jar,
-        proxy: "http://purchasing-assistant.itatmisis.ru"
+        proxy: "https://91.107.123.188"
     }));
 }
 

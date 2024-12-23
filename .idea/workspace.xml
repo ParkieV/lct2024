@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fix SQL" />
+    <list default="true" id="997070ce-5707-4aab-a0fe-051fd39fa8b4" name="Changes" comment="fix SQL">
+      <change beforePath="$PROJECT_DIR$/frontend/src/store/thunk.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/store/thunk.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -270,6 +272,7 @@
       <workItem from="1733308913776" duration="1703000" />
       <workItem from="1733314434343" duration="16000" />
       <workItem from="1733314805050" duration="30000" />
+      <workItem from="1734954874571" duration="354000" />
     </task>
     <task id="LOCAL-00001" summary="add types">
       <option name="closed" value="true" />
